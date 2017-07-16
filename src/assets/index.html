@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Speed Test</title>
+
+    <link rel="stylesheet" href="vendor.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>
+                Speed Test
+
+                <nav id="commands" class="pull-right">
+                    <button id="start" class="btn btn-lg btn-default btn-success">Start</button>
+                    <button id="stop" class="btn btn-lg btn-default btn-danger hidden">Stop</button>
+                </nav>
+            </h1>
+        </div>
+    </div>
+
+    <article id="speedtest" class="container">
+        <section id="results" class="row text-center">
+            <div id="gauge" class="col-xs-12">
+            </div>
+
+            <div id="ip" class="col-md12 col-xs-12 result ip">
+                <label>IP</label>
+                <span class="value"></span>
+            </div>
+            <div id="latency" class="col-md-3 col-xs-6 result duration">
+                <label>Latency</label>
+                <span class="value"></span>
+            </div>
+            <div id="jitter" class="col-md-3 col-xs-6 result duration">
+                <label>Jitter</label>
+                <span class="value"></span>
+            </div>
+            <div id="download" class="col-md-3 col-xs-6 result bandwidth">
+                <label>Download</label>
+                <span class="value"></span>
+            </div>
+            <div id="upload" class="col-md-3 col-xs-6 result bandwidth">
+                <label>Upload</label>
+                <span class="value"></span>
+            </div>
+        </section>
+    </article>
+
+    <script src="vendor.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

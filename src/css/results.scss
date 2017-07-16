@@ -1,0 +1,38 @@
+#results .result {
+    padding: 20px;
+}
+
+#results label {
+    display: block;
+    font-size: 20px;
+}
+
+#results .value {
+    display: block;
+    font-size: 36px;
+    font-weight: light;
+    color: grey;
+}
+
+#results .value::after {
+    display: block;
+    font-size: 16px;
+    color: black;
+    margin-top: -12px;
+}
+
+#results .value:empty::before {
+    content: "––"
+}
+
+#results .ip .value:empty::before {
+    content: "___.___.___.___"
+}
+
+#results .duration .value::after {
+    content: " ms";
+}
+
+#results .bandwidth .value::after {
+    content: " Mb/s";
+}
