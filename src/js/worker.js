@@ -689,8 +689,9 @@ class SpeedTestWorker {
     /**
      *
      *
+     * @returns
      */
-    testUploadSpeed() {
+    getRandomData()  {
         // prepare a random data buffer of 1MB
         const buffer = new Float32Array(new ArrayBuffer(1048576));
         for (var index = 0; index < buffer.length; index++) {
@@ -701,10 +702,18 @@ class SpeedTestWorker {
         for (let i = 0; i < this.config.upload.size; i++) {
             data.push(buffer);
         }
+        return new Blob(data, {type: 'application/octet-stream'});
+    }
 
+    /**
+     *
+     *
+     */
+    testUploadSpeed() {
         const test = {
             index: 0,
             promises: [],
+            data: this.getRandomData(),
             run: (size, delay = 0, startDate = Date.now()) => {
                 // store test index
                 const index = test.index++;
@@ -833,7 +842,7 @@ class SpeedTestWorker {
                     // delay request dispatching as configured
                     this.scope.setTimeout(
                         () => {
-                            xhr.send(new Blob(data));
+                            xhr.send(test.data);
                         },
                         delay
                     );
