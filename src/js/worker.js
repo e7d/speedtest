@@ -56,7 +56,7 @@ class SpeedTestWorker {
                 url: 'data.php',
                 streams: 5,
                 size: 20,
-                dataType: 'arraybuffer', // 'arraybuffer' or 'blob'
+                dataType: 'blob', // 'arraybuffer' or 'blob'
                 adaptative: false,
                 duration: 15,
                 gracetime: 2,
