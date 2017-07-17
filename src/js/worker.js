@@ -193,7 +193,7 @@ class SpeedTestWorker {
                 return new Promise((resolve, reject) => {
                     // compute endpoint URI with a random part for cache busting
                     const endpoint = this.config.ip.url +
-                        '?ip' + Math.round(Date.now());
+                        '?ip' + Math.random();
 
                     // build the XHR request
                     const xhr = new XMLHttpRequest();
@@ -277,7 +277,7 @@ class SpeedTestWorker {
 
                     // compute endpoint URI with a random part for cache busting
                     const endpoint = this.config.latency.url +
-                        '?latency' + Math.round(Date.now());
+                        '?latency' + Math.random();
 
                     // build the XHR request
                     const xhr = new XMLHttpRequest();
@@ -497,8 +497,8 @@ class SpeedTestWorker {
 
                     // compute endpoint URI with the chunk size and a random part for cache busting
                     const endpoint = this.config.download.url +
-                        '?size=' + size +
-                        '&download' + Math.round(Date.now());
+                        '?size=' + size || '' +
+                        '&download' + Math.random();
 
                     // build the XHR request
                     const xhr = new XMLHttpRequest();
@@ -735,7 +735,7 @@ class SpeedTestWorker {
 
                     // compute endpoint URI with the chunk size and a random part for cache busting
                     const endpoint = this.config.upload.url +
-                        '?upload' + Math.round(Date.now());
+                        '?upload' + Math.random();
 
                     // build the XHR request
                     let xhr = new XMLHttpRequest();
