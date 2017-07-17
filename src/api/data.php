@@ -1,9 +1,12 @@
 <?php
 
-$chunkSize = 1048576;
+// remove max execution time
+set_time_limit(0);
+
 
 // Read input
-$size = $_GET['size'] ?? 8;
+$chunkSize = 1 * 1024 * 1024;
+$size = intval($_GET['size'] ?? 0);
 
 // Disable Compression
 @ini_set('zlib.output_compression', 'Off');
@@ -18,7 +21,9 @@ header('Content-Description: File Transfer');
 header('Content-Type: application/octet-stream');
 header('Content-Disposition: attachment; filename=random.dat');
 header('Content-Transfer-Encoding: binary');
-header('Content-Length: ' . $size * $chunkSize);
+if ($size > 0) {
+    header('Content-Length: ' . $size * $chunkSize);
+}
 
 // Disable cache
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -29,7 +34,10 @@ header('Pragma: no-cache');
 $data = openssl_random_pseudo_bytes($chunkSize);
 
 // Assemble enough chunks to reach required size
-for ($i = 0; $i < intval($size); $i++) {
+if ($size === 0) {
+    $size = INF;
+}
+for ($i = 0; $i < $size; $i++) {
     echo $data;
     flush();
 }
