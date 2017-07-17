@@ -335,9 +335,6 @@ class SpeedTestWorker {
                             return;
                         }
 
-                        // delete request to release its memory
-                        delete this.test.requests[index];
-
                         // wait for grace time before issuing next ping
                         this.scope.setTimeout(
                             () => {
@@ -355,9 +352,6 @@ class SpeedTestWorker {
 
                     // track request errors
                     xhr.onerror = () => {
-                        // delete request to release its memory
-                        delete this.test.requests[index];
-
                         if (this.config.ignoreErrors) {
                             // prepare next loop
                             test.run(index + 1)
@@ -576,9 +570,6 @@ class SpeedTestWorker {
                             xhr.abort();
                         } catch (ex) {}
 
-                        // delete request to release its memory
-                        delete this.test.requests[index];
-
                         // prepare next loop
                         test.run(size)
                             .then(() => {
@@ -591,9 +582,6 @@ class SpeedTestWorker {
 
                     // track request errors
                     xhr.onerror = () => {
-                        // delete request to release its memory
-                        delete this.test.requests[index];
-
                         if (this.config.ignoreErrors) {
                             // prepare next loop
                             test.run(size)
@@ -805,9 +793,6 @@ class SpeedTestWorker {
                             }
                         }
 
-                        // delete request to release its memory
-                        delete this.test.requests[index];
-
                         // prepare next loop
                         test.run(size)
                             .then(() => {
@@ -821,9 +806,6 @@ class SpeedTestWorker {
                     // track request errors
                     xhr.upload.onerror = (e) => {
                         console.log(arguments);
-
-                        // delete request to release its memory
-                        delete this.test.requests[index];
 
                         if (this.config.ignoreErrors) {
                             // prepare next loop, but give it a delay to breathe
