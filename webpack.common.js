@@ -8,7 +8,6 @@ const extractSass = new ExtractTextPlugin({
 
 module.exports = {
     entry: {
-        vendor: './build/vendor',
         app: './build/app',
         worker: './build/worker'
     },
