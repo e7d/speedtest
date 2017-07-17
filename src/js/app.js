@@ -16,8 +16,8 @@ class App {
 
         // prepare default config
         this.config = {
-            updateDelay: 500,   // 100
-            endless: false,      // false
+            updateDelay: 200,   // 100
+            endless: false,     // false
         };
 
         // prepare speed test worker
