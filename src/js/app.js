@@ -46,6 +46,8 @@ class App {
         this.$startButton.addClass('hidden');
         this.$stopButton.removeClass('hidden');
 
+        this.reset();
+
         if (
             this.config.updateDelay &&
             !this.statusInterval
@@ -103,6 +105,14 @@ class App {
                 this.$stopButton.addClass('hidden');
                 break;
         }
+    }
+
+    reset() {
+        this.$ipValue.empty();
+        this.$latencyValue.empty();
+        this.$jitterValue.empty();
+        this.$downloadValue.empty();
+        this.$uploadValue.empty();
     }
 
     /**
