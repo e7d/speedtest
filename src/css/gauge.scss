@@ -1,0 +1,81 @@
+$background: #ffffff;
+$spinnerValueColor: #eeeeee;
+$spinnerBackgroundColor: grey;
+$pointerColor: #cccccc;
+$width: 300px;
+$height: $width / 2;
+$gaugewidth: 40px;
+$speed: 100ms;
+
+.gauge {
+    display: inline-block;
+    position: relative;
+    width: $width;
+    height: $height;
+
+    .gauge-container {
+        width: $width;
+        height: $height;
+        position: relative;
+        overflow: hidden;
+
+        .inner {
+            width: $width;
+            height: $height;
+            display: block;
+            background-color: $spinnerBackgroundColor;
+            border-radius: $width $width 0 0;
+            z-index: 1;
+            &:after {
+                content: '';
+                width: $width - ($gaugewidth * 2);
+                height: $height - $gaugewidth;
+                top: $gaugewidth;
+                left: $gaugewidth;
+                background-color: $background;
+                border-radius: $width $width 0 0;
+                position: absolute;
+                z-index: 3;
+            }
+        }
+
+        .spinner {
+            width: $width;
+            height: $height;
+            background-color: $spinnerValueColor;
+            position: absolute;
+            z-index: 2;
+            transform-origin: top center;
+            transform: rotate(0deg);
+            transition: transform $speed ease;
+            transform: translateZ(0);
+            border-radius: 0 0 $width $width;
+        }
+    }
+
+    .pointer {
+        display: block;
+        width: 6px;
+        height: $height + 5;
+        background-color: $pointerColor;
+        border-radius: 4px 4px 0 0;
+        position: absolute;
+        z-index: 4;
+        bottom: 0px;
+        left: ($width / 2) - 3;
+        transform: rotate(-90deg);
+        transform-origin: center bottom;
+        transition: transform $speed ease;
+    }
+
+    .pointer-knob {
+        width: 20px;
+        height: 20px;
+        background-color: $pointerColor;
+        position: absolute;
+        left: ($width / 2) - 10;
+        bottom: -10px;
+        z-index: 5;
+        border-radius: 20px;
+    }
+}

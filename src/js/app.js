@@ -28,6 +28,7 @@ class App {
 
         this.$startButton = $('#commands button#start');
         this.$stopButton = $('#commands button#stop');
+        this.$gauge = $('.gauge');
         this.$ipValue = $('#results #ip span.value');
         this.$latencyValue = $('#results #latency span.value');
         this.$jitterValue = $('#results #jitter span.value');
@@ -151,6 +152,21 @@ class App {
                 break;
         }
     }
+
+    setGauge(gauge, value = null) {
+        value = (value || $(gauge).data('percentage') || 0);
+        value = Math.max(0, Math.min(1, value));
+
+        const degrees = 180 * value;
+        const pointerDegrees = degrees - 90;
+        const spinner = $(gauge).find('.spinner');
+        const pointer = $(gauge).find('.pointer');
+        $(spinner).attr({
+            style: 'transform: rotate(' + degrees + 'deg)'
+        });
+        $(pointer).attr({
+            style: 'transform: rotate(' + pointerDegrees + 'deg)'
+        });
     }
 }
 
