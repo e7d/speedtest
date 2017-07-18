@@ -238,6 +238,9 @@ class SpeedTestWorker {
             .then(() => {
                 this.ip.running = false;
 
+                // broadcast status
+                this.processMessage({data: 'status'});
+
                 // cancel any remaining request
                 this.clearRequests(this.test.requests);
 
