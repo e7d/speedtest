@@ -84,11 +84,7 @@ class SpeedTestWorker {
         switch (event.data) {
             case 'abort':
                 this.abort();
-                this.scope.postMessage({
-                    'status': this.test.status,
-                    'step': this.test.step,
-                    'results': this.test.results
-                });
+                this.postStatus();
                 break;
             case 'config':
                 this.scope.postMessage(this.test.config);
@@ -96,24 +92,24 @@ class SpeedTestWorker {
             case 'start':
                 this.run()
                     .then(() => {
-                        this.scope.postMessage({
-                            'status': this.test.status,
-                            'step': this.test.step,
-                            'results': this.test.results
-                        });
+                        this.postStatus();
                     })
                     .catch((reason) => {
                         console.error('FAIL', reason);
                     });
                 break;
             case 'status':
-                this.scope.postMessage({
-                    'status': this.test.status,
-                    'step': this.test.step,
-                    'results': this.test.results
-                });
+                this.postStatus();
                 break;
         }
+    }
+
+    postStatus() {
+        this.scope.postMessage({
+            'status': this.test.status,
+            'step': this.test.step,
+            'results': this.test.results
+        });
     }
 
     /**
