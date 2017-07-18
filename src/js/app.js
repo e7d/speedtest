@@ -80,13 +80,13 @@ class App {
     processResponse(event) {
         switch (_.get(event.data, 'status')) {
             case 'running':
-                this.processResults(_.get(event.data, 'results', {}));
+                this.processData(_.get(event, 'data', {}));
                 break;
             case 'done':
                 window.clearInterval(this.statusInterval);
                 this.statusInterval = null;
 
-                this.processResults(_.get(event.data, 'results', {}));
+                this.processData(_.get(event, 'data', {}));
                 if (this.config.endless) {
                     this.startTest();
                     return;
@@ -98,7 +98,7 @@ class App {
                 window.clearInterval(this.statusInterval);
                 this.statusInterval = null;
 
-                this.processResults(_.get(event.data, 'results', {}));
+                this.processData(_.get(event, 'data', {}));
                 this.$startButton.removeClass('hidden');
                 this.$stopButton.addClass('hidden');
                 break;
@@ -108,28 +108,39 @@ class App {
     /**
      *
      *
-     * @param {any} results
+     * @param {any} data
      */
-    processResults(results) {
-        this.$ipValue.html(
-            _.get(results, 'ip', '')
-        );
-        this.$latencyValue.html(
-            _.get(results, 'latency.avg', '')
-        );
-        this.$jitterValue.html(
-            _.get(results, 'latency.jitter', '')
-        );
-        this.$downloadValue.html(
-            _.get(results, 'download') ?
-            (+results.download / (1024 * 1024)).toFixed(2) :
-            ''
-        );
-        this.$uploadValue.html(
-            _.get(results, 'upload') ?
-            (+results.upload / (1024 * 1024)).toFixed(2) :
-            ''
-        );
+    processData(data) {
+        switch (_.get(data, 'step')) {
+            case 'ip':
+                this.$ipValue.html(
+                    _.get(data, 'results.ip', '')
+                );
+                break;
+            case 'latency':
+                this.$latencyValue.html(
+                    _.get(data, 'results.latency.avg', '')
+                );
+                this.$jitterValue.html(
+                    _.get(data, 'results.latency.jitter', '')
+                );
+                break;
+            case 'download':
+                const downloadValue = _.get(data, 'results.download') ?
+                    (+data.results.download / (1024 * 1024)) :
+                    0;
+                this.$downloadValue.html(downloadValue ? downloadValue.toFixed(2) : '');
+                this.setGauge(this.$gauge, (downloadValue / 1024));
+                break;
+            case 'upload':
+                const uploadValue = _.get(data, 'results.upload') ?
+                    (+data.results.upload / (1024 * 1024)) :
+                    0;
+                this.$uploadValue.html(uploadValue ? uploadValue.toFixed(2) : '');
+                this.setGauge(this.$gauge, (uploadValue / 1024));
+                break;
+        }
+    }
     }
 }
 
