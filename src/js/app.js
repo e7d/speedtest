@@ -16,8 +16,8 @@ class App {
 
         // prepare default config
         this.config = {
-            updateDelay: 200,   // 100
-            endless: false,     // false
+            updateDelay: 200, // 100
+            endless: false, // false
         };
 
         // prepare speed test worker
@@ -29,6 +29,7 @@ class App {
         this.$startButton = $('#commands button#start');
         this.$stopButton = $('#commands button#stop');
         this.$gauge = $('.gauge');
+        this.$progressBar = $('.progress-bar');
         this.$ipValue = $('#results #ip span.value');
         this.$latencyValue = $('#results #latency span.value');
         this.$jitterValue = $('#results #jitter span.value');
@@ -44,10 +45,13 @@ class App {
      *
      */
     startTest() {
+        this.running = true;
+
         this.$startButton.addClass('hidden');
         this.$stopButton.removeClass('hidden');
 
-        this.reset();
+        this.resetMeters();
+        this.resetResults();
 
         if (
             this.config.updateDelay &&
@@ -67,12 +71,16 @@ class App {
      *
      */
     stopTest() {
+        this.running = false;
+
         window.clearInterval(this.statusInterval);
         this.statusInterval = null;
 
         if (this.worker) {
             this.worker.postMessage('abort');
         }
+
+        this.resetMeters();
     }
 
     /**
@@ -108,7 +116,12 @@ class App {
         }
     }
 
-    reset() {
+    resetMeters() {
+        this.setGauge(this.$gauge, 0);
+        this.setProgressBar(this.$progressBar, 0);
+    }
+
+    resetResults() {
         this.$ipValue.empty();
         this.$latencyValue.empty();
         this.$jitterValue.empty();
@@ -122,6 +135,10 @@ class App {
      * @param {any} data
      */
     processData(data) {
+        if (!this.running) {
+            return;
+        }
+
         switch (_.get(data, 'step')) {
             case 'ip':
                 this.$ipValue.html(
@@ -135,37 +152,46 @@ class App {
                 this.$jitterValue.html(
                     _.get(data, 'results.latency.jitter', '')
                 );
+                this.setProgressBar(this.$progressBar, _.get(data, 'results.latency.progress', 0));
                 break;
             case 'download':
                 const downloadValue = _.get(data, 'results.download') ?
-                    (+data.results.download / (1024 * 1024)) :
+                    (+data.results.download.speed / (1024 * 1024)) :
                     0;
                 this.$downloadValue.html(downloadValue ? downloadValue.toFixed(2) : '');
                 this.setGauge(this.$gauge, (downloadValue / 1024));
+                this.setProgressBar(this.$progressBar, _.get(data, 'results.download.progress', 0));
                 break;
             case 'upload':
                 const uploadValue = _.get(data, 'results.upload') ?
-                    (+data.results.upload / (1024 * 1024)) :
+                    (+data.results.upload.speed / (1024 * 1024)) :
                     0;
                 this.$uploadValue.html(uploadValue ? uploadValue.toFixed(2) : '');
                 this.setGauge(this.$gauge, (uploadValue / 1024));
+                this.setProgressBar(this.$progressBar, _.get(data, 'results.upload.progress', 0));
                 break;
         }
     }
 
-    setGauge(gauge, value = null) {
-        value = (value || $(gauge).data('percentage') || 0);
+    setGauge($gauge, value = null) {
+        value = (value || $gauge.data('percentage') || 0);
         value = Math.max(0, Math.min(1, value));
 
         const degrees = 180 * value;
         const pointerDegrees = degrees - 90;
-        const spinner = $(gauge).find('.spinner');
-        const pointer = $(gauge).find('.pointer');
-        $(spinner).attr({
+        const $spinner = $gauge.find('.spinner');
+        const $pointer = $gauge.find('.pointer');
+        $spinner.attr({
             style: 'transform: rotate(' + degrees + 'deg)'
         });
-        $(pointer).attr({
+        $pointer.attr({
             style: 'transform: rotate(' + pointerDegrees + 'deg)'
+        });
+    }
+
+    setProgressBar($progressBar, progress = 0) {
+        $progressBar.css({
+            width: progress * 100 + '%'
         });
     }
 }

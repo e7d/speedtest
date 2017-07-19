@@ -380,6 +380,7 @@ class SpeedTestWorker {
 
         // initialize latency test
         this.latency = {
+            initDate: Date.now(),
             status: this.STATUS.STARTING,
             running: true,
             data: []
@@ -434,10 +435,16 @@ class SpeedTestWorker {
      * @returns
      */
     processLatencyResults() {
+        // compute test durations
+        const durationFromInit = (Date.now() - this.latency.initDate) / 1000;
+
+        // compute progress
+        const progress = durationFromInit / this.config.latency.duration;
+
         // gather the processed latencies
         const latencies = this.latency.data;
 
-        // compute min, max and average latencies
+        // store results
         this.test.results.latency = {
             min: +Math.min.apply(null, latencies).toFixed(2),
             max: +Math.max.apply(null, latencies).toFixed(2),
@@ -446,6 +453,7 @@ class SpeedTestWorker {
                 latencies.length
             ).toFixed(2),
             jitter: 0,
+            progress: progress
         };
 
         // nothing else to do without at least two values
@@ -454,12 +462,13 @@ class SpeedTestWorker {
         }
 
         // process latencies by pair to compute jitter
-        latencies.forEach((latency, index) => {
+        latencies.forEach((value, index) => {
             if (0 === index) {
                 return;
             }
 
-            // RFC 1889 (https://www.ietf.org/rfc/rfc1889.txt): J=J+(|D(i-1,i)|-J)/16
+            // RFC 1889 (https://www.ietf.org/rfc/rfc1889.txt):
+            // J=J+(|D(i-1,i)|-J)/16
             const deltaPing = Math.abs(latencies[index - 1] - latencies[index]);
             this.test.results.latency.jitter += (deltaPing - this.test.results.latency.jitter) / 16.0;
         }, this);
@@ -612,6 +621,7 @@ class SpeedTestWorker {
 
         // initialize download test
         this.download = {
+            initDate: Date.now(),
             status: this.STATUS.STARTING,
             running: true,
             startDate: null,
@@ -675,14 +685,23 @@ class SpeedTestWorker {
      *
      */
     processDownloadSpeedResults() {
-        // compute test duration
-        const totalDuration = (Date.now() - this.download.startDate) / 1000;
+        // compute test durations
+        const durationFromInit = (Date.now() - this.download.initDate) / 1000;
+        const durationFromStart = (Date.now() - this.download.startDate) / 1000;
+
+        // compute progress
+        const progress = durationFromInit / this.config.download.duration;
 
         // compute bandwidth
         const {
             bitBandwidth: bandwidth
-        } = this.computeBandwidth(this.download.size, totalDuration);
-        this.test.results.download = +bandwidth.toFixed(2);
+        } = this.computeBandwidth(this.download.size, durationFromStart);
+
+        // store results
+        this.test.results.download = {
+            speed: +bandwidth.toFixed(2),
+            progress: progress,
+        };
     }
 
     /**
@@ -851,6 +870,7 @@ class SpeedTestWorker {
 
         // initialize upload test
         this.upload = {
+            initDate: Date.now(),
             status: this.STATUS.STARTING,
             running: true,
             startDate: null,
@@ -915,14 +935,23 @@ class SpeedTestWorker {
      * @param {any} test
      */
     processUploadSpeedResults() {
-        // compute test duration
-        const totalDuration = (Date.now() - this.upload.startDate) / 1000;
+        // compute test durations
+        const durationFromInit = (Date.now() - this.upload.initDate) / 1000;
+        const durationFromStart = (Date.now() - this.upload.startDate) / 1000;
+
+        // compute progress
+        const progress = durationFromInit / this.config.upload.duration;
 
         // compute bandwidth
         const {
             bitBandwidth: bandwidth
-        } = this.computeBandwidth(this.upload.size, totalDuration);
-        this.test.results.upload = +bandwidth.toFixed(2);
+        } = this.computeBandwidth(this.upload.size, durationFromStart);
+
+        // store results
+        this.test.results.upload = {
+            speed: +bandwidth.toFixed(2),
+            progress: progress,
+        };
     }
 
     /**
