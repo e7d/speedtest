@@ -496,8 +496,8 @@ class SpeedTestWorker {
 
                     // compute endpoint URI with the chunk size and a random part for cache busting
                     const endpoint = this.config.download.url +
-                        '?size=' + size +
-                        '&download' + Math.random();
+                        '?download' + Math.random() +
+                        '&size=' + size;
 
                     // build the XHR request
                     const xhr = new XMLHttpRequest();
