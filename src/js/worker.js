@@ -756,7 +756,7 @@ class SpeedTestWorker {
                         '?upload' + Math.random();
 
                     // build the XHR request
-                    let xhr = new XMLHttpRequest();
+                    const xhr = new XMLHttpRequest();
 
                     // store the request in case we need to cancel it later
                     this.test.requests[index] = xhr;
