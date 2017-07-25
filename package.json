@@ -14,7 +14,7 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "bootstrap": "^3.3.7",
-    "canvas-gauges": "^2.1.4",
+    "core-js": "^2.4.1",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1"
@@ -35,6 +35,5 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.3.0",
     "webpack-merge": "^4.1.0"
-  },
-  "false": {}
+  }
 }
