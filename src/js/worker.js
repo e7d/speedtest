@@ -94,7 +94,7 @@ class SpeedTestWorker {
                     .then(() => {
                         this.postStatus();
                     })
-                    .catch((reason) => {
+                    .catch(reason => {
                         console.error('FAIL', reason);
                     });
                 break;
@@ -127,7 +127,7 @@ class SpeedTestWorker {
 
         // walk entries starting from the most recent, until we find one matching the requested path
         performanceEntries = performanceEntries.reverse();
-        performanceEntries.forEach((entry) => {
+        performanceEntries.forEach(entry => {
             if (new RegExp(path.replace('?', '\\?')).test(entry.name)) {
                 performanceEntry = entry;
             }
@@ -227,8 +227,8 @@ class SpeedTestWorker {
         };
 
         // return ip test promise
-        return test.run()
-            .catch((reason) => {
+        return run()
+            .catch(reason => {
                 // store error
                 this.ip.error = reason;
 
@@ -239,14 +239,16 @@ class SpeedTestWorker {
                 this.ip.running = false;
 
                 // broadcast status
-                this.processMessage({data: 'status'});
+                this.processMessage({
+                    data: 'status'
+                });
 
                 // cancel any remaining request
                 this.clearRequests(this.test.requests);
 
                 // propagate error
                 if (this.ip.error) {
-                    throw(this.ip.error);
+                    throw (this.ip.error);
                 }
             });
     }
@@ -409,7 +411,7 @@ class SpeedTestWorker {
                 // compute stats
                 this.processLatencyResults();
             })
-            .catch((reason) => {
+            .catch(reason => {
                 // store error
                 this.latency.error = reason;
 
@@ -424,7 +426,7 @@ class SpeedTestWorker {
 
                 // propagate error
                 if (this.latency.error) {
-                    throw(this.latency.error);
+                    throw (this.latency.error);
                 }
             });
     }
