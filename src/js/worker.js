@@ -43,7 +43,7 @@ class SpeedTestWorker {
         this.config = {
             ignoreErrors: true,
             optimize: false,
-            mode: 'xhr', // 'websocket' or 'xhr'
+            mode: 'websocket', // 'websocket' or 'xhr'
             ip: {
                 url: 'ip.php',
             },
@@ -155,7 +155,7 @@ class SpeedTestWorker {
             return;
         }
 
-        requests.forEach((request, index) =>     {
+        requests.forEach((request, index) => {
             if (request instanceof WebSocket) {
                 this.clearWebSocket(request);
             }
@@ -406,7 +406,6 @@ class SpeedTestWorker {
                     return;
                 }
 
-
                 // test is in grace time as long as it is on "starting" status
                 if (this.STATUS.STARTING !== this.latency.status) {
                     // upon completion, we got a "pong"
@@ -429,7 +428,7 @@ class SpeedTestWorker {
                     // compute stats
                     this.processLatencyResults();
 
-                    // track progression
+                    // track progression while test is started
                     if (
                         this.config.latency.count &&
                         index >= this.config.latency.count
@@ -629,12 +628,6 @@ class SpeedTestWorker {
 
             // track request completion
             socket.onmessage = e => {
-                // test is in grace time as long as it is on "starting" status
-                if (this.STATUS.STARTING === this.download.status) {
-                    // skip that loop
-                    return;
-                }
-
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     reject({
@@ -649,18 +642,23 @@ class SpeedTestWorker {
                     return;
                 }
 
-                this.download.size += e.data.length;
+                // test is in grace time as long as it is on "starting" status
+                if (this.STATUS.STARTING !== this.download.status) {
+                    // add the chunk size to the total loaded size
+                    this.download.size += e.data.length;
 
-                // close socket
-                socket.close();
+                    // compute stats
+                    this.processDownloadSpeedResults();
+                }
 
-                // compute stats
-                this.processDownloadSpeedResults();
+                // ask for next chunk
+                socket.send('download ' + size);
 
-                // prepare next loop
-                this.testDownloadSpeedWebSocket(size)
-                    .then(resolve)
-                    .catch(reject);
+                // prepare for next loop
+                // this.clearWebSocket(socket);
+                // this.testDownloadSpeedWebSocket(size)
+                //     .then(resolve)
+                //     .catch(reject);
             };
 
             // track socket closing
