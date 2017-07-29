@@ -43,7 +43,7 @@ class SpeedTestWorker {
         this.config = {
             ignoreErrors: true,
             optimize: false,
-            mode: 'websocket', // 'websocket' or 'xhr'
+            mode: 'xhr', // 'websocket' or 'xhr'
             ip: {
                 url: 'ip.php',
             },
@@ -363,17 +363,17 @@ class SpeedTestWorker {
     testLatencyXHR(index = 1) {
         // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test isn't running anymore, exit right away
-            if (!this.latency.running) {
-                resolve();
-                return;
-            }
-
             // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
                 });
+                return;
+            }
+
+            // test is not running any more, exit
+            if (!this.latency.running) {
+                resolve();
                 return;
             }
 
@@ -390,14 +390,8 @@ class SpeedTestWorker {
             // mark the request as an async GET on endpoint
             xhr.open('GET', endpoint, true);
 
-            // track request progress
-            xhr.onprogress = e => {
-                // test isn't running anymore, exit right away
-                if (!this.latency.running) {
-                    resolve();
-                    return;
-                }
-
+            // track request completion
+            xhr.onload = e => {
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     reject({
@@ -405,20 +399,19 @@ class SpeedTestWorker {
                     });
                     return;
                 }
-            };
 
-            // track request completion
-            xhr.onload = e => {
-                // test isn't running anymore, exit right away
+                // test is not running any more, exit
                 if (!this.latency.running) {
                     resolve();
                     return;
                 }
 
+
                 // test is in grace time as long as it is on "starting" status
                 if (this.STATUS.STARTING !== this.latency.status) {
                     // upon completion, we got a "pong"
                     const pongDate = Date.now();
+
                     // by default, latency is delay between "ping" and "pong"
                     let networkLatency = pongDate - pingDate;
 
@@ -435,34 +428,29 @@ class SpeedTestWorker {
 
                     // compute stats
                     this.processLatencyResults();
+
+                    // track progression
+                    if (
+                        this.config.latency.count &&
+                        index >= this.config.latency.count
+                    ) {
+                        // test is done
+                        resolve();
+                        return;
+                    }
                 }
 
-                // track progression
-                if (
-                    this.config.latency.count &&
-                    index >= this.config.latency.count
-                ) {
-                    // test is done
-                    resolve();
-                    return;
-                }
-
-                // wait for grace time before issuing next ping
-                this.scope.setTimeout(
-                    () => {
-                        this.testLatencyXHR(index + 1)
-                            .then(resolve)
-                            .catch(reject);
-                    },
-                    this.config.latency.gracetime
-                );
+                // prepare next loop
+                this.testLatencyXHR(index + 1)
+                    .then(resolve)
+                    .catch(reject);
             };
 
             // track request errors
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    return this.testLatencyXHR(index + 1)
+                    this.testLatencyXHR(index + 1)
                         .then(resolve)
                         .catch(reject);
                 }
@@ -619,17 +607,17 @@ class SpeedTestWorker {
 
         // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test isn't running anymore, exit right away
-            if (!this.download.running) {
-                resolve();
-                return;
-            }
-
             // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
                 });
+                return;
+            }
+
+            // test isn't running anymore, exit right away
+            if (!this.download.running) {
+                resolve();
                 return;
             }
 
@@ -641,6 +629,26 @@ class SpeedTestWorker {
 
             // track request completion
             socket.onmessage = e => {
+                // test is in grace time as long as it is on "starting" status
+                if (this.STATUS.STARTING === this.download.status) {
+                    // skip that loop
+                    return;
+                }
+
+                // test is aborted, exit with status
+                if (this.STATUS.ABORTED === this.test.status) {
+                    reject({
+                        status: this.STATUS.ABORTED
+                    });
+                    return;
+                }
+
+                // test is not running any more, exit
+                if (!this.download.running) {
+                    resolve();
+                    return;
+                }
+
                 this.download.size += e.data.length;
 
                 // close socket
@@ -665,7 +673,7 @@ class SpeedTestWorker {
             socket.onerror = e => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    return this.testDownloadSpeedWebSocket(size)
+                    this.testDownloadSpeedWebSocket(size)
                         .then(resolve)
                         .catch(reject);
                 }
@@ -702,17 +710,17 @@ class SpeedTestWorker {
 
         // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test isn't running anymore, exit right away
-            if (!this.download.running) {
-                resolve();
-                return;
-            }
-
             // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
                 });
+                return;
+            }
+
+            // test is not running any more, exit
+            if (!this.download.running) {
+                resolve();
                 return;
             }
 
@@ -738,9 +746,9 @@ class SpeedTestWorker {
 
             // track request progress
             xhr.onprogress = e => {
-                // test is not running any more, exit
-                if (!this.download.running) {
-                    resolve();
+                // test is in grace time as long as it is on "starting" status
+                if (this.STATUS.STARTING === this.download.status) {
+                    // skip that loop
                     return;
                 }
 
@@ -752,16 +760,17 @@ class SpeedTestWorker {
                     return;
                 }
 
+                // test is not running any more, exit
+                if (!this.download.running) {
+                    resolve();
+                    return;
+                }
+
                 // compute the size of the loaded chunk
                 const loadDiff = e.loaded - sizeLoaded;
 
                 // remember the the loaded size for next progress tacking
                 sizeLoaded = e.loaded;
-
-                // test is in grace time as long as it is on "starting" status
-                if (this.STATUS.STARTING === this.download.status) {
-                    return;
-                }
 
                 // add the chunk size to the total loaded size
                 this.download.size += loadDiff;
@@ -800,7 +809,7 @@ class SpeedTestWorker {
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    return this.testDownloadSpeedXHR(size)
+                    this.testDownloadSpeedXHR(size)
                         .then(resolve)
                         .catch(reject);
                 }
@@ -947,17 +956,17 @@ class SpeedTestWorker {
 
         // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test isn't running anymore, exit right away
-            if (!this.upload.running) {
-                resolve();
-                return;
-            }
-
             // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
                 });
+                return;
+            }
+
+            // test is not running any more, exit
+            if (!this.upload.running) {
+                resolve();
                 return;
             }
 
@@ -982,9 +991,9 @@ class SpeedTestWorker {
 
             // track request progress
             xhr.upload.onprogress = e => {
-                // test is not running any more, exit
-                if (!this.upload.running) {
-                    resolve();
+                // test is in grace time as long as it is on "starting" status
+                if (this.STATUS.STARTING === this.upload.status) {
+                    // skip that loop
                     return;
                 }
 
@@ -993,6 +1002,12 @@ class SpeedTestWorker {
                     reject({
                         status: this.STATUS.ABORTED
                     });
+                    return;
+                }
+
+                // test is not running any more, exit
+                if (!this.upload.running) {
+                    resolve();
                     return;
                 }
 
@@ -1042,8 +1057,6 @@ class SpeedTestWorker {
 
             // track request errors
             xhr.upload.onerror = e => {
-                console.log(arguments);
-
                 if (this.config.ignoreErrors) {
                     // prepare next loop, but give it a delay to breathe
                     return this.testUploadSpeedXHR(size)
