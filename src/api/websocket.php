@@ -10,7 +10,7 @@ class SpeedTestServer extends WebSocketServer
 {
     public function __construct($addr, $port)
     {
-        $this->data = $this->generateRandomString(20 * 1024 * 1024);;
+        $this->data = $this->generateRandomString(128 * 1024);;
         parent::__construct($addr, $port);
     }
 
