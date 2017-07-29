@@ -570,6 +570,86 @@ class SpeedTestWorker {
     /**
      *
      *
+     * @param {any} size
+     * @param {number} [delay=0]
+     * @param {any} [startDate=Date.now()]
+     * @returns
+     */
+    testDownloadSpeedWebSocket(size, delay = 0, startDate = Date.now()) {
+        // store test index
+        const index = this.download.test.index++;
+
+        // return a promise to chain tests one after another
+        return new Promise((resolve, reject) => {
+            // test isn't running anymore, exit right away
+            if (!this.download.running) {
+                resolve();
+                return;
+            }
+
+            // test is aborted, exit with status
+            if (this.STATUS.ABORTED === this.test.status) {
+                reject({
+                    status: this.STATUS.ABORTED
+                });
+                return;
+            }
+
+            // open a WebSocket connection
+            const socket = new WebSocket('ws://127.0.0.1:9000/');
+
+            // store the request in case we need to cancel it later
+            this.test.requests[index] = socket;
+
+            // track request completion
+            socket.onmessage = e => {
+                this.download.size += e.data.length;
+
+                // close socket
+                socket.close();
+
+                // compute stats
+                this.processDownloadSpeedResults();
+
+                // prepare next loop
+                this.testDownloadSpeedWebSocket(size)
+                    .then(resolve)
+                    .catch(reject);
+            };
+
+            // track socket closing
+            socket.onclose = () => {
+                // clear WebSocket
+                this.clearWebSocket(socket);
+            };
+
+            // track request errors
+            socket.onerror = e => {
+                if (this.config.ignoreErrors) {
+                    // prepare next loop
+                    return this.testDownloadSpeedWebSocket(size)
+                        .then(resolve)
+                        .catch(reject);
+                }
+
+                reject({
+                    status: this.STATUS.FAILED,
+                    error: 'test failed',
+                });
+            };
+
+            // delay request dispatching as configured
+            socket.onopen = () => {
+                this.scope.setTimeout(
+                    () => {
+                        socket.send('download ' + size);
+                    },
+                    delay
+                );
+            };
+        });
+    }
+
     /**
      *
      *
