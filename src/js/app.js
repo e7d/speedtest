@@ -1,4 +1,5 @@
 //@ts-check
+
 import _ from 'lodash';
 import $ from 'jquery';
 
@@ -42,7 +43,6 @@ class App {
 
     /**
      *
-     *
      */
     startTest() {
         this.running = true;
@@ -66,8 +66,8 @@ class App {
         }
         this.worker.postMessage('start');
     }
+
     /**
-     *
      *
      */
     stopTest() {
@@ -116,11 +116,17 @@ class App {
         }
     }
 
+    /**
+     *
+    */
     resetMeters() {
         this.setGauge(this.$gauge, 0);
         this.setProgressBar(this.$progressBar, 0);
     }
 
+    /**
+     *
+    */
     resetResults() {
         this.$ipValue.empty();
         this.$latencyValue.empty();
