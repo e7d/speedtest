@@ -43,6 +43,7 @@ class SpeedTestWorker {
         this.config = {
             ignoreErrors: true,
             optimize: false,
+            mode: 'websocket', // 'websocket' or 'xhr'
             ip: {
                 url: 'ip.php',
             },
@@ -148,33 +149,70 @@ class SpeedTestWorker {
      * @returns
      */
     clearRequests(requests) {
-        if (null === requests) {
+        if (!Array.isArray(requests) ||
+            0 === requests.length
+        ) {
             return;
         }
 
-        requests.forEach(function (request, index) {
+        requests.forEach((request, index) =>     {
+            if (request instanceof WebSocket) {
+                this.clearWebSocket(request);
+            }
+
+            if (request instanceof XMLHttpRequest) {
+                this.clearXMLHttpRequest(request);
+            }
+
+            // Delete instance
             try {
-                request.onprogress = null;
-                request.onload = null;
-                request.onerror = null;
-            } catch (ex) {}
-            try {
-                request.upload.onprogress = null;
-                request.upload.onload = null;
-                request.upload.onerror = null;
-            } catch (ex) {}
-            try {
-                request.cancelRequested = true;
-            } catch (ex) {}
-            try {
-                request.abort();
-            } catch (ex) {}
-            try {
+                request = null;
                 delete(requests[index]);
             } catch (ex) {}
         }, this);
 
         requests = null;
+    }
+
+    /**
+     *
+     * @param {WebSocket} socket
+     */
+    clearWebSocket(socket) {
+        // Close socket
+        try {
+            socket.close();
+        } catch (ex) {}
+        // Clear event handlers
+        try {
+            socket.onopen = null;
+            socket.onmessage = null;
+            socket.onclose = null;
+            socket.onerror = null;
+        } catch (ex) {}
+    }
+
+    /**
+     *
+     *
+     * @param {XMLHttpRequest} request
+     */
+    clearXMLHttpRequest(xhr) {
+        // Close XHR
+        try {
+            xhr.abort();
+        } catch (ex) {}
+        // Clear event handlers
+        try {
+            xhr.onprogress = null;
+            xhr.onload = null;
+            xhr.onerror = null;
+        } catch (ex) {}
+        try {
+            xhr.upload.onprogress = null;
+            xhr.upload.onload = null;
+            xhr.upload.onerror = null;
+        } catch (ex) {}
     }
 
     /**
