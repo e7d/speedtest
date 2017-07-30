@@ -374,7 +374,7 @@ class SpeedTestWorker {
             }
 
             // test is not running any more, exit
-            if (!this.latency.running) {
+            if (this.STATUS.DONE === this.latency.status) {
                 resolve();
                 return;
             }
@@ -403,7 +403,7 @@ class SpeedTestWorker {
                 }
 
                 // test is not running any more, exit
-                if (!this.latency.running) {
+                if (this.STATUS.DONE === this.latency.status) {
                     resolve();
                     return;
                 }
@@ -617,7 +617,7 @@ class SpeedTestWorker {
             }
 
             // test isn't running anymore, exit right away
-            if (!this.download.running) {
+            if (this.STATUS.DONE === this.download.status) {
                 resolve();
                 return;
             }
@@ -640,7 +640,7 @@ class SpeedTestWorker {
                 }
 
                 // test is not running any more, exit
-                if (!this.download.running) {
+                if (this.STATUS.DONE === this.download.status) {
                     resolve();
                     return;
                 }
@@ -725,7 +725,7 @@ class SpeedTestWorker {
             }
 
             // test is not running any more, exit
-            if (!this.download.running) {
+            if (this.STATUS.DONE === this.download.status) {
                 resolve();
                 return;
             }
@@ -761,7 +761,7 @@ class SpeedTestWorker {
                 }
 
                 // test is not running any more, exit
-                if (!this.download.running) {
+                if (this.STATUS.DONE === this.download.status) {
                     resolve();
                     return;
                 }
@@ -997,7 +997,7 @@ class SpeedTestWorker {
             }
 
             // test isn't running anymore, exit right away
-            if (!this.upload.running) {
+            if (this.STATUS.DONE === this.upload.status) {
                 resolve();
                 return;
             }
@@ -1020,7 +1020,7 @@ class SpeedTestWorker {
                 }
 
                 // test is not running any more, exit
-                if (!this.upload.running) {
+                if (this.STATUS.DONE === this.upload.status) {
                     resolve();
                     return;
                 }
@@ -1087,7 +1087,7 @@ class SpeedTestWorker {
             }
 
             // test is not running any more, exit
-            if (!this.upload.running) {
+            if (this.STATUS.DONE === this.upload.status) {
                 resolve();
                 return;
             }
@@ -1122,7 +1122,7 @@ class SpeedTestWorker {
                 }
 
                 // test is not running any more, exit
-                if (!this.upload.running) {
+                if (this.STATUS.DONE === this.upload.status) {
                     resolve();
                     return;
                 }
