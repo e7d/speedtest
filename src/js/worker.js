@@ -408,8 +408,8 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is in grace time as long as it is on "starting" status
-                if (this.STATUS.STARTING !== this.latency.status) {
+                // test is in grace time as long as it is not on "running" status
+                if (this.STATUS.RUNNING === this.latency.status) {
                     // upon completion, we got a "pong"
                     const pongDate = Date.now();
 
@@ -645,8 +645,8 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is in grace time as long as it is on "starting" status
-                if (this.STATUS.STARTING !== this.download.status) {
+                // test is in grace time as long as it is not on "running" status
+                if (this.STATUS.RUNNING === this.download.status) {
                     // add the chunk size to the total loaded size
                     this.download.size += e.data.size;
 
@@ -752,12 +752,6 @@ class SpeedTestWorker {
 
             // track request progress
             xhr.onprogress = e => {
-                // test is in grace time as long as it is on "starting" status
-                if (this.STATUS.STARTING === this.download.status) {
-                    // skip that loop
-                    return;
-                }
-
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     reject({
@@ -772,17 +766,20 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // compute the size of the loaded chunk
-                const loadDiff = e.loaded - sizeLoaded;
+                // test is in grace time as long as it is not on "running" status
+                if (this.STATUS.RUNNING === this.download.status) {
+                    // compute the size of the loaded chunk
+                    const loadDiff = e.loaded - sizeLoaded;
 
-                // remember the the loaded size for next progress tacking
-                sizeLoaded = e.loaded;
+                    // remember the the loaded size for next progress tacking
+                    sizeLoaded = e.loaded;
 
-                // add the chunk size to the total loaded size
-                this.download.size += loadDiff;
+                    // add the chunk size to the total loaded size
+                    this.download.size += loadDiff;
 
-                // compute stats
-                this.processDownloadSpeedResults();
+                    // compute stats
+                    this.processDownloadSpeedResults();
+                }
             };
 
             // track request completion
@@ -1028,10 +1025,8 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is in grace time as long as it is on "starting" status
-                if (this.STATUS.STARTING !== this.upload.status) {
-                    console.log('uploaded');
-
+                // test is in grace time as long as it is not on "running" status
+                if (this.STATUS.RUNNING === this.upload.status) {
                     // add the chunk size to the total loaded size
                     this.upload.size += this.upload.test.data.byteLength;
 
@@ -1118,12 +1113,6 @@ class SpeedTestWorker {
 
             // track request progress
             xhr.upload.onprogress = e => {
-                // test is in grace time as long as it is on "starting" status
-                if (this.STATUS.STARTING === this.upload.status) {
-                    // skip that loop
-                    return;
-                }
-
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     reject({
@@ -1138,22 +1127,25 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // compute the size of the loaded chunk
-                const loadDiff = e.loaded - sizeLoaded;
-
-                // remember the the loaded size for next progress tacking
-                sizeLoaded = e.loaded;
-
                 // test is in grace time as long as we do not have a start date
                 if (!this.upload.startDate) {
                     return;
                 }
 
-                // add the chunk size to the total loaded size
-                this.upload.size += loadDiff;
+                // test is in grace time as long as it is on "starting" status
+                if (this.STATUS.RUNNING === this.upload.status) {
+                    // compute the size of the loaded chunk
+                    const loadDiff = e.loaded - sizeLoaded;
 
-                // compute stats
-                this.processUploadSpeedResults();
+                    // remember the the loaded size for next progress tacking
+                    sizeLoaded = e.loaded;
+
+                    // add the chunk size to the total loaded size
+                    this.upload.size += loadDiff;
+
+                    // compute stats
+                    this.processUploadSpeedResults();
+                }
             };
 
             // track request completion
