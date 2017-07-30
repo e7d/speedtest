@@ -28,6 +28,10 @@ class SpeedTestWorker {
             DOWNLOAD: 'download',
             UPLOAD: 'upload',
         };
+        this.OVERHEAD = {
+            'HTTP+TCP+IPv4': 1500 / (1500 - 40), // 40 bytes per 1500 bytes payload
+            'HTTP+TCP+IPv6': 1500 / (1500 - 60), // 60 bytes per 1500 bytes payload
+        };
 
         // initialize test data
         this.test = {
@@ -44,6 +48,7 @@ class SpeedTestWorker {
             ignoreErrors: true,
             optimize: false,
             mode: 'xhr', // 'websocket' or 'xhr'
+            overheadCompensation: this.OVERHEAD['HTTP+TCP+IPv4'],
             ip: {
                 url: 'ip.php',
             },
@@ -1229,7 +1234,9 @@ class SpeedTestWorker {
      */
     computeBandwidth(size, duration) {
         // bandwidth is data volume over time
-        const byteBandwidth = size / duration;
+        const byteBandwidth =
+            (size / duration) *
+            this.config.overheadCompensation;
         // there is 8 bits in a byte
         const bitBandwidth = 8 * byteBandwidth;
 
