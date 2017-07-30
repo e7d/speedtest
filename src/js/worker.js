@@ -523,9 +523,9 @@ class SpeedTestWorker {
      */
     testDownloadSpeed() {
         const run = (size, delay = 0) => {
-            // if ('websocket' === this.config.mode) {
-            //     return this.testDownloadSpeedWebSocket(size, delay);
-            // }
+            if ('websocket' === this.config.mode) {
+                return this.testDownloadSpeedWebSocket(size, delay);
+            }
             return this.testDownloadSpeedXHR(size, delay);
         };
 
