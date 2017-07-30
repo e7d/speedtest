@@ -766,13 +766,14 @@ class SpeedTestWorker {
                     return;
                 }
 
+                // compute the size of the loaded chunk
+                const loadDiff = e.loaded - sizeLoaded;
+
+                // remember the the loaded size for next progress tacking
+                sizeLoaded = e.loaded;
+
                 // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.download.status) {
-                    // compute the size of the loaded chunk
-                    const loadDiff = e.loaded - sizeLoaded;
-
-                    // remember the the loaded size for next progress tacking
-                    sizeLoaded = e.loaded;
 
                     // add the chunk size to the total loaded size
                     this.download.size += loadDiff;
@@ -1132,14 +1133,14 @@ class SpeedTestWorker {
                     return;
                 }
 
+                // compute the size of the loaded chunk
+                const loadDiff = e.loaded - sizeLoaded;
+
+                // remember the the loaded size for next progress tacking
+                sizeLoaded = e.loaded;
+
                 // test is in grace time as long as it is on "starting" status
                 if (this.STATUS.RUNNING === this.upload.status) {
-                    // compute the size of the loaded chunk
-                    const loadDiff = e.loaded - sizeLoaded;
-
-                    // remember the the loaded size for next progress tacking
-                    sizeLoaded = e.loaded;
-
                     // add the chunk size to the total loaded size
                     this.upload.size += loadDiff;
 
