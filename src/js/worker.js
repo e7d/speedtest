@@ -56,7 +56,7 @@ class SpeedTestWorker {
             download: {
                 url: 'data.php',
                 streams: 5,
-                size: 20,
+                size: 8,
                 xhr: {
                     responseType: 'arraybuffer', // 'arraybuffer' or 'blob'
                 },
@@ -67,7 +67,7 @@ class SpeedTestWorker {
             upload: {
                 url: 'empty.php',
                 streams: 3,
-                size: 20,
+                size: 1,
                 adaptative: false,
                 duration: 15,
                 gracetime: 2,
