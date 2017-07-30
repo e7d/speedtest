@@ -8,7 +8,7 @@
 class SpeedTestWorker {
     /**
      * Creates an instance of SpeedTestWorker.
-     * @param {any} scope
+     * @param {DedicatedWorkerGlobalScope} scope
      */
     constructor(scope) {
         this.scope = scope;
@@ -43,7 +43,7 @@ class SpeedTestWorker {
         this.config = {
             ignoreErrors: true,
             optimize: false,
-            mode: 'websocket', // 'websocket' or 'xhr'
+            mode: 'xhr', // 'websocket' or 'xhr'
             ip: {
                 url: 'ip.php',
             },
@@ -57,7 +57,9 @@ class SpeedTestWorker {
                 url: 'data.php',
                 streams: 5,
                 size: 20,
-                dataType: 'blob', // 'arraybuffer' or 'blob'
+                xhr: {
+                    responseType: 'arraybuffer', // 'arraybuffer' or 'blob'
+                },
                 adaptative: false,
                 duration: 15,
                 gracetime: 2,
@@ -521,9 +523,9 @@ class SpeedTestWorker {
      */
     testDownloadSpeed() {
         const run = (size, delay = 0) => {
-            if ('websocket' === this.config.mode) {
-                return this.testDownloadSpeedWebSocket(size, delay);
-            }
+            // if ('websocket' === this.config.mode) {
+            //     return this.testDownloadSpeedWebSocket(size, delay);
+            // }
             return this.testDownloadSpeedXHR(size, delay);
         };
 
@@ -622,6 +624,7 @@ class SpeedTestWorker {
 
             // open a WebSocket connection
             const socket = new WebSocket('ws://127.0.0.1:9000/');
+            // socket.binaryType = 'arraybuffer';
 
             // store the request in case we need to cancel it later
             this.test.requests[index] = socket;
@@ -645,20 +648,16 @@ class SpeedTestWorker {
                 // test is in grace time as long as it is on "starting" status
                 if (this.STATUS.STARTING !== this.download.status) {
                     // add the chunk size to the total loaded size
-                    this.download.size += e.data.length;
+                    this.download.size += e.data.size;
 
                     // compute stats
                     this.processDownloadSpeedResults();
                 }
 
-                // ask for next chunk
-                socket.send('download ' + size);
-
-                // prepare for next loop
-                // this.clearWebSocket(socket);
-                // this.testDownloadSpeedWebSocket(size)
-                //     .then(resolve)
-                //     .catch(reject);
+                // ask for next download chunk
+                socket.send(JSON.stringify({
+                    'action': 'download'
+                }));
             };
 
             // track socket closing
@@ -686,7 +685,16 @@ class SpeedTestWorker {
             socket.onopen = () => {
                 this.scope.setTimeout(
                     () => {
-                        socket.send('download ' + size);
+                        // ask WebSocket server to prepare a download chunk
+                        socket.send(JSON.stringify({
+                            'action': 'prepare',
+                            'size': this.config.download.size
+                        }));
+
+                        // ask for first download chunk
+                        socket.send(JSON.stringify({
+                            'action': 'download'
+                        }));
                     },
                     delay
                 );
@@ -734,7 +742,7 @@ class SpeedTestWorker {
             this.test.requests[index] = xhr;
 
             // set up the correct data response type
-            xhr.responseType = this.config.download.dataType;
+            xhr.responseType = this.config.download.xhr.responseType;
 
             // mark the request as an async GET on endpoint
             xhr.open('GET', endpoint, true);
@@ -855,7 +863,7 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @returns
+     * @returns {Float32Array}
      */
     getRandomData() {
         // prepare a random data buffer of 1MB
@@ -863,14 +871,31 @@ class SpeedTestWorker {
         for (var index = 0; index < buffer.length; index++) {
             buffer[index] = Math.random();
         }
+
         // build the data array of desired size from the 1MB buffer
-        let data = [];
+        let data = new Float32Array(buffer.length * this.config.upload.size);
         for (let i = 0; i < this.config.upload.size; i++) {
-            data.push(buffer);
+            data.set(
+                buffer,
+                i * buffer.length
+            );
         }
-        return new Blob(data, {
-            type: 'application/octet-stream'
-        });
+
+        return data;
+    }
+
+    /**
+     *
+     *
+     * @returns {Blob}
+     */
+    getRandomBlob() {
+        return new Blob(
+            [this.getRandomData()],
+            {
+                type: 'application/octet-stream'
+            }
+        );
     }
 
     /**
@@ -879,6 +904,9 @@ class SpeedTestWorker {
      */
     testUploadSpeed() {
         const run = (size, delay = 0) => {
+            if ('websocket' === this.config.mode) {
+                return this.testUploadSpeedWebSocket(size, delay);
+            }
             return this.testUploadSpeedXHR(size, delay);
         };
 
@@ -892,7 +920,8 @@ class SpeedTestWorker {
             test: {
                 index: 0,
                 promises: [],
-                data: this.getRandomData()
+                data: this.getRandomData(),
+                blob: this.getRandomBlob()
             }
         };
 
@@ -946,6 +975,106 @@ class SpeedTestWorker {
                     throw (this.upload.error);
                 }
             });
+    }
+
+    /**
+     *
+     *
+     * @param {any} size
+     * @param {number} [delay=0]
+     * @param {any} [startDate=Date.now()]
+     * @returns
+     */
+    testUploadSpeedWebSocket(size, delay = 0, startDate = Date.now()) {
+        // store test index
+        const index = this.upload.test.index++;
+
+        // return a promise to chain tests one after another
+        return new Promise((resolve, reject) => {
+            // test is aborted, exit with status
+            if (this.STATUS.ABORTED === this.test.status) {
+                reject({
+                    status: this.STATUS.ABORTED
+                });
+                return;
+            }
+
+            // test isn't running anymore, exit right away
+            if (!this.upload.running) {
+                resolve();
+                return;
+            }
+
+            // open a WebSocket connection
+            const socket = new WebSocket('ws://127.0.0.1:9000/');
+            // socket.binaryType = 'arraybuffer';
+
+            // store the request in case we need to cancel it later
+            this.test.requests[index] = socket;
+
+            // track request completion
+            socket.onmessage = e => {
+                // test is aborted, exit with status
+                if (this.STATUS.ABORTED === this.test.status) {
+                    reject({
+                        status: this.STATUS.ABORTED
+                    });
+                    return;
+                }
+
+                // test is not running any more, exit
+                if (!this.upload.running) {
+                    resolve();
+                    return;
+                }
+
+                // test is in grace time as long as it is on "starting" status
+                if (this.STATUS.STARTING !== this.upload.status) {
+                    console.log('uploaded');
+
+                    // add the chunk size to the total loaded size
+                    this.upload.size += this.upload.test.data.byteLength;
+
+                    // compute stats
+                    this.processUploadSpeedResults();
+                }
+
+                // send next upload chunk
+                socket.send(this.upload.test.data.buffer);
+            };
+
+            // track socket closing
+            socket.onclose = () => {
+                // clear WebSocket
+                this.clearWebSocket(socket);
+            };
+
+            // track request errors
+            socket.onerror = e => {
+                if (this.config.ignoreErrors) {
+                    // prepare next loop
+                    this.testUploadSpeedWebSocket(size)
+                        .then(resolve)
+                        .catch(reject);
+                }
+
+                reject({
+                    status: this.STATUS.FAILED,
+                    error: 'test failed',
+                });
+            };
+
+            // delay request dispatching as configured
+            socket.onopen = () => {
+                this.scope.setTimeout(
+                    () => {
+                        // send first upload chunk
+                        socket.send(this.upload.test.data.buffer);
+                    },
+                    delay
+                );
+            };
+        });
     }
 
     testUploadSpeedXHR(size, delay = 0, startDate = Date.now()) {
@@ -1071,7 +1200,7 @@ class SpeedTestWorker {
             // delay request dispatching as configured
             this.scope.setTimeout(
                 () => {
-                    xhr.send(this.upload.test.data);
+                    xhr.send(this.upload.test.blob);
                 },
                 delay
             );
