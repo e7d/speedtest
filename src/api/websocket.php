@@ -1,71 +1,18 @@
 #!/usr/bin/env php
 <?php
 
-require_once './WebSocketServer.php';
-
-/**
- * Echo server
- */
-class SpeedTestServer extends WebSocketServer
-{
-    public function __construct($addr, $port)
-    {
-        $this->data = $this->generateRandomString(128 * 1024);;
-        parent::__construct($addr, $port);
+define('BASE_PATH', realpath(dirname(__FILE__)));
+spl_autoload_register(function ($className) {
+    if (file_exists($className . '.php')) {
+        require_once $className . '.php';
+        return true;
     }
+    return false;
+});
 
-    function generateRandomString($length = 10)
-    {
-        $characters = '0123456789abcdefghijklmnpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param WebSocketUser $user    The user
-     * @param string        $message The message
-     *
-     * @return void
-     */
-    protected function process($user, $message)
-    {
-        $this->send($user, $this->data);
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param WebSocketUser $user The user
-     *
-     * @return void
-     */
-    protected function connected($user)
-    {
-        return;
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param WebSocketUser $user The user
-     *
-     * @return void
-     */
-    protected function closed($user)
-    {
-        return;
-    }
-}
-
-$echo = new SpeedTestServer("0.0.0.0", "9000");
+$server = new SpeedTestWebSocketServer('0.0.0.0', '9000');
 try {
-    $echo->run();
+    $server->run();
 } catch (Exception $e) {
-    $echo->stdout($e->getMessage());
+    $server->stdout($e->getMessage());
 }

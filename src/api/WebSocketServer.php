@@ -1,7 +1,5 @@
 <?php
 
-require_once './WebSocketUser.php';
-
 /**
  * WebSocket Server
  *
@@ -91,14 +89,15 @@ abstract class WebSocketServer
      * Send a message.
      *
      * @param WebSocketUser $user    The WebSocket user
-     * @param string        $message The WebSocket message
+     * @param string        $message The message
+     * @param string        $type    The transmission type
      *
      * @return void
      */
-    protected function send($user, $message)
+    protected function send($user, $message, $type = 'text')
     {
         if ($user->handshake) {
-            $message = $this->frame($message, $user);
+            $message = $this->frame($message, $user, $type);
             @socket_write($user->socket, $message, strlen($message));
             return;
         }
