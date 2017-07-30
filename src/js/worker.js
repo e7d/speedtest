@@ -1128,11 +1128,6 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is in grace time as long as we do not have a start date
-                if (!this.upload.startDate) {
-                    return;
-                }
-
                 // compute the size of the loaded chunk
                 const loadDiff = e.loaded - sizeLoaded;
 
