@@ -230,7 +230,7 @@ class SpeedTestWorker {
             // return a promise to chain tests one after another
             return new Promise((resolve, reject) => {
                 // compute endpoint URI with a random part for cache busting
-                const endpoint = this.config.ip.url +
+                const endpoint = this.config.ip.endpoint +
                     '?ip' + Math.random();
 
                 // build the XHR request
@@ -1240,8 +1240,12 @@ class SpeedTestWorker {
             });
         }
 
+        // TODO: Auto adjust config to best values following the browser in use
+        if (this.config.optimize) {
+            // this.config = JSON.parse(JSON.stringify(this.defaultConfig));
+        }
+
         // prepare test data
-        // this.config = JSON.parse(JSON.stringify(this.defaultConfig));
         this.test = {
             running: true,
             date: new Date().toJSON(),
