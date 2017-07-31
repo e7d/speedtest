@@ -8,7 +8,7 @@
 class SpeedTestWorker {
     /**
      * Creates an instance of SpeedTestWorker.
-     * @param {DedicatedWorkerGlobalScope} scope
+     * @param {any} scope
      */
     constructor(scope) {
         this.scope = scope;
@@ -50,28 +50,42 @@ class SpeedTestWorker {
             mode: 'xhr', // 'websocket' or 'xhr'
             overheadCompensation: this.OVERHEAD['HTTP+TCP+IPv4'],
             ip: {
-                url: 'ip.php',
+                endpoint: 'ip.php',
             },
             latency: {
-                url: 'empty.php',
+                xhr: {
+                    endpoint: 'empty.php',
+                },
                 count: null,
                 duration: 5,
                 gracetime: 1,
             },
             download: {
-                url: 'data.php',
-                streams: 5,
-                size: 8,
+                websocket: {
+                    endpoint: 'ws://127.0.0.1:9000/',
+                    streams: 20,
+                    size: 1,
+                },
                 xhr: {
+                    endpoint: 'data.php',
+                    streams: 5,
+                    size: 8,
                     responseType: 'arraybuffer', // 'arraybuffer' or 'blob'
                 },
                 duration: 15,
                 gracetime: 2,
             },
             upload: {
-                url: 'empty.php',
-                streams: 3,
-                size: 1,
+                websocket: {
+                    endpoint: 'ws://127.0.0.1:9000/',
+                    streams: 20,
+                    size: 0.125,
+                },
+                xhr: {
+                    endpoint: 'empty.php',
+                    streams: 3,
+                    size: 1,
+                },
                 duration: 15,
                 gracetime: 2,
             },
@@ -382,7 +396,7 @@ class SpeedTestWorker {
             }
 
             // compute endpoint URI with a random part for cache busting
-            const endpoint = this.config.latency.url +
+            const endpoint = this.config.latency.xhr.endpoint +
                 '?latency' + Math.random();
 
             // build the XHR request
@@ -545,9 +559,9 @@ class SpeedTestWorker {
         };
 
         // prepare and launch download streams
-        for (let index = 0; index < this.config.download.streams; index++) {
+        for (let index = 0; index < this.config.download[this.config.mode].streams; index++) {
             const testPromise = run(
-                this.config.download.size,
+                this.config.download[this.config.mode].size,
                 index * 100
             );
             this.download.test.promises.push(testPromise);
@@ -625,7 +639,7 @@ class SpeedTestWorker {
             }
 
             // open a WebSocket connection
-            const socket = new WebSocket('ws://127.0.0.1:9000/');
+            const socket = new WebSocket(this.config.download.websocket.endpoint);
             // socket.binaryType = 'arraybuffer';
 
             // store the request in case we need to cancel it later
@@ -690,7 +704,7 @@ class SpeedTestWorker {
                         // ask WebSocket server to prepare a download chunk
                         socket.send(JSON.stringify({
                             'action': 'prepare',
-                            'size': this.config.download.size
+                            'size': this.config.download.websocket.size
                         }));
 
                         // ask for first download chunk
@@ -733,7 +747,7 @@ class SpeedTestWorker {
             }
 
             // compute endpoint URI with the chunk size and a random part for cache busting
-            const endpoint = this.config.download.url +
+            const endpoint = this.config.download.xhr.endpoint +
                 '?download' + Math.random() +
                 '&size=' + size;
 
@@ -916,9 +930,9 @@ class SpeedTestWorker {
         };
 
         // prepare and launch upload streams
-        for (let index = 0; index < this.config.upload.streams; index++) {
+        for (let index = 0; index < this.config.upload[this.config.mode].streams; index++) {
             const testPromise = run(
-                this.config.upload.size,
+                this.config.upload[this.config.mode].size,
                 index * 100
             );
             this.upload.test.promises.push(testPromise);
@@ -996,8 +1010,8 @@ class SpeedTestWorker {
             }
 
             // open a WebSocket connection
-            const socket = new WebSocket('ws://127.0.0.1:9000/');
-            // socket.binaryType = 'arraybuffer';
+            const socket = new WebSocket(this.config.upload.websocket.endpoint);
+            socket.binaryType = 'arraybuffer';
 
             // store the request in case we need to cancel it later
             this.test.requests[index] = socket;
@@ -1086,7 +1100,7 @@ class SpeedTestWorker {
             }
 
             // compute endpoint URI with the chunk size and a random part for cache busting
-            const endpoint = this.config.upload.url +
+            const endpoint = this.config.upload.xhr.endpoint +
                 '?upload' + Math.random();
 
             // build the XHR request
