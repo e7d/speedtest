@@ -65,7 +65,6 @@ class SpeedTestWorker {
                 xhr: {
                     responseType: 'arraybuffer', // 'arraybuffer' or 'blob'
                 },
-                adaptative: false,
                 duration: 15,
                 gracetime: 2,
             },
@@ -73,7 +72,6 @@ class SpeedTestWorker {
                 url: 'empty.php',
                 streams: 3,
                 size: 1,
-                adaptative: false,
                 duration: 15,
                 gracetime: 2,
             },
@@ -793,18 +791,6 @@ class SpeedTestWorker {
                 // store current date and time
                 const now = Date.now();
 
-                // adjust chunk size of next loop if adaptive mode is enabled
-                if (this.config.download.adaptative) {
-                    // loading was too fast? increase size
-                    if (now - startDate < 500) {
-                        size *= 2;
-                    }
-                    // loading was too slow? decrease size
-                    if (now - startDate > 1000) {
-                        size /= 2;
-                    }
-                }
-
                 // clear XHR
                 this.clearXMLHttpRequest(xhr);
 
@@ -1153,18 +1139,6 @@ class SpeedTestWorker {
             xhr.upload.onload = e => {
                 // store current date and time
                 const now = Date.now();
-
-                // adjust chunk size of next loop if adaptive mode is enabled
-                if (this.config.upload.adaptative) {
-                    // loading was too fast? increase size
-                    if (now - startDate < 500) {
-                        size *= 2;
-                    }
-                    // loading was too slow? decrease size
-                    if (now - startDate > 1000) {
-                        size /= 2;
-                    }
-                }
 
                 // clear XHR
                 this.clearXMLHttpRequest(xhr);
