@@ -76,7 +76,6 @@ class SpeedTestWorker {
                 gracetime: 2,
             },
         };
-        // TODO: add a setting (optimize) to auto adjust this.config to best values following the browser in use
 
         this.scope.addEventListener('message', this.processMessage.bind(this));
     }
