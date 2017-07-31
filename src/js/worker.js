@@ -855,15 +855,17 @@ class SpeedTestWorker {
      * @returns {Float32Array}
      */
     getRandomData() {
-        // prepare a random data buffer of 1MB
-        const buffer = new Float32Array(new ArrayBuffer(1048576));
-        for (var index = 0; index < buffer.length; index++) {
+        // prepare a random data buffer
+        const bufferSize = 128 * 1024;
+        const buffer = new Float32Array(new ArrayBuffer(bufferSize));
+        for (let index = 0; index < buffer.length; index++) {
             buffer[index] = Math.random();
         }
 
-        // build the data array of desired size from the 1MB buffer
-        let data = new Float32Array(buffer.length * this.config.upload.size);
-        for (let i = 0; i < this.config.upload.size; i++) {
+        // build the data array of desired size from the buffer
+        const dataSize = this.config.upload[this.config.mode].size * 1024 * 1024;
+        let data = new Float32Array(new ArrayBuffer(dataSize));
+        for (let i = 0; i < data.byteLength / buffer.byteLength; i++) {
             data.set(
                 buffer,
                 i * buffer.length
