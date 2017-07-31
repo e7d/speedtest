@@ -102,6 +102,9 @@ class App {
                     this.startTest();
                     return;
                 }
+
+                this.resetMeters();
+
                 this.$startButton.removeClass('hidden');
                 this.$stopButton.addClass('hidden');
                 break;
