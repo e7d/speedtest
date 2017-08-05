@@ -47,14 +47,18 @@ class SpeedTestWorker {
         this.config = {
             ignoreErrors: true,
             optimize: false,
-            mode: 'xhr', // 'websocket' or 'xhr'
+            mode: 'websocket', // 'websocket' or 'xhr'
+            websocket: {
+                host: '127.0.0.1',
+                port: 80
+            },
             overheadCompensation: this.OVERHEAD['HTTP+TCP+IPv4'],
             ip: {
-                endpoint: 'ip.php',
+                endpoint: 'ip',
             },
             latency: {
                 xhr: {
-                    endpoint: 'empty.php',
+                    endpoint: 'ping',
                 },
                 count: null,
                 duration: 5,
@@ -62,27 +66,27 @@ class SpeedTestWorker {
             },
             download: {
                 websocket: {
-                    endpoint: 'ws://127.0.0.1:9000/',
+                    endpoint: 'ws://127.0.0.1:8080/download',
                     streams: 20,
                     size: 1,
                 },
                 xhr: {
-                    endpoint: 'data.php',
+                    endpoint: 'download',
                     streams: 5,
                     size: 8,
-                    responseType: 'arraybuffer', // 'arraybuffer' or 'blob'
+                    responseType: 'blob', // 'arraybuffer' or 'blob'
                 },
                 duration: 15,
-                gracetime: 2,
+                gracetime: 0,
             },
             upload: {
                 websocket: {
-                    endpoint: 'ws://127.0.0.1:9000/',
+                    endpoint: 'ws://127.0.0.1:8080/upload',
                     streams: 20,
-                    size: 0.125,
+                    size: 1,
                 },
                 xhr: {
-                    endpoint: 'empty.php',
+                    endpoint: 'upload',
                     streams: 3,
                     size: 1,
                 },
@@ -244,7 +248,7 @@ class SpeedTestWorker {
             return new Promise((resolve, reject) => {
                 // compute endpoint URI with a random part for cache busting
                 const endpoint = this.config.ip.endpoint +
-                    '?ip' + Math.random();
+                    '?ip' + new Date().getTime();
 
                 // build the XHR request
                 const xhr = new XMLHttpRequest();
@@ -397,7 +401,7 @@ class SpeedTestWorker {
 
             // compute endpoint URI with a random part for cache busting
             const endpoint = this.config.latency.xhr.endpoint +
-                '?latency' + Math.random();
+                '?latency' + new Date().getTime();
 
             // build the XHR request
             const xhr = new XMLHttpRequest();
@@ -649,6 +653,7 @@ class SpeedTestWorker {
             socket.onmessage = e => {
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
+                    socket.close();
                     reject({
                         status: this.STATUS.ABORTED
                     });
@@ -657,6 +662,7 @@ class SpeedTestWorker {
 
                 // test is not running any more, exit
                 if (this.STATUS.DONE === this.download.status) {
+                    socket.close();
                     resolve();
                     return;
                 }
@@ -748,7 +754,7 @@ class SpeedTestWorker {
 
             // compute endpoint URI with the chunk size and a random part for cache busting
             const endpoint = this.config.download.xhr.endpoint +
-                '?download' + Math.random() +
+                '?download' + new Date().getTime() +
                 '&size=' + size;
 
             // build the XHR request
@@ -770,6 +776,7 @@ class SpeedTestWorker {
             xhr.onprogress = e => {
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
+                    this.clearXMLHttpRequest(xhr);
                     reject({
                         status: this.STATUS.ABORTED
                     });
@@ -778,6 +785,7 @@ class SpeedTestWorker {
 
                 // test is not running any more, exit
                 if (this.STATUS.DONE === this.download.status) {
+                    this.clearXMLHttpRequest(xhr);
                     resolve();
                     return;
                 }
@@ -1020,6 +1028,7 @@ class SpeedTestWorker {
             socket.onmessage = e => {
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
+                    socket.close();
                     reject({
                         status: this.STATUS.ABORTED
                     });
@@ -1028,6 +1037,7 @@ class SpeedTestWorker {
 
                 // test is not running any more, exit
                 if (this.STATUS.DONE === this.upload.status) {
+                    socket.close();
                     resolve();
                     return;
                 }
@@ -1101,7 +1111,7 @@ class SpeedTestWorker {
 
             // compute endpoint URI with the chunk size and a random part for cache busting
             const endpoint = this.config.upload.xhr.endpoint +
-                '?upload' + Math.random();
+                '?upload' + new Date().getTime();
 
             // build the XHR request
             const xhr = new XMLHttpRequest();
@@ -1122,6 +1132,7 @@ class SpeedTestWorker {
             xhr.upload.onprogress = e => {
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
+                    this.clearXMLHttpRequest(xhr);
                     reject({
                         status: this.STATUS.ABORTED
                     });
@@ -1130,6 +1141,7 @@ class SpeedTestWorker {
 
                 // test is not running any more, exit
                 if (this.STATUS.DONE === this.upload.status) {
+                    this.clearXMLHttpRequest(xhr);
                     resolve();
                     return;
                 }
@@ -1156,7 +1168,11 @@ class SpeedTestWorker {
                 const now = Date.now();
 
                 // clear XHR
-                this.clearXMLHttpRequest(xhr);
+                this.scope.setTimeout(
+                    () => {
+                        this.clearXMLHttpRequest(xhr);
+                    }
+                );
 
                 // prepare next loop
                 this.testUploadSpeedXHR(size)
