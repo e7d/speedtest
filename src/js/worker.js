@@ -467,7 +467,7 @@ class SpeedTestWorker {
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    this.testLatencyXHR(index + 1)
+                    return this.testLatencyXHR(index + 1)
                         .then(resolve)
                         .catch(reject);
                 }
@@ -686,11 +686,12 @@ class SpeedTestWorker {
             socket.onerror = e => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    this.testDownloadSpeedWebSocket(size)
+                    return this.testDownloadSpeedWebSocket(size)
                         .then(resolve)
                         .catch(reject);
                 }
 
+                // advertize fail status
                 reject({
                     status: this.STATUS.FAILED,
                     error: 'test failed',
@@ -817,7 +818,7 @@ class SpeedTestWorker {
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    this.testDownloadSpeedXHR(size)
+                    return this.testDownloadSpeedXHR(size)
                         .then(resolve)
                         .catch(reject);
                 }
@@ -1055,7 +1056,7 @@ class SpeedTestWorker {
             socket.onerror = e => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    this.testUploadSpeedWebSocket(size)
+                    return this.testUploadSpeedWebSocket(size)
                         .then(resolve)
                         .catch(reject);
                 }
