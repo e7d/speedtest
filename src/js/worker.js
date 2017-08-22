@@ -691,6 +691,9 @@ class SpeedTestWorker {
                         .catch(reject);
                 }
 
+                // clear WebSocket
+                this.clearWebSocket(socket);
+
                 // advertize fail status
                 reject({
                     status: this.STATUS.FAILED,
@@ -1060,6 +1063,9 @@ class SpeedTestWorker {
                         .then(resolve)
                         .catch(reject);
                 }
+
+                // clear WebSocket
+                this.clearWebSocket(socket);
 
                 reject({
                     status: this.STATUS.FAILED,
