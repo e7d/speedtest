@@ -1,7 +1,5 @@
 function requireAll(r) { r.keys().forEach(r); }
 
-// API
-requireAll(require.context('file-loader?name=[name].[ext]!../src/api/', true, /\.php$/));
 
 // HTML
 require('file-loader?name=[name].[ext]!../src/assets/index.html');

@@ -1,0 +1,16 @@
+{
+  "name": "speedtest-server",
+  "version": "0.0.1",
+  "description": "A JavaScript network speedtest based on Web Worker.",
+  "main": "server.js",
+  "scripts": {
+    "run": "node server.js"
+  },
+  "author": "e7d",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "express-ws": "^3.0.0",
+    "websocket": "^1.0.24"
+  }
+}
