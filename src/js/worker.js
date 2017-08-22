@@ -66,7 +66,7 @@ class SpeedTestWorker {
             },
             download: {
                 websocket: {
-                    endpoint: 'ws://127.0.0.1:8080/download',
+                    endpoint: 'ws://127.0.0.1/ws',
                     streams: 20,
                     size: 1,
                 },
@@ -81,7 +81,7 @@ class SpeedTestWorker {
             },
             upload: {
                 websocket: {
-                    endpoint: 'ws://127.0.0.1:8080/upload',
+                    endpoint: 'ws://127.0.0.1/ws',
                     streams: 20,
                     size: 1,
                 },
