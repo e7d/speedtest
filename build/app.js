@@ -1,6 +1,5 @@
 function requireAll(r) { r.keys().forEach(r); }
 
-
 // HTML
 require('file-loader?name=[name].[ext]!../src/assets/index.html');
 
