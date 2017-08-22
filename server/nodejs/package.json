@@ -9,8 +9,6 @@
   "author": "e7d",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.3",
-    "express-ws": "^3.0.0",
     "websocket": "^1.0.24"
   }
 }
