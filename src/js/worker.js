@@ -410,6 +410,9 @@ class SpeedTestWorker {
 
             // track request completion
             xhr.onload = e => {
+                // upon completion, mark receive time as "pong"
+                const pongDate = Date.now();
+
                 // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     reject({
@@ -426,9 +429,6 @@ class SpeedTestWorker {
 
                 // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.latency.status) {
-                    // upon completion, we got a "pong"
-                    const pongDate = Date.now();
-
                     // by default, latency is delay between "ping" and "pong"
                     let networkLatency = pongDate - pingDate;
 
