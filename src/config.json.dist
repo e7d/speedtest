@@ -1,0 +1,6 @@
+{
+    "mode": "XHR",
+    "ip": {
+        "endpoint": ""
+    }
+}
