@@ -49,8 +49,10 @@ class SpeedTestWorker {
             optimize: false,
             mode: 'websocket', // 'websocket' or 'xhr'
             websocket: {
-                host: '127.0.0.1',
-                port: 80
+                protocol : 'ws', // 'ws' or 'wss'
+                host: 'localhost',
+                port: 80,
+                path: '',
             },
             overheadCompensation: this.OVERHEAD['HTTP+TCP+IPv4'],
             ip: {
@@ -643,7 +645,8 @@ class SpeedTestWorker {
             }
 
             // open a WebSocket connection
-            const socket = new WebSocket(this.config.download.websocket.endpoint);
+            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.websocket.path}`;
+            const socket = new WebSocket(endpoint);
             // socket.binaryType = 'arraybuffer';
 
             // store the request in case we need to cancel it later
@@ -1022,7 +1025,8 @@ class SpeedTestWorker {
             }
 
             // open a WebSocket connection
-            const socket = new WebSocket(this.config.upload.websocket.endpoint);
+            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.websocket.path}`;
+            const socket = new WebSocket(endpoint);
             socket.binaryType = 'arraybuffer';
 
             // store the request in case we need to cancel it later
@@ -1267,7 +1271,7 @@ class SpeedTestWorker {
     run() {
         // only one test at a time
         if (this.test.running) {
-            // Handle running satus and advertise it
+            // Handle running status and advertise it
             return new Promise((resolve, reject) => {
                 reject({
                     status: this.test.status,
