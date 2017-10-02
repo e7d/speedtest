@@ -52,7 +52,6 @@ class SpeedTestWorker {
                 protocol : 'ws', // 'ws' or 'wss'
                 host: 'localhost',
                 port: 80,
-                path: '',
             },
             overheadCompensation: this.OVERHEAD['HTTP+TCP+IPv4'],
             ip: {
@@ -68,7 +67,7 @@ class SpeedTestWorker {
             },
             download: {
                 websocket: {
-                    endpoint: 'ws://127.0.0.1/ws',
+                    path: '',
                     streams: 20,
                     size: 1,
                 },
@@ -78,12 +77,12 @@ class SpeedTestWorker {
                     size: 8,
                     responseType: 'blob', // 'arraybuffer' or 'blob'
                 },
-                duration: 15,
-                gracetime: 0,
+                duration: 10,
+                gracetime: 2,
             },
             upload: {
                 websocket: {
-                    endpoint: 'ws://127.0.0.1/ws',
+                    path: '',
                     streams: 20,
                     size: 1,
                 },
@@ -92,7 +91,7 @@ class SpeedTestWorker {
                     streams: 3,
                     size: 1,
                 },
-                duration: 15,
+                duration: 10,
                 gracetime: 2,
             },
         };
@@ -645,7 +644,7 @@ class SpeedTestWorker {
             }
 
             // open a WebSocket connection
-            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.websocket.path}`;
+            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.download.websocket.path}`;
             const socket = new WebSocket(endpoint);
             // socket.binaryType = 'arraybuffer';
 
@@ -1025,7 +1024,7 @@ class SpeedTestWorker {
             }
 
             // open a WebSocket connection
-            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.websocket.path}`;
+            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.upload.websocket.path}`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = 'arraybuffer';
 
