@@ -7,7 +7,6 @@ const extractSass = new ExtractTextPlugin({
     // disable: process.env.NODE_ENV === 'development'
 });
 
-
 module.exports = {
     entry: {
         app: './build/app',
