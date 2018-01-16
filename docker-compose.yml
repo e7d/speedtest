@@ -16,12 +16,12 @@ nodejs-server:
         - 80:80
 
 # php-server:
-#     image: node:8-alpine
+#     image: php:7-alpine
 #     working_dir: /app
-#     command: yarn && node server.js
+#     command: php -S 0.0.0.0:80
 #     volumes:
-#         - ./server/nodejs:/app
-#         - ./dist:/app/web
+#         - ./server/php:/app
+#         - ./web/dist:/app/web
 #     ports:
-#         - 8080:80
+#         - 80:80
 
