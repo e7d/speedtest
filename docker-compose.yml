@@ -3,7 +3,7 @@ dev:
     working_dir: /app
     command: sh -c "yarn && yarn watch"
     volumes:
-        - .:/app
+        - ./web:/app
 
 nodejs-server:
     image: node:8-alpine
@@ -11,7 +11,7 @@ nodejs-server:
     command: sh -c "yarn && node server.js"
     volumes:
         - ./server/nodejs:/app
-        - ./dist:/app/web
+        - ./web/dist:/app/web
     ports:
         - 80:80
 
