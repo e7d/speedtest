@@ -54,8 +54,8 @@ module.exports = {
         //     $: 'jquery',
         //     jQuery: 'jquery'
         // }),
-        new CopyWebpackPlugin([
-            { from: 'server' /*, to: 'server'*/ },
-        ])
+        // new CopyWebpackPlugin([
+        //     { from: 'server' /*, to: 'server'*/ },
+        // ])
     ],
 };
