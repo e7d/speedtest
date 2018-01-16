@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const WebSocketServer = require('websocket').server;
 const port = process.argv[2] || 80;
-const basePath = process.argv[3] || '../../dist';
+const basePath = process.argv[3] || 'web';
 
 // prepare a random data buffer of 128KB
 const buffer = new Buffer(128 * 1024);

@@ -1,0 +1,27 @@
+dev:
+    image: node:8-alpine
+    working_dir: /app
+    command: sh -c "yarn && yarn watch"
+    volumes:
+        - .:/app
+
+nodejs-server:
+    image: node:8-alpine
+    working_dir: /app
+    command: sh -c "yarn && node server.js"
+    volumes:
+        - ./server/nodejs:/app
+        - ./dist:/app/web
+    ports:
+        - 80:80
+
+# php-server:
+#     image: node:8-alpine
+#     working_dir: /app
+#     command: yarn && node server.js
+#     volumes:
+#         - ./server/nodejs:/app
+#         - ./dist:/app/web
+#     ports:
+#         - 8080:80
+
