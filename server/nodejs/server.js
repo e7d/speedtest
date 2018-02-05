@@ -84,7 +84,22 @@ const server = http.createServer((request, response) => {
                             return;
                         }
 
-                        response.writeHead(200);
+                        let contentType = 'text/plain';
+                        switch(path.extname(filename)) {
+                            case '.css':
+                                contentType = 'text/css';
+                                break;
+                            case '.html':
+                                contentType = 'text/html';
+                                break;
+                            case '.js':
+                                contentType = 'application/javascript';
+                                break;
+                        }
+                        response.writeHead(200, {
+                            'Content-Type': contentType,
+                            'Content-Length': data.length
+                        });
                         response.write(data, 'binary');
                         response.end();
                     });
@@ -117,7 +132,6 @@ wsServer.on('request', request => {
 
     // handle messages
     connection.on('message', message => {
-
         if (message.type === 'utf8') {
             try {
                 const data = JSON.parse(message.utf8Data);
