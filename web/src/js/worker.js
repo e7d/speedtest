@@ -143,7 +143,7 @@ class SpeedTestWorker {
      *
      *
      * @param {any} path
-     * @returns
+     * @returns {PerformanceNavigationTiming}
      */
     getPerformanceEntry(path) {
         let performanceEntry = null;
@@ -172,7 +172,7 @@ class SpeedTestWorker {
      *
      *
      * @param {any} requests
-     * @returns
+     * @returns {Promise}
      */
     clearRequests(requests) {
         if (!Array.isArray(requests) ||
@@ -221,7 +221,7 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @param {XMLHttpRequest} request
+     * @param {XMLHttpRequest} xhr
      */
     clearXMLHttpRequest(xhr) {
         // Close XHR
@@ -244,7 +244,7 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @returns
+     * @returns {Promise}
      */
     testIP() {
         const run = () => {
@@ -320,7 +320,7 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @returns
+     * @returns {Promise}
      */
     testLatency() {
         const run = (delay = 0) => {
@@ -389,7 +389,7 @@ class SpeedTestWorker {
      *
      * @param {number} [delay=0]
      *
-     * @returns
+     * @returns {Promise}
      *
      */
     testLatencyWebSocket(delay = 0) {
@@ -621,7 +621,7 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @returns
+     * @returns {Promise}
      */
     processLatencyResults() {
         // compute test durations
@@ -667,7 +667,7 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @returns
+     * @returns {Promise}
      */
     testDownloadSpeed() {
         const run = (size, delay = 0) => {
@@ -863,7 +863,7 @@ class SpeedTestWorker {
      * @param {any} size
      * @param {number} [delay=0]
      * @param {number} [startDate=Date.now()]
-     * @returns
+     * @returns {Promise}
      */
     testDownloadSpeedXHR(size, delay = 0, startDate = Date.now()) {
         // store test index
@@ -1344,8 +1344,6 @@ class SpeedTestWorker {
 
     /**
      *
-     *
-     * @param {any} test
      */
     processUploadSpeedResults() {
         // compute test durations
@@ -1370,9 +1368,9 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @param {any} size
-     * @param {any} duration
-     * @returns
+     * @param {number} size
+     * @param {number} duration
+     * @returns {Object}
      */
     computeBandwidth(size, duration) {
         // bandwidth is data volume over time
@@ -1392,7 +1390,7 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @returns
+     * @returns {Promise}
      */
     run() {
         // only one test at a time
