@@ -67,29 +67,29 @@ class SpeedTestWorker {
             },
             download: {
                 websocket: {
-                    path: '',
+                    path: '/download',
                     streams: 20,
-                    size: 1,
+                    size: 1 * 1024 * 1024,
                 },
                 xhr: {
                     endpoint: 'download',
                     streams: 5,
-                    size: 8,
-                    responseType: 'blob', // 'arraybuffer' or 'blob'
+                    size: 8 * 1024 * 1024,
+                    responseType: "blob", // 'arraybuffer' or 'blob'
                 },
                 duration: 10,
                 gracetime: 2,
             },
             upload: {
                 websocket: {
-                    path: '',
+                    path: '/upload',
                     streams: 20,
-                    size: 1,
+                    size: 1 * 1024 * 1024,
                 },
                 xhr: {
                     endpoint: 'upload',
                     streams: 3,
-                    size: 1,
+                    size: 1 * 1024 * 1024,
                 },
                 duration: 10,
                 gracetime: 2,
@@ -890,7 +890,7 @@ class SpeedTestWorker {
         }
 
         // build the data array of desired size from the buffer
-        const dataSize = this.config.upload[this.config.mode].size * 1024 * 1024;
+        const dataSize = this.config.upload[this.config.mode].size;
         let data = new Float32Array(new ArrayBuffer(dataSize));
         for (let i = 0; i < data.byteLength / buffer.byteLength; i++) {
             data.set(
@@ -1052,14 +1052,14 @@ class SpeedTestWorker {
                 // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.upload.status) {
                     // add the chunk size to the total loaded size
-                    this.upload.size += this.upload.test.data.byteLength;
+                    this.upload.size += this.upload.test.blob.size;
 
                     // compute stats
                     this.processUploadSpeedResults();
                 }
 
                 // send next upload chunk
-                socket.send(this.upload.test.data.buffer);
+                socket.send(this.upload.test.blob);
             };
 
             // track socket closing
@@ -1091,7 +1091,7 @@ class SpeedTestWorker {
                 this.scope.setTimeout(
                     () => {
                         // send first upload chunk
-                        socket.send(this.upload.test.data.buffer);
+                        socket.send(this.upload.test.blob);
                     },
                     delay
                 );

@@ -14,9 +14,9 @@ for (let bufferIndex = 0; bufferIndex < buffer.byteLength; bufferIndex++) {
     buffer[bufferIndex] = Math.random();
 }
 
-const getRandomData = (size = 8) => {
+const getRandomData = (size = 8 * 1024 * 1024) => {
     // build the data array of desired size from the buffer
-    const data = new Buffer(size * 1024 * 1024);
+    const data = new Buffer(size);
     for (let dataIndex = 0; dataIndex * buffer.byteLength < size; dataIndex++) {
         data.set(
             buffer,
@@ -52,7 +52,7 @@ const server = http.createServer((request, response) => {
                     'Content-Type': 'application/octet-stream'
                 });
                 response.write(
-                    getRandomData(query.size),
+                    getRandomData(+query.size),
                     'binary'
                 );
                 response.end();
