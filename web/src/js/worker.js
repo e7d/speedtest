@@ -58,6 +58,9 @@ class SpeedTestWorker {
                 endpoint: 'ip',
             },
             latency: {
+                websocket: {
+                    path: '/ping',
+                },
                 xhr: {
                     endpoint: 'ping',
                 },
@@ -320,7 +323,10 @@ class SpeedTestWorker {
      * @returns
      */
     testLatency() {
-        const run = () => {
+        const run = (delay = 0) => {
+            if ('websocket' === this.config.mode) {
+                return this.testLatencyWebSocket(delay);
+            }
             return this.testLatencyXHR();
         };
 
@@ -329,7 +335,10 @@ class SpeedTestWorker {
             initDate: Date.now(),
             status: this.STATUS.STARTING,
             running: true,
-            data: []
+            data: [],
+            test: {
+                pingDate: []
+            }
         };
 
         // handle grace time, then mark test as running
@@ -378,12 +387,130 @@ class SpeedTestWorker {
     /**
      *
      *
-     * @param {number} [index=1]
+     * @param {number} [delay=0]
      *
      * @returns
      *
      */
-    testLatencyXHR(index = 1) {
+    testLatencyWebSocket(delay = 0) {
+        // store test index
+        let index = 0;
+
+        // return a promise to chain tests one after another
+        return new Promise((resolve, reject) => {
+            // test is aborted, exit with status
+            if (this.STATUS.ABORTED === this.test.status) {
+                reject({
+                    status: this.STATUS.ABORTED
+                });
+                return;
+            }
+
+            // test is not running any more, exit
+            if (this.STATUS.DONE === this.latency.status) {
+                resolve();
+                return;
+            }
+
+            // open a WebSocket connection
+            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.latency.websocket.path}`;
+            const socket = new WebSocket(endpoint);
+
+            // store the request in case we need to cancel it later
+            this.test.requests[index] = socket;
+
+            // track request completion
+            socket.onmessage = e => {
+                // test is aborted, exit with status
+                if (this.STATUS.ABORTED === this.test.status) {
+                    socket.close();
+                    reject({
+                        status: this.STATUS.ABORTED
+                    });
+                    return;
+                }
+
+                // test is not running any more, exit
+                if (this.STATUS.DONE === this.latency.status) {
+                    socket.close();
+                    resolve();
+                    return;
+                }
+
+                // test is in grace time as long as it is not on "running" status
+                if (this.STATUS.RUNNING === this.latency.status) {
+                    // extract latency from response
+                    const data = JSON.parse(e.data);
+                    const index = data.index;
+                    let networkLatency = Date.now() - this.latency.test.pingDate[index];
+
+                    // format and store the result
+                    networkLatency = +networkLatency.toFixed(2);
+                    this.latency.data.push(networkLatency);
+
+                    // compute stats
+                    this.processLatencyResults();
+                }
+
+                // ask for next latency chunk
+                index += 1;
+                this.latency.test.pingDate[index] = Date.now();
+                socket.send(JSON.stringify({
+                    'action': 'ping',
+                    'index': index
+                }));
+            };
+
+            // track socket closing
+            socket.onclose = () => {
+                // clear WebSocket
+                this.clearWebSocket(socket);
+            };
+
+            // track request errors
+            socket.onerror = e => {
+                if (this.config.ignoreErrors) {
+                    // prepare next loop
+                    return this.testLatencyWebSocket()
+                        .then(resolve)
+                        .catch(reject);
+                }
+
+                // clear WebSocket
+                this.clearWebSocket(socket);
+
+                // advertize fail status
+                reject({
+                    status: this.STATUS.FAILED,
+                    error: 'test failed',
+                });
+            };
+
+            // delay request dispatching as configured
+            socket.onopen = () => {
+                this.scope.setTimeout(
+                    () => {
+                        // ask for first download chunk
+                        index += 1;
+                        this.latency.test.pingDate[index] = +new Date();
+                        socket.send(JSON.stringify({
+                            'action': 'ping',
+                            'index': index
+                        }));
+                    },
+                    delay
+                );
+            };
+        });
+    }
+
+    /**
+     * @returns {Promise}
+     */
+    testLatencyXHR() {
+        // store test index
+        const index = this.latency.test.index++;
+
         // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
             // test is aborted, exit with status
@@ -463,7 +590,7 @@ class SpeedTestWorker {
                 }
 
                 // prepare next loop
-                this.testLatencyXHR(index + 1)
+                this.testLatencyXHR()
                     .then(resolve)
                     .catch(reject);
             };
@@ -472,7 +599,7 @@ class SpeedTestWorker {
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
                     // prepare next loop
-                    return this.testLatencyXHR(index + 1)
+                    return this.testLatencyXHR()
                         .then(resolve)
                         .catch(reject);
                 }
@@ -620,8 +747,8 @@ class SpeedTestWorker {
      *
      * @param {any} size
      * @param {number} [delay=0]
-     * @param {any} [startDate=Date.now()]
-     * @returns
+     * @param {number} [startDate=Date.now()]
+     * @returns {Promise}
      */
     testDownloadSpeedWebSocket(size, delay = 0, startDate = Date.now()) {
         // store test index
@@ -938,7 +1065,7 @@ class SpeedTestWorker {
             test: {
                 index: 0,
                 promises: [],
-                data: this.getRandomData(),
+                // data: this.getRandomData(),
                 blob: this.getRandomBlob()
             }
         };
@@ -1000,8 +1127,8 @@ class SpeedTestWorker {
      *
      * @param {any} size
      * @param {number} [delay=0]
-     * @param {any} [startDate=Date.now()]
-     * @returns
+     * @param {number} [startDate=Date.now()]
+     * @returns {Promise}
      */
     testUploadSpeedWebSocket(size, delay = 0, startDate = Date.now()) {
         // store test index

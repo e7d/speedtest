@@ -137,6 +137,13 @@ wsServer.on('request', request => {
                 const data = JSON.parse(message.utf8Data);
 
                 switch (data.action) {
+                    case 'ping':
+                        connection.send(JSON.stringify({
+                            action: 'pong',
+                            index: data.index
+                        }));
+                        break;
+
                     case 'prepare':
                         downloadData = getRandomData(data.size);
                         break;
