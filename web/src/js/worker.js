@@ -47,7 +47,7 @@ class SpeedTestWorker {
         this.config = {
             ignoreErrors: true,
             optimize: false,
-            mode: 'websocket', // 'websocket' or 'xhr'
+            mode: 'xhr', // 'websocket' or 'xhr'
             websocket: {
                 protocol : 'ws', // 'ws' or 'wss'
                 host: 'localhost',
