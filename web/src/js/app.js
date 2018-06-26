@@ -169,7 +169,7 @@ class App {
                     0;
                 this.$downloadValue.html(downloadValue ? downloadValue.toFixed(2) : '');
                 this.setGauge(this.$gauge, (downloadValue / 1024));
-                this.setProgressBar(this.$progressBar, _.get(data, 'results.download.progress', 0));
+                this.setProgressBar(this.$progressBar, _.get(data, 'results.download.progress', 0), 'download');
                 break;
             case 'upload':
                 const uploadValue = _.get(data, 'results.upload') ?
@@ -198,9 +198,10 @@ class App {
         });
     }
 
-    setProgressBar($progressBar, progress = 0) {
+    setProgressBar($progressBar, progress, mode) {
         $progressBar.css({
-            width: progress * 100 + '%'
+            width: progress * 100 + '%',
+            float: mode === 'download' ? 'right' : 'left'
         });
     }
 }
