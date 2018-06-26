@@ -3,12 +3,16 @@
   "version": "0.0.1",
   "description": "A JavaScript network speedtest based on Web Worker.",
   "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/e7d/speedtest.git"
+  },
   "scripts": {
     "run": "node server.js"
   },
   "author": "e7d",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "websocket": "^1.0.24"
+    "websocket": "^1.0.26"
   }
 }
