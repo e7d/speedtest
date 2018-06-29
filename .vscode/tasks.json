@@ -7,13 +7,28 @@
             "type": "npm",
             "script": "watch",
             "path": "web/",
-            "problemMatcher": ["$eslint-stylish"]
+            "problemMatcher": [
+                "$eslint-stylish"
+            ]
         },
         {
             "type": "npm",
             "script": "build",
             "path": "web/",
-            "problemMatcher": ["$eslint-stylish"]
+            "problemMatcher": [
+                "$eslint-stylish"
+            ]
+        },
+        {
+            "label": "Docker",
+            "type": "shell",
+            "command": [
+                "DOCKER_USER=$(id -u):$(id -g); docker-compose up"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

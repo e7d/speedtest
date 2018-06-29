@@ -1,5 +1,6 @@
 dev:
     image: node:10-alpine
+    user: ${DOCKER_USER}
     working_dir: /app
     command: sh -c "npm install && npm run watch"
     volumes:
@@ -7,21 +8,23 @@ dev:
 
 nodejs-server:
     image: node:10-alpine
+    user: ${DOCKER_USER}
     working_dir: /app
-    command: sh -c "npm install && node server.js"
+    command: sh -c "npm install && node server.js 8080"
     volumes:
         - ./server/nodejs:/app
         - ./web/dist:/app/web
     ports:
-        - 80:80
+        - 8080:8080
 
 # php-server:
 #     image: php:7-alpine
+#     user: ${DOCKER_USER}
 #     working_dir: /app
-#     command: php -S 0.0.0.0:80
+#     command: php -S 0.0.0.0:8080
 #     volumes:
 #         - ./server/php:/app
 #         - ./web/dist:/app/web
 #     ports:
-#         - 80:80
+#         - 8080:8080
 
