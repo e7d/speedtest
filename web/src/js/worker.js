@@ -13,7 +13,6 @@ class SpeedTestWorker {
     constructor(scope) {
         this.scope = scope;
 
-        // possible test status values
         this.STATUS = {
             WAITING: 'waiting',
             STARTING: 'starting',
@@ -33,7 +32,6 @@ class SpeedTestWorker {
             'HTTP+TCP+IPv6': 1500 / (1500 - 60), // 60 bytes per 1500 bytes payload
         };
 
-        // initialize test data
         this.test = {
             running: false,
             status: this.STATUS.WAITING,
@@ -43,7 +41,6 @@ class SpeedTestWorker {
             requests: [],
         };
 
-        // the default configuration
         this.config = {
             ignoreErrors: true,
             optimize: false,
@@ -148,20 +145,14 @@ class SpeedTestWorker {
     getPerformanceEntry(path) {
         let performanceEntry = null;
 
-        // get performance entries
         // TODO: Fix for Firefox and IE 11 as they have partial performance object in scope
-        let performanceEntries = this.scope.performance.getEntries();
-
-        // walk entries starting from the most recent, until we find one matching the requested path
-        performanceEntries = performanceEntries.reverse();
-        performanceEntries.forEach(entry => {
+        this.scope.performance.getEntries().reverse().forEach(entry => {
             if (new RegExp(path.replace('?', '\\?')).test(entry.name)) {
                 performanceEntry = entry;
             }
         }, this);
 
-        // Browser keeps only the first 150 entries
-        if (performanceEntries.length > 120) {
+        if (this.scope.performance.getEntries().length > 120) {
             this.scope.performance.clearResourceTimings();
         }
 
@@ -190,7 +181,6 @@ class SpeedTestWorker {
                 this.clearXMLHttpRequest(request);
             }
 
-            // Delete instance
             try {
                 request = null;
                 delete(requests[index]);
@@ -205,11 +195,10 @@ class SpeedTestWorker {
      * @param {WebSocket} socket
      */
     clearWebSocket(socket) {
-        // Close socket
         try {
             socket.close();
         } catch (ex) {}
-        // Clear event handlers
+
         try {
             socket.onopen = null;
             socket.onmessage = null;
@@ -224,11 +213,10 @@ class SpeedTestWorker {
      * @param {XMLHttpRequest} xhr
      */
     clearXMLHttpRequest(xhr) {
-        // Close XHR
         try {
             xhr.abort();
         } catch (ex) {}
-        // Clear event handlers
+
         try {
             xhr.onprogress = null;
             xhr.onload = null;
@@ -248,29 +236,19 @@ class SpeedTestWorker {
      */
     testIP() {
         const run = () => {
-            // return a promise to chain tests one after another
             return new Promise((resolve, reject) => {
-                // compute endpoint URI with a random part for cache busting
                 const endpoint = this.config.ip.endpoint +
                     '?ip' + new Date().getTime();
-
-                // build the XHR request
                 const xhr = new XMLHttpRequest();
 
-                // mark the request as an async GET on endpoint
                 xhr.open('GET', endpoint, true);
-
-                // track request completion
                 xhr.onload = e => {
                     this.test.results.ip = xhr.response;
-
-                    // clear XHR
                     this.clearXMLHttpRequest(xhr);
 
                     resolve();
                 };
 
-                // track request errors
                 xhr.onerror = () => {
                     reject({
                         status: this.STATUS.FAILED,
@@ -278,39 +256,28 @@ class SpeedTestWorker {
                     });
                 };
 
-                // dispatch request
                 xhr.send();
             });
         };
 
-        // initialize ip test
         this.ip = {
             status: this.STATUS.STARTING,
             running: true,
             data: []
         };
 
-        // return ip test promise
         return run()
             .catch(reason => {
-                // store error
                 this.ip.error = reason;
-
-                // erase results
                 this.test.results.ip = null;
             })
             .then(() => {
                 this.ip.running = false;
-
-                // broadcast status
                 this.processMessage({
                     data: 'status'
                 });
-
-                // cancel any remaining request
                 this.clearRequests(this.test.requests);
 
-                // propagate error
                 if (this.ip.error) {
                     throw (this.ip.error);
                 }
@@ -330,7 +297,6 @@ class SpeedTestWorker {
             return this.testLatencyXHR();
         };
 
-        // initialize latency test
         this.latency = {
             initDate: Date.now(),
             status: this.STATUS.STARTING,
@@ -341,7 +307,6 @@ class SpeedTestWorker {
             }
         };
 
-        // handle grace time, then mark test as running
         this.scope.setTimeout(
             () => {
                 this.latency.status = this.STATUS.RUNNING;
@@ -349,7 +314,6 @@ class SpeedTestWorker {
             },
             this.config.latency.gracetime * 1000
         );
-        // handle duration time, then mark test as complete
         this.scope.setTimeout(
             () => {
                 this.latency.status = this.STATUS.DONE;
@@ -358,26 +322,18 @@ class SpeedTestWorker {
             this.config.latency.duration * 1000
         );
 
-        // return latency test promise
         return run()
             .then(() => {
-                // compute stats
                 this.processLatencyResults();
             })
             .catch(reason => {
-                // store error
                 this.latency.error = reason;
-
-                // erase results
                 this.test.results.latency = null;
             })
             .then(() => {
                 this.latency.running = false;
-
-                // cancel any remaining request
                 this.clearRequests(this.test.requests);
 
-                // propagate error
                 if (this.latency.error) {
                     throw (this.latency.error);
                 }
@@ -393,12 +349,9 @@ class SpeedTestWorker {
      *
      */
     testLatencyWebSocket(delay = 0) {
-        // store test index
         let index = 0;
 
-        // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
@@ -406,22 +359,17 @@ class SpeedTestWorker {
                 return;
             }
 
-            // test is not running any more, exit
             if (this.STATUS.DONE === this.latency.status) {
                 resolve();
                 return;
             }
 
-            // open a WebSocket connection
             const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.latency.websocket.path}`;
             const socket = new WebSocket(endpoint);
 
-            // store the request in case we need to cancel it later
             this.test.requests[index] = socket;
 
-            // track request completion
             socket.onmessage = e => {
-                // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     socket.close();
                     reject({
@@ -430,29 +378,22 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is not running any more, exit
                 if (this.STATUS.DONE === this.latency.status) {
                     socket.close();
                     resolve();
                     return;
                 }
 
-                // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.latency.status) {
-                    // extract latency from response
                     const data = JSON.parse(e.data);
                     const index = data.index;
                     let networkLatency = Date.now() - this.latency.test.pingDate[index];
-
-                    // format and store the result
                     networkLatency = +networkLatency.toFixed(2);
                     this.latency.data.push(networkLatency);
 
-                    // compute stats
                     this.processLatencyResults();
                 }
 
-                // ask for next latency chunk
                 index += 1;
                 this.latency.test.pingDate[index] = Date.now();
                 socket.send(JSON.stringify({
@@ -461,36 +402,28 @@ class SpeedTestWorker {
                 }));
             };
 
-            // track socket closing
             socket.onclose = () => {
-                // clear WebSocket
                 this.clearWebSocket(socket);
             };
 
-            // track request errors
-            socket.onerror = e => {
+            socket.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    // prepare next loop
                     return this.testLatencyWebSocket()
                         .then(resolve)
                         .catch(reject);
                 }
 
-                // clear WebSocket
                 this.clearWebSocket(socket);
 
-                // advertize fail status
                 reject({
                     status: this.STATUS.FAILED,
                     error: 'test failed',
                 });
             };
 
-            // delay request dispatching as configured
             socket.onopen = () => {
                 this.scope.setTimeout(
                     () => {
-                        // ask for first download chunk
                         index += 1;
                         this.latency.test.pingDate[index] = +new Date();
                         socket.send(JSON.stringify({
@@ -508,12 +441,9 @@ class SpeedTestWorker {
      * @returns {Promise}
      */
     testLatencyXHR() {
-        // store test index
         const index = this.latency.test.index++;
 
-        // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
@@ -521,31 +451,21 @@ class SpeedTestWorker {
                 return;
             }
 
-            // test is not running any more, exit
             if (this.STATUS.DONE === this.latency.status) {
                 resolve();
                 return;
             }
 
-            // compute endpoint URI with a random part for cache busting
             const endpoint = this.config.latency.xhr.endpoint +
-                '?latency' + new Date().getTime();
-
-            // build the XHR request
+                '?' + new Date().getTime();
             const xhr = new XMLHttpRequest();
 
-            // store the request in case we need to cancel it later
             this.test.requests[index] = xhr;
 
-            // mark the request as an async GET on endpoint
             xhr.open('GET', endpoint, true);
-
-            // track request completion
-            xhr.onload = e => {
-                // upon completion, mark receive time as "pong"
+            xhr.onload = () => {
                 const pongDate = Date.now();
 
-                // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     reject({
                         status: this.STATUS.ABORTED
@@ -553,52 +473,39 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is not running any more, exit
                 if (this.STATUS.DONE === this.latency.status) {
                     resolve();
                     return;
                 }
 
-                // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.latency.status) {
-                    // by default, latency is delay between "ping" and "pong"
                     let networkLatency = pongDate - pingDate;
 
-                    // seek for a performance entry, more precise than the "ping / pong" calculation
                     const performanceEntry = this.getPerformanceEntry(endpoint);
                     if (null !== performanceEntry) {
-                        // latency is the duration between the moment the request is issued and the moment we get the first byte of response
                         networkLatency = performanceEntry.responseStart - performanceEntry.requestStart;
                     }
 
-                    // format and store the result
                     networkLatency = +networkLatency.toFixed(2);
                     this.latency.data.push(networkLatency);
-
-                    // compute stats
                     this.processLatencyResults();
 
-                    // track progression while test is started
                     if (
                         this.config.latency.count &&
                         index >= this.config.latency.count
                     ) {
-                        // test is done
                         resolve();
                         return;
                     }
                 }
 
-                // prepare next loop
                 this.testLatencyXHR()
                     .then(resolve)
                     .catch(reject);
             };
 
-            // track request errors
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    // prepare next loop
                     return this.testLatencyXHR()
                         .then(resolve)
                         .catch(reject);
@@ -610,10 +517,8 @@ class SpeedTestWorker {
                 });
             };
 
-            // dispatch request
             xhr.send();
 
-            // mark dispatch time as "ping"
             const pingDate = Date.now();
         });
     }
@@ -624,16 +529,10 @@ class SpeedTestWorker {
      * @returns {Promise}
      */
     processLatencyResults() {
-        // compute test durations
         const durationFromInit = (Date.now() - this.latency.initDate) / 1000;
-
-        // compute progress
         const progress = durationFromInit / this.config.latency.duration;
-
-        // gather the processed latencies
         const latencies = this.latency.data;
 
-        // store results
         this.test.results.latency = {
             min: +Math.min.apply(null, latencies).toFixed(2),
             max: +Math.max.apply(null, latencies).toFixed(2),
@@ -645,12 +544,10 @@ class SpeedTestWorker {
             progress: progress
         };
 
-        // nothing else to do without at least two values
         if (latencies.length < 2) {
             return;
         }
 
-        // process latencies by pair to compute jitter
         latencies.forEach((value, index) => {
             if (0 === index) {
                 return;
@@ -677,7 +574,6 @@ class SpeedTestWorker {
             return this.testDownloadSpeedXHR(size, delay);
         };
 
-        // initialize download test
         this.download = {
             initDate: Date.now(),
             status: this.STATUS.STARTING,
@@ -690,7 +586,6 @@ class SpeedTestWorker {
             }
         };
 
-        // prepare and launch download streams
         for (let index = 0; index < this.config.download[this.config.mode].streams; index++) {
             const testPromise = run(
                 this.config.download[this.config.mode].size,
@@ -699,7 +594,6 @@ class SpeedTestWorker {
             this.download.test.promises.push(testPromise);
         }
 
-        // handle grace time, then mark test as running
         this.scope.setTimeout(
             () => {
                 this.download.status = this.STATUS.RUNNING;
@@ -707,7 +601,6 @@ class SpeedTestWorker {
             },
             this.config.download.gracetime * 1000
         );
-        // handle duration time, then mark test as complete
         this.scope.setTimeout(
             () => {
                 this.download.status = this.STATUS.DONE;
@@ -716,26 +609,18 @@ class SpeedTestWorker {
             this.config.download.duration * 1000
         );
 
-        // listen for download streams completion before giving back hand for next test
         return Promise.all(this.download.test.promises)
             .then(() => {
-                // compute stats
                 this.processDownloadSpeedResults();
             })
             .catch(reason => {
-                // store error
                 this.download.error = reason;
-
-                // erase results
                 this.test.results.latency = null;
             })
             .then(() => {
                 this.download.running = false;
-
-                // cancel any remaining request
                 this.clearRequests(this.test.requests);
 
-                // propagate error
                 if (this.download.error) {
                     throw (this.download.error);
                 }
@@ -747,16 +632,12 @@ class SpeedTestWorker {
      *
      * @param {any} size
      * @param {number} [delay=0]
-     * @param {number} [startDate=Date.now()]
      * @returns {Promise}
      */
-    testDownloadSpeedWebSocket(size, delay = 0, startDate = Date.now()) {
-        // store test index
+    testDownloadSpeedWebSocket(size, delay = 0) {
         const index = this.download.test.index++;
 
-        // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
@@ -764,23 +645,16 @@ class SpeedTestWorker {
                 return;
             }
 
-            // test isn't running anymore, exit right away
             if (this.STATUS.DONE === this.download.status) {
                 resolve();
                 return;
             }
 
-            // open a WebSocket connection
             const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.download.websocket.path}`;
             const socket = new WebSocket(endpoint);
             // socket.binaryType = 'arraybuffer';
-
-            // store the request in case we need to cancel it later
             this.test.requests[index] = socket;
-
-            // track request completion
             socket.onmessage = e => {
-                // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     socket.close();
                     reject({
@@ -789,64 +663,49 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is not running any more, exit
                 if (this.STATUS.DONE === this.download.status) {
                     socket.close();
                     resolve();
                     return;
                 }
 
-                // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.download.status) {
-                    // add the chunk size to the total loaded size
                     this.download.size += e.data.size;
-
-                    // compute stats
                     this.processDownloadSpeedResults();
                 }
 
-                // ask for next download chunk
                 socket.send(JSON.stringify({
                     'action': 'download'
                 }));
             };
 
-            // track socket closing
             socket.onclose = () => {
-                // clear WebSocket
                 this.clearWebSocket(socket);
             };
 
-            // track request errors
             socket.onerror = e => {
                 if (this.config.ignoreErrors) {
-                    // prepare next loop
                     return this.testDownloadSpeedWebSocket(size)
                         .then(resolve)
                         .catch(reject);
                 }
 
-                // clear WebSocket
                 this.clearWebSocket(socket);
 
-                // advertize fail status
                 reject({
                     status: this.STATUS.FAILED,
                     error: 'test failed',
                 });
             };
 
-            // delay request dispatching as configured
             socket.onopen = () => {
                 this.scope.setTimeout(
                     () => {
-                        // ask WebSocket server to prepare a download chunk
                         socket.send(JSON.stringify({
                             'action': 'prepare',
                             'size': this.config.download.websocket.size
                         }));
 
-                        // ask for first download chunk
                         socket.send(JSON.stringify({
                             'action': 'download'
                         }));
@@ -862,16 +721,12 @@ class SpeedTestWorker {
      *
      * @param {any} size
      * @param {number} [delay=0]
-     * @param {number} [startDate=Date.now()]
      * @returns {Promise}
      */
-    testDownloadSpeedXHR(size, delay = 0, startDate = Date.now()) {
-        // store test index
+    testDownloadSpeedXHR(size, delay = 0) {
         const index = this.download.test.index++;
 
-        // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
@@ -879,35 +734,24 @@ class SpeedTestWorker {
                 return;
             }
 
-            // test is not running any more, exit
             if (this.STATUS.DONE === this.download.status) {
                 resolve();
                 return;
             }
 
-            // compute endpoint URI with the chunk size and a random part for cache busting
             const endpoint = this.config.download.xhr.endpoint +
-                '?download' + new Date().getTime() +
+                '?' + new Date().getTime() +
                 '&size=' + size;
 
-            // build the XHR request
             const xhr = new XMLHttpRequest();
-
-            // store the request in case we need to cancel it later
             this.test.requests[index] = xhr;
+            Object.assign(xhr, {
+                responseType: this.config.download.xhr.responseType
+            })
 
-            // set up the correct data response type
-            xhr.responseType = this.config.download.xhr.responseType;
-
-            // mark the request as an async GET on endpoint
             xhr.open('GET', endpoint, true);
-
-            // initialize size loaded for this request
             let sizeLoaded = 0;
-
-            // track request progress
             xhr.onprogress = e => {
-                // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     this.clearXMLHttpRequest(xhr);
                     reject({
@@ -916,48 +760,30 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is not running any more, exit
                 if (this.STATUS.DONE === this.download.status) {
                     this.clearXMLHttpRequest(xhr);
                     resolve();
                     return;
                 }
 
-                // compute the size of the loaded chunk
                 const loadDiff = e.loaded - sizeLoaded;
-
-                // remember the the loaded size for next progress tacking
                 sizeLoaded = e.loaded;
 
-                // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.download.status) {
-
-                    // add the chunk size to the total loaded size
                     this.download.size += loadDiff;
-
-                    // compute stats
                     this.processDownloadSpeedResults();
                 }
             };
 
-            // track request completion
-            xhr.onload = e => {
-                // store current date and time
-                const now = Date.now();
-
-                // clear XHR
+            xhr.onload = () => {
                 this.clearXMLHttpRequest(xhr);
-
-                // prepare next loop
                 this.testDownloadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
             };
 
-            // track request errors
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    // prepare next loop
                     return this.testDownloadSpeedXHR(size)
                         .then(resolve)
                         .catch(reject);
@@ -969,11 +795,8 @@ class SpeedTestWorker {
                 });
             };
 
-            // delay request dispatching as configured
             this.scope.setTimeout(
-                () => {
-                    xhr.send(null);
-                },
+                () => xhr.send(null),
                 delay
             );
         });
@@ -984,19 +807,14 @@ class SpeedTestWorker {
      *
      */
     processDownloadSpeedResults() {
-        // compute test durations
         const durationFromInit = (Date.now() - this.download.initDate) / 1000;
         const durationFromStart = (Date.now() - this.download.startDate) / 1000;
-
-        // compute progress
         const progress = durationFromInit / this.config.download.duration;
 
-        // compute bandwidth
         const {
             bitBandwidth: bandwidth
         } = this.computeBandwidth(this.download.size, durationFromStart);
 
-        // store results
         this.test.results.download = {
             speed: +bandwidth.toFixed(2),
             progress: progress,
@@ -1009,14 +827,12 @@ class SpeedTestWorker {
      * @returns {Float32Array}
      */
     getRandomData() {
-        // prepare a random data buffer
         const bufferSize = 128 * 1024;
         const buffer = new Float32Array(new ArrayBuffer(bufferSize));
         for (let index = 0; index < buffer.length; index++) {
             buffer[index] = Math.random();
         }
 
-        // build the data array of desired size from the buffer
         const dataSize = this.config.upload[this.config.mode].size;
         let data = new Float32Array(new ArrayBuffer(dataSize));
         for (let i = 0; i < data.byteLength / buffer.byteLength; i++) {
@@ -1055,7 +871,6 @@ class SpeedTestWorker {
             return this.testUploadSpeedXHR(size, delay);
         };
 
-        // initialize upload test
         this.upload = {
             initDate: Date.now(),
             status: this.STATUS.STARTING,
@@ -1070,7 +885,6 @@ class SpeedTestWorker {
             }
         };
 
-        // prepare and launch upload streams
         for (let index = 0; index < this.config.upload[this.config.mode].streams; index++) {
             const testPromise = run(
                 this.config.upload[this.config.mode].size,
@@ -1079,7 +893,6 @@ class SpeedTestWorker {
             this.upload.test.promises.push(testPromise);
         }
 
-        // handle grace time, then mark test as running
         this.scope.setTimeout(
             () => {
                 this.upload.status = this.STATUS.RUNNING;
@@ -1087,7 +900,6 @@ class SpeedTestWorker {
             },
             this.config.upload.gracetime * 1000
         );
-        // handle duration time, then mark test as complete
         this.scope.setTimeout(
             () => {
                 this.upload.status = this.STATUS.DONE;
@@ -1096,26 +908,18 @@ class SpeedTestWorker {
             this.config.upload.duration * 1000
         );
 
-        // listen for upload streams completion before giving back hand for next test
         return Promise.all(this.upload.test.promises)
             .then(() => {
-                // compute stats
                 this.processUploadSpeedResults();
             })
             .catch(reason => {
-                // store error
                 this.upload.error = reason;
-
-                // erase results
                 this.test.results.latency = null;
             })
             .then(() => {
                 this.upload.running = false;
-
-                // cancel any remaining request
                 this.clearRequests(this.test.requests);
 
-                // propagate error
                 if (this.upload.error) {
                     throw (this.upload.error);
                 }
@@ -1131,12 +935,9 @@ class SpeedTestWorker {
      * @returns {Promise}
      */
     testUploadSpeedWebSocket(size, delay = 0, startDate = Date.now()) {
-        // store test index
         const index = this.upload.test.index++;
 
-        // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
@@ -1144,23 +945,17 @@ class SpeedTestWorker {
                 return;
             }
 
-            // test isn't running anymore, exit right away
             if (this.STATUS.DONE === this.upload.status) {
                 resolve();
                 return;
             }
 
-            // open a WebSocket connection
             const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.upload.websocket.path}`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = 'arraybuffer';
 
-            // store the request in case we need to cancel it later
             this.test.requests[index] = socket;
-
-            // track request completion
             socket.onmessage = e => {
-                // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     socket.close();
                     reject({
@@ -1169,42 +964,31 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is not running any more, exit
                 if (this.STATUS.DONE === this.upload.status) {
                     socket.close();
                     resolve();
                     return;
                 }
 
-                // test is in grace time as long as it is not on "running" status
                 if (this.STATUS.RUNNING === this.upload.status) {
-                    // add the chunk size to the total loaded size
                     this.upload.size += this.upload.test.blob.size;
-
-                    // compute stats
                     this.processUploadSpeedResults();
                 }
 
-                // send next upload chunk
                 socket.send(this.upload.test.blob);
             };
 
-            // track socket closing
             socket.onclose = () => {
-                // clear WebSocket
                 this.clearWebSocket(socket);
             };
 
-            // track request errors
             socket.onerror = e => {
                 if (this.config.ignoreErrors) {
-                    // prepare next loop
                     return this.testUploadSpeedWebSocket(size)
                         .then(resolve)
                         .catch(reject);
                 }
 
-                // clear WebSocket
                 this.clearWebSocket(socket);
 
                 reject({
@@ -1213,11 +997,9 @@ class SpeedTestWorker {
                 });
             };
 
-            // delay request dispatching as configured
             socket.onopen = () => {
                 this.scope.setTimeout(
                     () => {
-                        // send first upload chunk
                         socket.send(this.upload.test.blob);
                     },
                     delay
@@ -1226,13 +1008,11 @@ class SpeedTestWorker {
         });
     }
 
-    testUploadSpeedXHR(size, delay = 0, startDate = Date.now()) {
+    testUploadSpeedXHR(size, delay = 0) {
         // store test index
         const index = this.upload.test.index++;
 
-        // return a promise to chain tests one after another
         return new Promise((resolve, reject) => {
-            // test is aborted, exit with status
             if (this.STATUS.ABORTED === this.test.status) {
                 reject({
                     status: this.STATUS.ABORTED
@@ -1240,34 +1020,22 @@ class SpeedTestWorker {
                 return;
             }
 
-            // test is not running any more, exit
             if (this.STATUS.DONE === this.upload.status) {
                 resolve();
                 return;
             }
 
-            // compute endpoint URI with the chunk size and a random part for cache busting
             const endpoint = this.config.upload.xhr.endpoint +
-                '?upload' + new Date().getTime();
+                '?' + new Date().getTime();
 
-            // build the XHR request
             const xhr = new XMLHttpRequest();
 
-            // store the request in case we need to cancel it later
             this.test.requests[index] = xhr;
 
-            // mark the request as an async GET on endpoint
-            xhr.open('POST', endpoint, true);
-
-            // disable compression
-            xhr.setRequestHeader('Content-Encoding', 'identity');
-
-            // initialize size loaded for this request
             let sizeLoaded = 0;
-
-            // track request progress
+            xhr.open('POST', endpoint, true);
+            xhr.setRequestHeader('Content-Encoding', 'identity');
             xhr.upload.onprogress = e => {
-                // test is aborted, exit with status
                 if (this.STATUS.ABORTED === this.test.status) {
                     this.clearXMLHttpRequest(xhr);
                     reject({
@@ -1276,51 +1044,34 @@ class SpeedTestWorker {
                     return;
                 }
 
-                // test is not running any more, exit
                 if (this.STATUS.DONE === this.upload.status) {
                     this.clearXMLHttpRequest(xhr);
                     resolve();
                     return;
                 }
 
-                // compute the size of the loaded chunk
                 const loadDiff = e.loaded - sizeLoaded;
-
-                // remember the the loaded size for next progress tacking
                 sizeLoaded = e.loaded;
 
-                // test is in grace time as long as it is on "starting" status
                 if (this.STATUS.RUNNING === this.upload.status) {
-                    // add the chunk size to the total loaded size
                     this.upload.size += loadDiff;
-
-                    // compute stats
                     this.processUploadSpeedResults();
                 }
             };
 
-            // track request completion
-            xhr.upload.onload = e => {
-                // store current date and time
-                const now = Date.now();
-
-                // clear XHR
+            xhr.upload.onload = () => {
                 this.scope.setTimeout(
                     () => {
                         this.clearXMLHttpRequest(xhr);
                     }
                 );
-
-                // prepare next loop
                 this.testUploadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
             };
 
-            // track request errors
             xhr.upload.onerror = e => {
                 if (this.config.ignoreErrors) {
-                    // prepare next loop, but give it a delay to breathe
                     return this.testUploadSpeedXHR(size)
                         .then(resolve)
                         .catch(reject);
@@ -1332,7 +1083,6 @@ class SpeedTestWorker {
                 });
             };
 
-            // delay request dispatching as configured
             this.scope.setTimeout(
                 () => {
                     xhr.send(this.upload.test.blob);
@@ -1346,19 +1096,14 @@ class SpeedTestWorker {
      *
      */
     processUploadSpeedResults() {
-        // compute test durations
         const durationFromInit = (Date.now() - this.upload.initDate) / 1000;
         const durationFromStart = (Date.now() - this.upload.startDate) / 1000;
-
-        // compute progress
         const progress = durationFromInit / this.config.upload.duration;
 
-        // compute bandwidth
         const {
             bitBandwidth: bandwidth
         } = this.computeBandwidth(this.upload.size, durationFromStart);
 
-        // store results
         this.test.results.upload = {
             speed: +bandwidth.toFixed(2),
             progress: progress,
@@ -1373,14 +1118,11 @@ class SpeedTestWorker {
      * @returns {Object}
      */
     computeBandwidth(size, duration) {
-        // bandwidth is data volume over time
         const byteBandwidth =
             (size / duration) *
             this.config.overheadCompensation;
-        // there is 8 bits in a byte
         const bitBandwidth = 8 * byteBandwidth;
 
-        // return both values
         return {
             byteBandwidth: byteBandwidth,
             bitBandwidth: bitBandwidth,
@@ -1393,9 +1135,7 @@ class SpeedTestWorker {
      * @returns {Promise}
      */
     run() {
-        // only one test at a time
         if (this.test.running) {
-            // Handle running status and advertise it
             return new Promise((resolve, reject) => {
                 reject({
                     status: this.test.status,
@@ -1409,7 +1149,6 @@ class SpeedTestWorker {
             // this.config = JSON.parse(JSON.stringify(this.defaultConfig));
         }
 
-        // prepare test data
         this.test = {
             running: true,
             date: new Date().toJSON(),
@@ -1425,7 +1164,6 @@ class SpeedTestWorker {
             },
         };
 
-        // run tests one after another
         this.test.status = this.STATUS.RUNNING;
         this.test.step = this.STEP.IP;
         return this.testIP()
@@ -1449,14 +1187,11 @@ class SpeedTestWorker {
                 this.test.error = reason.error;
             })
             .then(() => {
-                // test is finished and not running anymore
                 this.test.running = false;
                 this.test.step = null;
 
-                // clear any remaining request
                 this.clearRequests(this.test.requests);
 
-                // handle FAILED and ABORTED status
                 if (this.STATUS.DONE !== this.test.status) {
                     throw ({
                         status: this.test.status,
@@ -1472,11 +1207,8 @@ class SpeedTestWorker {
      */
     abort() {
         this.test.status = this.STATUS.ABORTED;
-
-        // test is canceled and not running anymore
         this.test.running = false;
 
-        // clear any remaining request
         this.clearRequests(this.test.requests);
     }
 }

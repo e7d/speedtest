@@ -5,11 +5,15 @@
     "tasks": [
         {
             "type": "npm",
+            "script": "watch",
+            "path": "web/",
+            "problemMatcher": ["$eslint-stylish"]
+        },
+        {
+            "type": "npm",
             "script": "build",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "path": "web/",
+            "problemMatcher": ["$eslint-stylish"]
         }
     ]
 }

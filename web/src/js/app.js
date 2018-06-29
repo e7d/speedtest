@@ -2,6 +2,7 @@
 
 import _ from 'lodash';
 import $ from 'jquery';
+import Worker from 'worker-loader!./worker.js'
 
 /**
  *
@@ -15,13 +16,11 @@ class App {
     constructor() {
         this.statusInterval = null;
 
-        // prepare default config
         this.config = {
             updateDelay: 200, // 100
             endless: false, // false
         };
 
-        // prepare speed test worker
         this.worker = new Worker('worker.js');
         this.worker.onmessage = event => {
             this.processResponse(event);

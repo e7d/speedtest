@@ -1,12 +1,12 @@
 dev:
-    image: node:8-alpine
+    image: node:10-alpine
     working_dir: /app
     command: sh -c "npm install && npm run watch"
     volumes:
         - ./web:/app
 
 nodejs-server:
-    image: node:8-alpine
+    image: node:10-alpine
     working_dir: /app
     command: sh -c "npm install && node server.js"
     volumes:

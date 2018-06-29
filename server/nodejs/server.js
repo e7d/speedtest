@@ -9,14 +9,14 @@ const port = process.argv[2] || 80;
 const basePath = process.argv[3] || 'web';
 
 // prepare a random data buffer of 128KB
-const buffer = new Buffer(128 * 1024);
+const buffer = Buffer.alloc(128 * 1024);
 for (let bufferIndex = 0; bufferIndex < buffer.byteLength; bufferIndex++) {
     buffer[bufferIndex] = Math.random();
 }
 
 const getRandomData = (size = 8 * 1024 * 1024) => {
     // build the data array of desired size from the buffer
-    const data = new Buffer(size);
+    const data = Buffer.alloc(size);
     for (let dataIndex = 0; dataIndex * buffer.byteLength < size; dataIndex++) {
         data.set(
             buffer,

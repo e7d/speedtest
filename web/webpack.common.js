@@ -1,24 +1,55 @@
 const path = require('path');
 const webpack = require('webpack');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSass = new ExtractTextPlugin({
-    filename: '[name].css', // '[name].[contenthash].css'
+    filename: '[name].[hash].css'
     // disable: process.env.NODE_ENV === 'development'
 });
 
 module.exports = {
     entry: {
         app: './build/app',
-        worker: './build/worker'
     },
+    plugins: [
+        new CleanWebpackPlugin(
+            ['dist/*'], {
+                root: __dirname
+            }
+        ),
+        extractSass,
+        new HtmlWebpackPlugin({
+            inject: 'body',
+            template: 'src/assets/index.html',
+            filename: 'index.html',
+            chunks: ['app'],
+            minify: {
+                collapseWhitespace: true
+            }
+        }),
+        // new webpack.ProvidePlugin({
+        //     $: 'jquery',
+        //     jQuery: 'jquery'
+        // }),
+        // new CopyWebpackPlugin([
+        //     { from: 'server' /*, to: 'server'*/ },
+        // ])
+    ],
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: '[name].js'
+        filename: '[name].[chunkhash].js'
     },
     module: {
         loaders: [{
-                test: /\.js$/,
+                test: /\.worker\.js$/,
+                use: {
+                    loader: 'worker-loader'
+                }
+            },
+            {
+                test: /\.app\.js$/,
                 exclude: /(node_modules)/,
                 use: {
                     loader: 'babel-loader',
@@ -30,12 +61,10 @@ module.exports = {
             {
                 test: /\.(css|scss)$/,
                 use: extractSass.extract({
-                    use: [{
-                        loader: 'css-loader'
-                    }, {
-                        loader: 'sass-loader'
-                    }],
-                    // use style-loader in development
+                    use: [
+                        'css-loader',
+                        'sass-loader'
+                    ],
                     fallback: 'style-loader'
                 })
             },
@@ -48,14 +77,4 @@ module.exports = {
             },
         ]
     },
-    plugins: [
-        extractSass,
-        // new webpack.ProvidePlugin({
-        //     $: 'jquery',
-        //     jQuery: 'jquery'
-        // }),
-        // new CopyWebpackPlugin([
-        //     { from: 'server' /*, to: 'server'*/ },
-        // ])
-    ],
 };
