@@ -1,9 +1,10 @@
 //@ts-check
 
-const http = require('http');
-const url = require('url');
-const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const ipInfo = require('ipinfo');
+const path = require('path');
+const url = require('url');
 const WebSocketServer = require('websocket').server;
 const port = process.argv[2] || 80;
 const basePath = process.argv[3] || 'web';
@@ -38,18 +39,23 @@ const server = http.createServer((request, response) => {
         switch (uri) {
             case '/ip':
                 response.writeHead(200);
-                response.write(request.connection.remoteAddress);
-                response.end();
+                const ip = /\:\:ffff\:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/.test(request.connection.remoteAddress)
+                    ? request.connection.remoteAddress.replace('::ffff:', '')
+                    : request.connection.remoteAddress;
+                ipInfo(`${ip}/org`, (err, org) => {
+                    response.write(org ? `${ip} (${org})` : ip);
+                    response.end();
+                });
                 break;
             case '/ping':
             case '/upload':
                 response.writeHead(200);
-                response.write('');
                 response.end();
                 break;
             case '/download':
                 response.writeHead(200, {
-                    'Content-Type': 'application/octet-stream'
+                    'Content-Type': 'application/octet-stream',
+                    'Content-Length': +query.size
                 });
                 response.write(
                     getRandomData(+query.size),
@@ -65,7 +71,7 @@ const server = http.createServer((request, response) => {
                         response.writeHead(404, {
                             'Content-Type': 'text/plain'
                         });
-                        response.write('404 Not Found');
+                        response.write('Not Found');
                         response.end();
                         return;
                     }
@@ -79,7 +85,7 @@ const server = http.createServer((request, response) => {
                             response.writeHead(500, {
                                 'Content-Type': 'text/plain'
                             });
-                            response.write(err + '\n');
+                            response.write(err.message);
                             response.end();
                             return;
                         }
@@ -111,13 +117,17 @@ const server = http.createServer((request, response) => {
         response.writeHead(500, {
             'Content-Type': 'text/plain'
         });
-        response.write(err + '\n');
+        response.write(err);
         response.end();
     }
 });
 server.listen(port);
 
-console.log('Server running at http://0.0.0.0:' + port + '/');
+if (!server.listening) {
+    throw new Error(`Server failed listening on port ${port}`);
+}
+
+console.log(`Server listening at http://0.0.0.0:${port}/`);
 
 // create the server
 const wsServer = new WebSocketServer({
