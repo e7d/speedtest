@@ -238,7 +238,7 @@ class SpeedTestWorker {
         const run = () => {
             return new Promise((resolve, reject) => {
                 const endpoint = this.config.ip.endpoint +
-                    '?ip' + new Date().getTime();
+                    '?' + new Date().getTime();
                 const xhr = new XMLHttpRequest();
 
                 xhr.open('GET', endpoint, true);
@@ -290,12 +290,10 @@ class SpeedTestWorker {
      * @returns {Promise}
      */
     testLatency() {
-        const run = (delay = 0) => {
-            if ('websocket' === this.config.mode) {
-                return this.testLatencyWebSocket(delay);
-            }
-            return this.testLatencyXHR();
-        };
+        const run = (delay = 0) =>
+            'websocket' === this.config.mode
+                ? this.testLatencyWebSocket(delay)
+                : this.testLatencyXHR();
 
         this.latency = {
             initDate: Date.now(),
@@ -567,12 +565,10 @@ class SpeedTestWorker {
      * @returns {Promise}
      */
     testDownloadSpeed() {
-        const run = (size, delay = 0) => {
-            if ('websocket' === this.config.mode) {
-                return this.testDownloadSpeedWebSocket(size, delay);
-            }
-            return this.testDownloadSpeedXHR(size, delay);
-        };
+        const run = (size, delay = 0) =>
+            'websocket' === this.config.mode
+                ? this.testDownloadSpeedWebSocket(size, delay)
+                : this.testDownloadSpeedXHR(size, delay);
 
         this.download = {
             initDate: Date.now(),
@@ -586,6 +582,7 @@ class SpeedTestWorker {
             }
         };
 
+        this.download.test.promises = [];
         for (let index = 0; index < this.config.download[this.config.mode].streams; index++) {
             const testPromise = run(
                 this.config.download[this.config.mode].size,
@@ -864,12 +861,10 @@ class SpeedTestWorker {
      *
      */
     testUploadSpeed() {
-        const run = (size, delay = 0) => {
-            if ('websocket' === this.config.mode) {
-                return this.testUploadSpeedWebSocket(size, delay);
-            }
-            return this.testUploadSpeedXHR(size, delay);
-        };
+        const run = (size, delay = 0) =>
+            'websocket' === this.config.mode
+                ? this.testUploadSpeedWebSocket(size, delay)
+                : this.testUploadSpeedXHR(size, delay);
 
         this.upload = {
             initDate: Date.now(),
@@ -885,6 +880,7 @@ class SpeedTestWorker {
             }
         };
 
+        this.upload.test.promises = [];
         for (let index = 0; index < this.config.upload[this.config.mode].streams; index++) {
             const testPromise = run(
                 this.config.upload[this.config.mode].size,
