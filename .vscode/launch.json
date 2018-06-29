@@ -5,17 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch via NPM",
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceRoot}",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "debug"
-            ],
-            "port": 5858,
-            "program": "${workspaceRoot}/api/nodejs-2/server.js"
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/server/nodejs/server.js",
+            "args": [
+                "8123",
+                "web/dist"
+            ]
         }
     ]
 }
