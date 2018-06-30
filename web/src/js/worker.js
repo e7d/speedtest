@@ -293,9 +293,9 @@ class SpeedTestWorker {
      */
     testLatency() {
         const run = (delay = 0) =>
-            'websocket' === this.config.mode
-                ? this.testLatencyWebSocket(delay)
-                : this.testLatencyXHR(delay);
+            'websocket' === this.config.mode ?
+                this.testLatencyWebSocket(delay) :
+                this.testLatencyXHR(delay);
 
         this.latency = {
             initDate: Date.now(),
@@ -360,7 +360,6 @@ class SpeedTestWorker {
 
             const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.latency.websocket.path}`;
             const socket = new WebSocket(endpoint);
-
             this.test.requests[index] = socket;
 
             socket.onmessage = e => {
@@ -380,9 +379,9 @@ class SpeedTestWorker {
                     let networkLatency = Date.now() - this.latency.test.pingDate[index];
                     networkLatency = +networkLatency.toFixed(2);
                     this.latency.data.push(networkLatency);
-
-                    this.processLatencyResults();
                 }
+
+                this.processLatencyResults();
 
                 index += 1;
                 this.latency.test.pingDate[index] = Date.now();
@@ -398,9 +397,10 @@ class SpeedTestWorker {
 
             socket.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    return this.testLatencyWebSocket()
+                    this.testLatencyWebSocket()
                         .then(resolve)
                         .catch(reject);
+                    return;
                 }
 
                 this.clearWebSocket(socket);
@@ -450,7 +450,6 @@ class SpeedTestWorker {
             const endpoint = this.config.latency.xhr.endpoint +
                 '?' + new Date().getTime();
             const xhr = new XMLHttpRequest();
-
             this.test.requests[index] = xhr;
 
             xhr.open('GET', endpoint, true);
@@ -467,20 +466,20 @@ class SpeedTestWorker {
 
                 if (this.STATUS.RUNNING === this.latency.status) {
                     const performanceEntry = this.getPerformanceEntry(endpoint);
-                    let networkLatency = null !== performanceEntry
-                        ? performanceEntry.responseStart - performanceEntry.requestStart
-                        : pongDate - pingDate;
+                    let networkLatency = null !== performanceEntry ?
+                        performanceEntry.responseStart - performanceEntry.requestStart :
+                        pongDate - pingDate;
 
                     networkLatency = +networkLatency.toFixed(2);
                     this.latency.data.push(networkLatency);
-                    this.processLatencyResults();
+                }
 
-                    if (
-                        this.config.latency.count &&
-                        index >= this.config.latency.count
-                    ) {
-                        return resolve();
-                    }
+                this.processLatencyResults();
+                if (
+                    this.config.latency.count &&
+                    index >= this.config.latency.count
+                ) {
+                    return resolve();
                 }
 
                 this.testLatencyXHR()
@@ -489,9 +488,10 @@ class SpeedTestWorker {
             };
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    return this.testLatencyXHR()
+                    this.testLatencyXHR()
                         .then(resolve)
                         .catch(reject);
+                    return;
                 }
 
                 reject({
@@ -503,7 +503,7 @@ class SpeedTestWorker {
             let pingDate;
             this.scope.setTimeout(
                 () => {
-                    xhr.send()
+                    xhr.send();
                     pingDate = Date.now();
                 },
                 delay
@@ -556,9 +556,9 @@ class SpeedTestWorker {
      */
     testDownloadSpeed() {
         const run = (size, delay = 0) =>
-            'websocket' === this.config.mode
-                ? this.testDownloadSpeedWebSocket(size, delay)
-                : this.testDownloadSpeedXHR(size, delay);
+            'websocket' === this.config.mode ?
+                this.testDownloadSpeedWebSocket(size, delay) :
+                this.testDownloadSpeedXHR(size, delay);
 
         this.download = {
             initDate: Date.now(),
@@ -650,8 +650,8 @@ class SpeedTestWorker {
 
                 if (this.STATUS.RUNNING === this.download.status) {
                     this.download.size += e.data.size;
-                    this.processDownloadSpeedResults();
                 }
+                this.processDownloadSpeedResults();
 
                 socket.send(JSON.stringify({
                     'action': 'download'
@@ -662,11 +662,12 @@ class SpeedTestWorker {
                 this.clearWebSocket(socket);
             };
 
-            socket.onerror = e => {
+            socket.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    return this.testDownloadSpeedWebSocket(size)
+                    this.testDownloadSpeedWebSocket(size)
                         .then(resolve)
                         .catch(reject);
+                    return;
                 }
 
                 this.clearWebSocket(socket);
@@ -724,7 +725,7 @@ class SpeedTestWorker {
             this.test.requests[index] = xhr;
             Object.assign(xhr, {
                 responseType: this.config.download.xhr.responseType
-            })
+            });
 
             let sizeLoaded = 0;
             xhr.open('GET', endpoint, true);
@@ -743,23 +744,23 @@ class SpeedTestWorker {
 
                 const loadDiff = e.loaded - sizeLoaded;
                 sizeLoaded = e.loaded;
-
                 if (this.STATUS.RUNNING === this.download.status) {
                     this.download.size += loadDiff;
-                    this.processDownloadSpeedResults();
                 }
+                this.processDownloadSpeedResults();
             };
             xhr.onload = () => {
-                this.clearXMLHttpRequest(xhr);
+                // this.clearXMLHttpRequest(xhr);
                 this.testDownloadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
             };
             xhr.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    return this.testDownloadSpeedXHR(size)
+                    this.testDownloadSpeedXHR(size)
                         .then(resolve)
                         .catch(reject);
+                    return;
                 }
 
                 reject({
@@ -838,9 +839,9 @@ class SpeedTestWorker {
      */
     testUploadSpeed() {
         const run = (size, delay = 0) =>
-            'websocket' === this.config.mode
-                ? this.testUploadSpeedWebSocket(size, delay)
-                : this.testUploadSpeedXHR(size, delay);
+            'websocket' === this.config.mode ?
+                this.testUploadSpeedWebSocket(size, delay) :
+                this.testUploadSpeedXHR(size, delay);
 
         this.upload = {
             initDate: Date.now(),
@@ -935,8 +936,8 @@ class SpeedTestWorker {
 
                 if (this.STATUS.RUNNING === this.upload.status) {
                     this.upload.size += this.upload.test.blob.size;
-                    this.processUploadSpeedResults();
                 }
+                this.processUploadSpeedResults();
 
                 socket.send(this.upload.test.blob);
             };
@@ -945,11 +946,12 @@ class SpeedTestWorker {
                 this.clearWebSocket(socket);
             };
 
-            socket.onerror = e => {
+            socket.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    return this.testUploadSpeedWebSocket(size)
+                    this.testUploadSpeedWebSocket(size)
                         .then(resolve)
                         .catch(reject);
+                    return;
                 }
 
                 this.clearWebSocket(socket);
@@ -1018,26 +1020,27 @@ class SpeedTestWorker {
 
                 if (this.STATUS.RUNNING === this.upload.status) {
                     this.upload.size += loadDiff;
-                    this.processUploadSpeedResults();
                 }
+                this.processUploadSpeedResults();
             };
 
             xhr.upload.onload = () => {
-                this.scope.setTimeout(
-                    () => {
-                        this.clearXMLHttpRequest(xhr);
-                    }
-                );
+                // this.scope.setTimeout(
+                //     () => {
+                //         this.clearXMLHttpRequest(xhr);
+                //     }
+                // );
                 this.testUploadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
             };
 
-            xhr.upload.onerror = e => {
+            xhr.upload.onerror = () => {
                 if (this.config.ignoreErrors) {
-                    return this.testUploadSpeedXHR(size)
+                    this.testUploadSpeedXHR(size)
                         .then(resolve)
                         .catch(reject);
+                    return;
                 }
 
                 reject({

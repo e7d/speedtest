@@ -1,17 +1,14 @@
-//@ts-check
-
-import _ from 'lodash';
 import $ from 'jquery';
-import Worker from 'worker-loader!./worker.js'
+import Worker from 'worker-loader!./worker.js';
 
 /**
+ * Speed Test web UI
  *
- *
- * @class App
+ * @class WebUI
  */
-class App {
+class WebUI {
     /**
-     * Creates an instance of App.
+     * Create an instance of WebUI.
      */
     constructor() {
         this.statusInterval = null;
@@ -41,13 +38,13 @@ class App {
     }
 
     /**
-     *
+     * Start a speed test.
      */
     startTest() {
         this.running = true;
 
-        this.$startButton.addClass('hidden');
-        this.$stopButton.removeClass('hidden');
+        this.$startButton.attr('hidden', true);
+        this.$stopButton.removeAttr('hidden');
 
         this.resetMeters();
         this.resetResults();
@@ -67,7 +64,7 @@ class App {
     }
 
     /**
-     *
+     * Abort a running speed test.
      */
     stopTest() {
         this.running = false;
@@ -83,20 +80,20 @@ class App {
     }
 
     /**
-     *
+     * Process an event response from the speed test Worker
      *
      * @param {MessageEvent} event
      */
     processResponse(event) {
-        switch (_.get(event.data, 'status')) {
+        switch (event.data.status) {
             case 'running':
-                this.processData(_.get(event, 'data', {}));
+                this.processData(event.data || {});
                 break;
             case 'done':
                 window.clearInterval(this.statusInterval);
                 this.statusInterval = null;
 
-                this.processData(_.get(event, 'data', {}));
+                this.processData(event.data || {});
                 if (this.config.endless) {
                     this.startTest();
                     return;
@@ -104,31 +101,31 @@ class App {
 
                 this.resetMeters();
 
-                this.$startButton.removeClass('hidden');
-                this.$stopButton.addClass('hidden');
+                this.$startButton.removeAttr('hidden');
+                this.$stopButton.attr('hidden', true);
                 break;
             case 'aborted':
                 window.clearInterval(this.statusInterval);
                 this.statusInterval = null;
 
-                this.processData(_.get(event, 'data', {}));
-                this.$startButton.removeClass('hidden');
-                this.$stopButton.addClass('hidden');
+                this.processData(event.data || {});
+                this.$startButton.removeAttr('hidden');
+                this.$stopButton.attr('hidden', true);
                 break;
         }
     }
 
     /**
-     *
-    */
+     * Reset the current meters.
+     */
     resetMeters() {
         this.setGauge(this.$gauge, 0);
         this.setProgressBar(this.$progressBar, 0);
     }
 
     /**
-     *
-    */
+     * Reset the current results.
+     */
     resetResults() {
         this.$ipValue.empty();
         this.$latencyValue.empty();
@@ -138,7 +135,7 @@ class App {
     }
 
     /**
-     *
+     * Process a set of data.
      *
      * @param {any} data
      */
@@ -147,40 +144,41 @@ class App {
             return;
         }
 
-        switch (_.get(data, 'step')) {
+        switch (data.step) {
             case 'ip':
-                this.$ipValue.html(
-                    _.get(data, 'results.ip', '')
-                );
+                this.$ipValue.html(data.results.ip);
                 break;
             case 'latency':
-                this.$latencyValue.html(
-                    _.get(data, 'results.latency.avg', '')
-                );
-                this.$jitterValue.html(
-                    _.get(data, 'results.latency.jitter', '')
-                );
-                this.setProgressBar(this.$progressBar, _.get(data, 'results.latency.progress', 0));
+                this.$latencyValue.html(data.results.latency.avg);
+                this.$jitterValue.html(data.results.latency.jitter);
+                this.setProgressBar(this.$progressBar, data.results.latency.progress);
                 break;
             case 'download':
-                const downloadValue = _.get(data, 'results.download') ?
+                console.log(data.results);
+                const downloadValue = data.results.download ?
                     (+data.results.download.speed / (1024 * 1024)) :
                     0;
                 this.$downloadValue.html(downloadValue ? downloadValue.toFixed(2) : '');
                 this.setGauge(this.$gauge, (downloadValue / 1024));
-                this.setProgressBar(this.$progressBar, _.get(data, 'results.download.progress', 0), 'download');
+                this.setProgressBar(this.$progressBar, data.results.download.progress, 'download');
                 break;
             case 'upload':
-                const uploadValue = _.get(data, 'results.upload') ?
+                const uploadValue = data.results.upload ?
                     (+data.results.upload.speed / (1024 * 1024)) :
                     0;
                 this.$uploadValue.html(uploadValue ? uploadValue.toFixed(2) : '');
                 this.setGauge(this.$gauge, (uploadValue / 1024));
-                this.setProgressBar(this.$progressBar, _.get(data, 'results.upload.progress', 0));
+                this.setProgressBar(this.$progressBar, data.results.upload.progress);
                 break;
         }
     }
 
+    /**
+     * Set a value on the gauge
+     *
+     * @param {*} $gauge
+     * @param {*} value
+     */
     setGauge($gauge, value = null) {
         value = (value || $gauge.data('percentage') || 0);
         value = Math.max(0, Math.min(1, value));
@@ -197,12 +195,19 @@ class App {
         });
     }
 
+
+    /**
+     * Set a value on the progress bar
+     *
+     * @param {*} $progressBar
+     * @param {*} progress
+     * @param {*} mode
+     */
     setProgressBar($progressBar, progress, mode) {
         $progressBar.css({
-            width: progress * 100 + '%',
-            float: mode === 'download' ? 'right' : 'left'
+            width: progress * 100 + '%'
         });
     }
 }
 
-new App();
+new WebUI();
