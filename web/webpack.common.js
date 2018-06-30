@@ -1,17 +1,20 @@
 const path = require('path');
-const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSass = new ExtractTextPlugin({
     filename: '[name].[hash].css'
-    // disable: process.env.NODE_ENV === 'development'
 });
 
 module.exports = {
     entry: {
         app: './build/app',
+    },
+    watchOptions: {
+        ignored: /node_modules/,
+        aggregateTimeout: 300,
+        poll: 500
     },
     plugins: [
         new CleanWebpackPlugin(
@@ -22,20 +25,16 @@ module.exports = {
         extractSass,
         new HtmlWebpackPlugin({
             inject: 'body',
-            template: 'src/assets/index.html',
+            template: 'src/index.html',
             filename: 'index.html',
             chunks: ['app'],
             minify: {
                 collapseWhitespace: true
             }
         }),
-        // new webpack.ProvidePlugin({
-        //     $: 'jquery',
-        //     jQuery: 'jquery'
-        // }),
-        // new CopyWebpackPlugin([
-        //     { from: 'server' /*, to: 'server'*/ },
-        // ])
+        new CopyWebpackPlugin([
+            { from: 'assets/*' },
+        ])
     ],
     output: {
         path: path.join(__dirname, 'dist'),

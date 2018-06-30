@@ -1,14 +1,5 @@
-dev:
-    image: node:10-alpine
-    user: ${DOCKER_USER}
-    working_dir: /app
-    command: sh -c "npm install && npm run watch"
-    volumes:
-        - ./web:/app
-
 nodejs-server:
     image: node:10-alpine
-    user: ${DOCKER_USER}
     working_dir: /app
     command: sh -c "npm install && node server.js 8080"
     volumes:

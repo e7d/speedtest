@@ -4,31 +4,35 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Web: watch",
             "type": "npm",
             "script": "watch",
             "path": "web/",
             "problemMatcher": [
                 "$eslint-stylish"
-            ]
-        },
-        {
-            "type": "npm",
-            "script": "build",
-            "path": "web/",
-            "problemMatcher": [
-                "$eslint-stylish"
-            ]
-        },
-        {
-            "label": "Docker",
-            "type": "shell",
-            "command": [
-                "DOCKER_USER=$(id -u):$(id -g); docker-compose up"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Web: build",
+            "type": "npm",
+            "script": "build",
+            "path": "web/",
+            "problemMatcher": [
+                "$eslint-stylish"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Server: NodeJS",
+            "type": "shell",
+            "command": [
+                "docker-compose up"
+            ],
+            "problemMatcher": []
         }
     ]
 }
