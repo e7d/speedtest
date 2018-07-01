@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Worker from 'worker-loader!./worker.js';
+import Worker from 'worker-loader!./worker';
 
 /**
  * Speed Test web UI
