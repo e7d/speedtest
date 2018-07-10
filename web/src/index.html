@@ -10,56 +10,41 @@
 </head>
 
 <body>
-	<div class="container">
+	<article id="speedtest">
+		<h1>Speed Test</h1>
 
-	</div>
-
-	<article id="speedtest" class="container text-center">
-		<section id="commands" class="row">
-			<h1 class="col col-12 col-md-8 text-left">
-				Speed Test
-			</h1>
-			<nav id="commands" class="col col-12 col-md-4 text-right">
-				<button id="start" class="btn btn-lg btn-default btn-success">Start</button>
-				<button id="stop" class="btn btn-lg btn-default btn-danger" hidden>Stop</button>
-			</nav>
-		</section>
+		<nav id="commands">
+			<button id="start" class="btn btn-primary">Start</button>
+			<button id="stop" class="btn btn-danger" hidden>Stop</button>
+		</nav>
 
 		<section id="results">
-			<div class="row">
-				<div id="ip" class="col col-12 result ip">
-					<label>IP</label>
-					<span class="value"></span>
-				</div>
+			<div id="ip" class="result">
+				<label>IP</label>
+				<span class="ip value"></span>
 			</div>
 
-			<div class="row">
-				<div id="latency" class="col col-6 col-md-3 result duration">
-					<label>Latency</label>
-					<span class="value"></span>
-				</div>
-				<div id="jitter" class="col col-6 col-md-3 result duration">
-					<label>Jitter</label>
-					<span class="value"></span>
-				</div>
-				<div id="download" class="col col-6 col-md-3 result bandwidth">
-					<label>Download</label>
-					<span class="value"></span>
-				</div>
-				<div id="upload" class="col col-6 col-md-3 result bandwidth">
-					<label>Upload</label>
-					<span class="value"></span>
-				</div>
+			<div id="latency" class="result">
+				<label>Latency</label>
+				<span class="time value"></span>
+			</div>
+			<div id="jitter" class="result">
+				<label>Jitter</label>
+				<span class="time value"></span>
+			</div>
+			<div id="download" class="result">
+				<label>Download</label>
+				<span class="bandwidth value"></span>
+			</div>
+			<div id="upload" class="result">
+				<label>Upload</label>
+				<span class="bandwidth value"></span>
 			</div>
 		</section>
 
-		<section id="meter" class="row text-center">
-			<div id="progress" class="col col-xs-12">
-				<div class="progress">
-					<div class="progress-bar" role="progressbar"></div>
-				</div>
-			</div>
-		</section>
+		<div id="progress" class="progress">
+			<div class="progress-bar" role="progressbar"></div>
+		</div>
 	</article>
 </body>
 

@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Worker from 'worker-loader!./worker';
 
 /**
@@ -6,7 +5,7 @@ import Worker from 'worker-loader!./worker';
  *
  * @class WebUI
  */
-class WebUI {
+export default class WebUI {
     /**
      * Create an instance of WebUI.
      */
@@ -23,18 +22,18 @@ class WebUI {
             this.processResponse(event);
         };
 
-        this.$startButton = $('#commands button#start');
-        this.$stopButton = $('#commands button#stop');
-        this.$gauge = $('.gauge');
-        this.$progressBar = $('.progress-bar');
-        this.$ipValue = $('#results #ip span.value');
-        this.$latencyValue = $('#results #latency span.value');
-        this.$jitterValue = $('#results #jitter span.value');
-        this.$downloadValue = $('#results #download span.value');
-        this.$uploadValue = $('#results #upload span.value');
+        this.$startButton = document.querySelector('#commands button#start');
+        this.$stopButton = document.querySelector('#commands button#stop');
+        this.$progress = document.querySelector('#progress');
+        this.$progressBar = document.querySelector('#progress .progress-bar');
+        this.$ipValue = document.querySelector('#ip span.value');
+        this.$latencyValue = document.querySelector('#latency span.value');
+        this.$jitterValue = document.querySelector('#jitter span.value');
+        this.$downloadValue = document.querySelector('#download span.value');
+        this.$uploadValue = document.querySelector('#upload span.value');
 
-        this.$startButton.on('click', this.startTest.bind(this));
-        this.$stopButton.on('click', this.stopTest.bind(this));
+        this.$startButton.addEventListener('click', this.startTest.bind(this));
+        this.$stopButton.addEventListener('click', this.stopTest.bind(this));
     }
 
     /**
@@ -43,8 +42,8 @@ class WebUI {
     startTest() {
         this.running = true;
 
-        this.$startButton.attr('hidden', true);
-        this.$stopButton.removeAttr('hidden');
+        this.$startButton.hidden = true;
+        this.$stopButton.hidden = false;
 
         this.resetMeters();
         this.resetResults();
@@ -101,16 +100,16 @@ class WebUI {
 
                 this.resetMeters();
 
-                this.$startButton.removeAttr('hidden');
-                this.$stopButton.attr('hidden', true);
+                this.$startButton.hidden = false;
+                this.$stopButton.hidden = true;
                 break;
             case 'aborted':
                 window.clearInterval(this.statusInterval);
                 this.statusInterval = null;
 
                 this.processData(event.data || {});
-                this.$startButton.removeAttr('hidden');
-                this.$stopButton.attr('hidden', true);
+                this.$startButton.hidden = false;
+                this.$stopButton.hidden = true;
                 break;
         }
     }
@@ -119,19 +118,18 @@ class WebUI {
      * Reset the current meters.
      */
     resetMeters() {
-        this.setGauge(this.$gauge, 0);
-        this.setProgressBar(this.$progressBar, 0);
+        this.setProgressBar(0);
     }
 
     /**
      * Reset the current results.
      */
     resetResults() {
-        this.$ipValue.empty();
-        this.$latencyValue.empty();
-        this.$jitterValue.empty();
-        this.$downloadValue.empty();
-        this.$uploadValue.empty();
+        this.$ipValue.innerHTML = '';
+        this.$latencyValue.innerHTML = '';
+        this.$jitterValue.innerHTML = '';
+        this.$downloadValue.innerHTML = '';
+        this.$uploadValue.innerHTML = '';
     }
 
     /**
@@ -146,68 +144,39 @@ class WebUI {
 
         switch (data.step) {
             case 'ip':
-                this.$ipValue.html(data.results.ip);
+                this.$ipValue.innerHTML = data.results.ip;
                 break;
             case 'latency':
-                this.$latencyValue.html(data.results.latency.avg);
-                this.$jitterValue.html(data.results.latency.jitter);
-                this.setProgressBar(this.$progressBar, data.results.latency.progress);
+                this.$latencyValue.innerHTML = data.results.latency.avg;
+                this.$jitterValue.innerHTML = data.results.latency.jitter;
+                this.setProgressBar(data.results.latency.progress);
                 break;
             case 'download':
-                console.log(data.results);
                 const downloadValue = data.results.download ?
                     (+data.results.download.speed / (1024 * 1024)) :
                     0;
-                this.$downloadValue.html(downloadValue ? downloadValue.toFixed(2) : '');
-                this.setGauge(this.$gauge, (downloadValue / 1024));
-                this.setProgressBar(this.$progressBar, data.results.download.progress, 'download');
+                this.$downloadValue.innerHTML = downloadValue ? downloadValue.toFixed(2) : '';
+                this.setProgressBar(data.results.download.progress, 'download');
                 break;
             case 'upload':
                 const uploadValue = data.results.upload ?
                     (+data.results.upload.speed / (1024 * 1024)) :
                     0;
-                this.$uploadValue.html(uploadValue ? uploadValue.toFixed(2) : '');
-                this.setGauge(this.$gauge, (uploadValue / 1024));
-                this.setProgressBar(this.$progressBar, data.results.upload.progress);
+                this.$uploadValue.innerHTML = uploadValue ? uploadValue.toFixed(2) : '';
+                this.setProgressBar(data.results.upload.progress);
                 break;
         }
-    }
-
-    /**
-     * Set a value on the gauge
-     *
-     * @param {*} $gauge
-     * @param {*} value
-     */
-    setGauge($gauge, value = null) {
-        value = (value || $gauge.data('percentage') || 0);
-        value = Math.max(0, Math.min(1, value));
-
-        const degrees = 180 * value;
-        const pointerDegrees = degrees - 90;
-        const $spinner = $gauge.find('.spinner');
-        const $pointer = $gauge.find('.pointer');
-        $spinner.attr({
-            style: 'transform: rotate(' + degrees + 'deg)'
-        });
-        $pointer.attr({
-            style: 'transform: rotate(' + pointerDegrees + 'deg)'
-        });
     }
 
 
     /**
      * Set a value on the progress bar
      *
-     * @param {*} $progressBar
      * @param {*} progress
      * @param {*} mode
      */
-    setProgressBar($progressBar, progress, mode) {
-        $progressBar.css({
-            width: progress * 100 + '%'
-        });
+    setProgressBar(progress, mode) {
+        this.$progress.style.flexDirection = mode === 'download' ? 'row-reverse' : 'row';
+        this.$progressBar.style.width = progress * 100 + '%';
     }
 }
-
-new WebUI();

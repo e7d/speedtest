@@ -1,3 +1,32 @@
 body {
     margin: 0;
 }
+
+#speedtest {
+    display: grid;
+    grid-template-areas: "h c"
+                         "r r"
+                         "p p";
+    grid-template-columns: repeat(2, 50%);
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+
+    h1 {
+        grid-area: h;
+        font-size: 2em;
+    }
+
+    #commands {
+        grid-area: c;
+        text-align: right;
+    }
+
+    #results {
+        grid-area: r;
+    }
+
+    #progress {
+        grid-area: p;
+    }
+}

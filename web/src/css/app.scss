@@ -1,8 +1,10 @@
-@import "./vars.scss";
+@import "./vars";
 
-@import "./global.scss";
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/_buttons";
+@import "../../node_modules/bootstrap/scss/_progress";
 
-@import "./commands.scss";
-@import "./gauge.scss";
-@import "./progress.scss";
-@import "./results.scss";
+@import "./global";
+@import "./results";

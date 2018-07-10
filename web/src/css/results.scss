@@ -1,4 +1,39 @@
 #results {
+    display: grid;
+    grid-template-areas: "i i i i"
+                         "l j d u";
+    grid-template-columns: repeat(4, 25%);
+    text-align: center;
+
+    @media only screen and (max-width: 800px) {
+        & {
+            grid-template-areas: "i i i i"
+                                 "l l j j"
+                                 "d d u u";
+            grid-template-columns: repeat(4, 25%);
+        }
+    }
+
+    #ip {
+        grid-area: i;
+    }
+
+    #latency {
+        grid-area: l;
+    }
+
+    #jitter {
+        grid-area: j;
+    }
+
+    #download {
+        grid-area: d;
+    }
+
+    #upload {
+        grid-area: u;
+    }
+
     .result {
         padding: 20px;
     }
@@ -6,35 +41,36 @@
     label {
         display: block;
         font-size: 20px;
+        margin-bottom: 0.5rem;
     }
 
     .value {
         display: block;
         font-size: 36px;
-        font-weight: light;
+        font-weight: lighter;
         color: $primaryColor;
 
         &::after {
             display: block;
             font-size: 16px;
             color: $black;
-            margin-top: -12px;
+            margin-top: -0.5rem;
         }
 
         &:empty::before {
             content: "––"
         }
-    }
 
-    .ip .value:empty::before {
-        content: "___.___.___.___"
-    }
+        &.ip:empty::before {
+            content: "___.___.___.___"
+        }
 
-    .duration .value::after {
-        content: " ms";
-    }
+        &.time::after {
+            content: " ms";
+        }
 
-    .bandwidth .value::after {
-        content: " Mb/s";
+        &.bandwidth::after {
+            content: " Mb/s";
+        }
     }
 }
