@@ -1,7 +1,5 @@
 //@ts-check
 
-import SpeedTestWorker from "./worker";
-
 /**
  * Speed Test web UI
  *
@@ -19,8 +17,8 @@ export default class WebUI {
             endless: false // false
         };
 
-        this.worker = new SpeedTestWorker();
-        this.worker.scope.onmessage = event => {
+        this.worker = new Worker('worker.js');
+        this.worker.onmessage = event => {
             this.processResponse(event);
         };
 
@@ -52,11 +50,11 @@ export default class WebUI {
 
         if (this.config.updateDelay && !this.statusInterval) {
             this.statusInterval = window.setInterval(() => {
-                this.worker.scope.postMessage("status", location.href);
+                this.worker.postMessage("status");
                 // this.worker.processMessage({data: 'status'});
             }, this.config.updateDelay);
         }
-        this.worker.scope.postMessage("start", location.href);
+        this.worker.postMessage("start");
         // this.worker.processMessage({data: 'start'});
     }
 
@@ -70,7 +68,7 @@ export default class WebUI {
         this.statusInterval = null;
 
         if (this.worker) {
-            this.worker.scope.postMessage("abort", location.href);
+            this.worker.scope.postMessage("abort");
             // this.worker.processMessage({data: 'abort'});
         }
 

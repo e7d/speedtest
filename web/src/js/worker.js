@@ -9,7 +9,7 @@ export default class SpeedTestWorker {
     // class SpeedTestWorker {
     /**
      * Creates an instance of SpeedTestWorker.
-     * @param {any} scope
+     * @param {DedicatedWorkerGlobalScope} scope
      */
     constructor(scope = self) {
         this.scope = scope;
@@ -135,7 +135,7 @@ export default class SpeedTestWorker {
      * Post a message
      */
     postMessage(message) {
-        this.scope.postMessage(message, this.scope.location.href);
+        this.scope.postMessage(message);
     }
 
     /**
