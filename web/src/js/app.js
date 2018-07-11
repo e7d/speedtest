@@ -1,4 +1,6 @@
-import Worker from 'worker-loader!./worker';
+//@ts-check
+
+import SpeedTestWorker from './worker';
 
 /**
  * Speed Test web UI
@@ -17,8 +19,8 @@ export default class WebUI {
             endless: false, // false
         };
 
-        this.worker = new Worker('worker.js');
-        this.worker.onmessage = event => {
+        this.worker = new SpeedTestWorker();
+        this.worker.scope.onmessage = event => {
             this.processResponse(event);
         };
 
@@ -54,12 +56,14 @@ export default class WebUI {
         ) {
             this.statusInterval = window.setInterval(
                 () => {
-                    this.worker.postMessage('status');
+                    this.worker.scope.postMessage('status', location.href);
+                    // this.worker.processMessage({data: 'status'});
                 },
                 this.config.updateDelay
             );
         }
-        this.worker.postMessage('start');
+        this.worker.scope.postMessage('start', location.href);
+        // this.worker.processMessage({data: 'start'});
     }
 
     /**
@@ -72,7 +76,8 @@ export default class WebUI {
         this.statusInterval = null;
 
         if (this.worker) {
-            this.worker.postMessage('abort');
+            this.worker.scope.postMessage('abort', location.href);
+            // this.worker.processMessage({data: 'abort'});
         }
 
         this.resetMeters();
@@ -175,7 +180,7 @@ export default class WebUI {
      * @param {*} progress
      * @param {*} mode
      */
-    setProgressBar(progress, mode) {
+    setProgressBar(progress, mode = '') {
         this.$progress.style.flexDirection = mode === 'download' ? 'row-reverse' : 'row';
         this.$progressBar.style.width = progress * 100 + '%';
     }

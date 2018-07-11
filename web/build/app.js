@@ -1,4 +1,3 @@
-
 // JSON
 import 'file-loader?name=[name].[ext]!../src/config.json';
 

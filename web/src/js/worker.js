@@ -5,12 +5,13 @@
  *
  * @class SpeedTestWorker
  */
-class SpeedTestWorker {
+export default class SpeedTestWorker {
+// class SpeedTestWorker {
     /**
      * Creates an instance of SpeedTestWorker.
      * @param {any} scope
      */
-    constructor(scope) {
+    constructor(scope = self) {
         this.scope = scope;
 
         this.STATUS = {
@@ -97,6 +98,8 @@ class SpeedTestWorker {
         };
 
         this.scope.addEventListener('message', this.processMessage.bind(this));
+
+        return this;
     }
 
     /**
@@ -111,7 +114,7 @@ class SpeedTestWorker {
                 this.postStatus();
                 break;
             case 'config':
-                this.scope.postMessage(this.test.config);
+                this.postMessage(this.test.config);
                 break;
             case 'start':
                 this.run()
@@ -129,10 +132,17 @@ class SpeedTestWorker {
     }
 
     /**
+     * Post a message
+     */
+    postMessage(message) {
+        this.scope.postMessage(message, this.scope.location.href);
+    }
+
+    /**
      * Post a message with the current status
      */
     postStatus() {
-        this.scope.postMessage({
+        this.postMessage({
             'status': this.test.status,
             'step': this.test.step,
             'results': this.test.results
@@ -1177,4 +1187,3 @@ class SpeedTestWorker {
         this.clearRequests(this.test.requests);
     }
 }
-new SpeedTestWorker(self);
