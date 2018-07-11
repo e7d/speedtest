@@ -1,9 +1,9 @@
 // JSON
-import 'file-loader?name=[name].[ext]!../src/config.json';
+import "file-loader?name=[name].[ext]!../src/config.json";
 
 // CSS
-import '../src/css/app.scss';
+import "../src/css/app.scss";
 
 // JS
-import WebUI from '../src/js/app.js';
+import WebUI from "../src/js/app.js";
 new WebUI();

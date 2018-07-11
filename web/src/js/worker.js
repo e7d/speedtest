@@ -6,7 +6,7 @@
  * @class SpeedTestWorker
  */
 export default class SpeedTestWorker {
-// class SpeedTestWorker {
+    // class SpeedTestWorker {
     /**
      * Creates an instance of SpeedTestWorker.
      * @param {any} scope
@@ -15,22 +15,22 @@ export default class SpeedTestWorker {
         this.scope = scope;
 
         this.STATUS = {
-            WAITING: 'waiting',
-            STARTING: 'starting',
-            RUNNING: 'running',
-            DONE: 'done',
-            ABORTED: 'aborted',
-            FAILED: 'failed',
+            WAITING: "waiting",
+            STARTING: "starting",
+            RUNNING: "running",
+            DONE: "done",
+            ABORTED: "aborted",
+            FAILED: "failed"
         };
         this.STEP = {
-            IP: 'ip',
-            LATENCY: 'latency',
-            DOWNLOAD: 'download',
-            UPLOAD: 'upload',
+            IP: "ip",
+            LATENCY: "latency",
+            DOWNLOAD: "download",
+            UPLOAD: "upload"
         };
         this.OVERHEAD = {
-            'HTTP+TCP+IPv4': 1500 / (1500 - 40), // 40 bytes per 1500 bytes payload
-            'HTTP+TCP+IPv6': 1500 / (1500 - 60), // 60 bytes per 1500 bytes payload
+            "HTTP+TCP+IPv4": 1500 / (1500 - 40), // 40 bytes per 1500 bytes payload
+            "HTTP+TCP+IPv6": 1500 / (1500 - 60) // 60 bytes per 1500 bytes payload
         };
 
         this.test = {
@@ -39,65 +39,65 @@ export default class SpeedTestWorker {
             step: null,
             error: false,
             data: {},
-            requests: [],
+            requests: []
         };
 
         this.config = {
             ignoreErrors: true,
             optimize: false,
-            mode: 'xhr', // 'websocket' or 'xhr'
+            mode: "xhr", // 'websocket' or 'xhr'
             websocket: {
-                protocol : 'ws', // 'ws' or 'wss'
-                host: 'localhost',
-                port: 80,
+                protocol: "ws", // 'ws' or 'wss'
+                host: "localhost",
+                port: 80
             },
-            overheadCompensation: this.OVERHEAD['HTTP+TCP+IPv4'],
+            overheadCompensation: this.OVERHEAD["HTTP+TCP+IPv4"],
             ip: {
-                endpoint: 'ip',
+                endpoint: "ip"
             },
             latency: {
                 websocket: {
-                    path: '/ping',
+                    path: "/ping"
                 },
                 xhr: {
-                    endpoint: 'ping',
+                    endpoint: "ping"
                 },
                 count: null,
                 duration: 5,
-                gracetime: 1,
+                gracetime: 1
             },
             download: {
                 websocket: {
-                    path: '/download',
+                    path: "/download",
                     streams: 20,
-                    size: 1 * 1024 * 1024,
+                    size: 1 * 1024 * 1024
                 },
                 xhr: {
-                    endpoint: 'download',
+                    endpoint: "download",
                     streams: 5,
                     size: 8 * 1024 * 1024,
-                    responseType: "blob", // 'arraybuffer' or 'blob'
+                    responseType: "blob" // 'arraybuffer' or 'blob'
                 },
                 duration: 10,
-                gracetime: 2,
+                gracetime: 2
             },
             upload: {
                 websocket: {
-                    path: '/upload',
+                    path: "/upload",
                     streams: 20,
-                    size: 1 * 1024 * 1024,
+                    size: 1 * 1024 * 1024
                 },
                 xhr: {
-                    endpoint: 'upload',
+                    endpoint: "upload",
                     streams: 3,
-                    size: 1 * 1024 * 1024,
+                    size: 1 * 1024 * 1024
                 },
                 duration: 10,
-                gracetime: 2,
-            },
+                gracetime: 2
+            }
         };
 
-        this.scope.addEventListener('message', this.processMessage.bind(this));
+        this.scope.addEventListener("message", this.processMessage.bind(this));
 
         return this;
     }
@@ -109,23 +109,23 @@ export default class SpeedTestWorker {
      */
     processMessage(event) {
         switch (event.data) {
-            case 'abort':
+            case "abort":
                 this.abort();
                 this.postStatus();
                 break;
-            case 'config':
+            case "config":
                 this.postMessage(this.test.config);
                 break;
-            case 'start':
+            case "start":
                 this.run()
                     .then(() => {
                         this.postStatus();
                     })
                     .catch(reason => {
-                        console.error('FAIL', reason);
+                        console.error("FAIL", reason);
                     });
                 break;
-            case 'status':
+            case "status":
                 this.postStatus();
                 break;
         }
@@ -143,9 +143,9 @@ export default class SpeedTestWorker {
      */
     postStatus() {
         this.postMessage({
-            'status': this.test.status,
-            'step': this.test.step,
-            'results': this.test.results
+            status: this.test.status,
+            step: this.test.step,
+            results: this.test.results
         });
     }
 
@@ -159,11 +159,14 @@ export default class SpeedTestWorker {
         let performanceEntry = null;
 
         // TODO: Fix for Firefox and IE 11 as they have partial performance object in scope
-        this.scope.performance.getEntries().reverse().forEach(entry => {
-            if (new RegExp(path.replace('?', '\\?')).test(entry.name)) {
-                performanceEntry = entry;
-            }
-        }, this);
+        this.scope.performance
+            .getEntries()
+            .reverse()
+            .forEach(entry => {
+                if (new RegExp(path.replace("?", "\\?")).test(entry.name)) {
+                    performanceEntry = entry;
+                }
+            }, this);
 
         if (this.scope.performance.getEntries().length > 120) {
             this.scope.performance.clearResourceTimings();
@@ -179,9 +182,7 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     clearRequests(requests) {
-        if (!Array.isArray(requests) ||
-            0 === requests.length
-        ) {
+        if (!Array.isArray(requests) || 0 === requests.length) {
             return;
         }
 
@@ -196,7 +197,7 @@ export default class SpeedTestWorker {
 
             try {
                 request = null;
-                delete(requests[index]);
+                delete requests[index];
             } catch (ex) {}
         }, this);
 
@@ -251,11 +252,11 @@ export default class SpeedTestWorker {
     testIP() {
         const run = () => {
             return new Promise((resolve, reject) => {
-                const endpoint = this.config.ip.endpoint +
-                    '?' + new Date().getTime();
+                const endpoint =
+                    this.config.ip.endpoint + "?" + new Date().getTime();
                 const xhr = new XMLHttpRequest();
 
-                xhr.open('GET', endpoint, true);
+                xhr.open("GET", endpoint, true);
                 xhr.onload = () => {
                     this.test.results.ip = xhr.response;
                     this.clearXMLHttpRequest(xhr);
@@ -265,7 +266,7 @@ export default class SpeedTestWorker {
                 xhr.onerror = () => {
                     reject({
                         status: this.STATUS.FAILED,
-                        error: 'test failed',
+                        error: "test failed"
                     });
                 };
                 xhr.send();
@@ -286,12 +287,12 @@ export default class SpeedTestWorker {
             .then(() => {
                 this.ip.running = false;
                 this.processMessage({
-                    data: 'status'
+                    data: "status"
                 });
                 this.clearRequests(this.test.requests);
 
                 if (this.ip.error) {
-                    throw (this.ip.error);
+                    throw this.ip.error;
                 }
             });
     }
@@ -303,9 +304,9 @@ export default class SpeedTestWorker {
      */
     testLatency() {
         const run = (delay = 0) =>
-            'websocket' === this.config.mode ?
-                this.testLatencyWebSocket(delay) :
-                this.testLatencyXHR(delay);
+            "websocket" === this.config.mode
+                ? this.testLatencyWebSocket(delay)
+                : this.testLatencyXHR(delay);
 
         this.latency = {
             initDate: Date.now(),
@@ -317,20 +318,14 @@ export default class SpeedTestWorker {
             }
         };
 
-        this.scope.setTimeout(
-            () => {
-                this.latency.status = this.STATUS.RUNNING;
-                this.latency.startDate = Date.now();
-            },
-            this.config.latency.gracetime * 1000
-        );
-        this.scope.setTimeout(
-            () => {
-                this.latency.status = this.STATUS.DONE;
-                this.latency.running = false;
-            },
-            this.config.latency.duration * 1000
-        );
+        this.scope.setTimeout(() => {
+            this.latency.status = this.STATUS.RUNNING;
+            this.latency.startDate = Date.now();
+        }, this.config.latency.gracetime * 1000);
+        this.scope.setTimeout(() => {
+            this.latency.status = this.STATUS.DONE;
+            this.latency.running = false;
+        }, this.config.latency.duration * 1000);
 
         return run()
             .then(() => this.processLatencyResults)
@@ -343,7 +338,7 @@ export default class SpeedTestWorker {
                 this.clearRequests(this.test.requests);
 
                 if (this.latency.error) {
-                    throw (this.latency.error);
+                    throw this.latency.error;
                 }
             });
     }
@@ -368,7 +363,11 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.latency.websocket.path}`;
+            const endpoint = `${this.config.websocket.protocol}://${
+                this.config.websocket.host
+            }:${this.config.websocket.port}/${
+                this.config.latency.websocket.path
+            }`;
             const socket = new WebSocket(endpoint);
             this.test.requests[index] = socket;
 
@@ -386,7 +385,8 @@ export default class SpeedTestWorker {
                 if (this.STATUS.RUNNING === this.latency.status) {
                     const data = JSON.parse(e.data);
                     const index = data.index;
-                    let networkLatency = Date.now() - this.latency.test.pingDate[index];
+                    let networkLatency =
+                        Date.now() - this.latency.test.pingDate[index];
                     networkLatency = +networkLatency.toFixed(2);
                     this.latency.data.push(networkLatency);
                 }
@@ -395,10 +395,12 @@ export default class SpeedTestWorker {
 
                 index += 1;
                 this.latency.test.pingDate[index] = Date.now();
-                socket.send(JSON.stringify({
-                    'action': 'ping',
-                    'index': index
-                }));
+                socket.send(
+                    JSON.stringify({
+                        action: "ping",
+                        index: index
+                    })
+                );
             };
 
             socket.onclose = () => {
@@ -417,22 +419,21 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: this.STATUS.FAILED,
-                    error: 'test failed',
+                    error: "test failed"
                 });
             };
 
             socket.onopen = () => {
-                this.scope.setTimeout(
-                    () => {
-                        index += 1;
-                        this.latency.test.pingDate[index] = +new Date();
-                        socket.send(JSON.stringify({
-                            'action': 'ping',
-                            'index': index
-                        }));
-                    },
-                    delay
-                );
+                this.scope.setTimeout(() => {
+                    index += 1;
+                    this.latency.test.pingDate[index] = +new Date();
+                    socket.send(
+                        JSON.stringify({
+                            action: "ping",
+                            index: index
+                        })
+                    );
+                }, delay);
             };
         });
     }
@@ -457,12 +458,12 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = this.config.latency.xhr.endpoint +
-                '?' + new Date().getTime();
+            const endpoint =
+                this.config.latency.xhr.endpoint + "?" + new Date().getTime();
             const xhr = new XMLHttpRequest();
             this.test.requests[index] = xhr;
 
-            xhr.open('GET', endpoint, true);
+            xhr.open("GET", endpoint, true);
             xhr.onload = () => {
                 const pongDate = Date.now();
 
@@ -476,9 +477,11 @@ export default class SpeedTestWorker {
 
                 if (this.STATUS.RUNNING === this.latency.status) {
                     const performanceEntry = this.getPerformanceEntry(endpoint);
-                    let networkLatency = null !== performanceEntry ?
-                        performanceEntry.responseStart - performanceEntry.requestStart :
-                        pongDate - pingDate;
+                    let networkLatency =
+                        null !== performanceEntry
+                            ? performanceEntry.responseStart -
+                              performanceEntry.requestStart
+                            : pongDate - pingDate;
 
                     networkLatency = +networkLatency.toFixed(2);
                     this.latency.data.push(networkLatency);
@@ -506,18 +509,15 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: this.STATUS.FAILED,
-                    error: 'test failed',
+                    error: "test failed"
                 });
             };
 
             let pingDate;
-            this.scope.setTimeout(
-                () => {
-                    xhr.send();
-                    pingDate = Date.now();
-                },
-                delay
-            );
+            this.scope.setTimeout(() => {
+                xhr.send();
+                pingDate = Date.now();
+            }, delay);
         });
     }
 
@@ -535,8 +535,7 @@ export default class SpeedTestWorker {
             min: +Math.min.apply(null, latencies).toFixed(2),
             max: +Math.max.apply(null, latencies).toFixed(2),
             avg: +(
-                latencies.reduce((a, b) => a + b, 0) /
-                latencies.length
+                latencies.reduce((a, b) => a + b, 0) / latencies.length
             ).toFixed(2),
             jitter: 0,
             progress: progress
@@ -554,9 +553,12 @@ export default class SpeedTestWorker {
             // RFC 1889 (https://www.ietf.org/rfc/rfc1889.txt):
             // J=J+(|D(i-1,i)|-J)/16
             const deltaPing = Math.abs(latencies[index - 1] - latencies[index]);
-            this.test.results.latency.jitter += (deltaPing - this.test.results.latency.jitter) / 16.0;
+            this.test.results.latency.jitter +=
+                (deltaPing - this.test.results.latency.jitter) / 16.0;
         }, this);
-        this.test.results.latency.jitter = +this.test.results.latency.jitter.toFixed(2);
+        this.test.results.latency.jitter = +this.test.results.latency.jitter.toFixed(
+            2
+        );
     }
 
     /**
@@ -566,9 +568,9 @@ export default class SpeedTestWorker {
      */
     testDownloadSpeed() {
         const run = (size, delay = 0) =>
-            'websocket' === this.config.mode ?
-                this.testDownloadSpeedWebSocket(size, delay) :
-                this.testDownloadSpeedXHR(size, delay);
+            "websocket" === this.config.mode
+                ? this.testDownloadSpeedWebSocket(size, delay)
+                : this.testDownloadSpeedXHR(size, delay);
 
         this.download = {
             initDate: Date.now(),
@@ -583,7 +585,11 @@ export default class SpeedTestWorker {
         };
 
         this.download.test.promises = [];
-        for (let index = 0; index < this.config.download[this.config.mode].streams; index++) {
+        for (
+            let index = 0;
+            index < this.config.download[this.config.mode].streams;
+            index++
+        ) {
             const testPromise = run(
                 this.config.download[this.config.mode].size,
                 index * 100
@@ -591,20 +597,14 @@ export default class SpeedTestWorker {
             this.download.test.promises.push(testPromise);
         }
 
-        this.scope.setTimeout(
-            () => {
-                this.download.status = this.STATUS.RUNNING;
-                this.download.startDate = Date.now();
-            },
-            this.config.download.gracetime * 1000
-        );
-        this.scope.setTimeout(
-            () => {
-                this.download.status = this.STATUS.DONE;
-                this.download.running = false;
-            },
-            this.config.download.duration * 1000
-        );
+        this.scope.setTimeout(() => {
+            this.download.status = this.STATUS.RUNNING;
+            this.download.startDate = Date.now();
+        }, this.config.download.gracetime * 1000);
+        this.scope.setTimeout(() => {
+            this.download.status = this.STATUS.DONE;
+            this.download.running = false;
+        }, this.config.download.duration * 1000);
 
         return Promise.all(this.download.test.promises)
             .then(() => this.processDownloadSpeedResults)
@@ -617,7 +617,7 @@ export default class SpeedTestWorker {
                 this.clearRequests(this.test.requests);
 
                 if (this.download.error) {
-                    throw (this.download.error);
+                    throw this.download.error;
                 }
             });
     }
@@ -643,7 +643,11 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.download.websocket.path}`;
+            const endpoint = `${this.config.websocket.protocol}://${
+                this.config.websocket.host
+            }:${this.config.websocket.port}/${
+                this.config.download.websocket.path
+            }`;
             const socket = new WebSocket(endpoint);
             // socket.binaryType = 'arraybuffer';
             this.test.requests[index] = socket;
@@ -663,9 +667,11 @@ export default class SpeedTestWorker {
                 }
                 this.processDownloadSpeedResults();
 
-                socket.send(JSON.stringify({
-                    'action': 'download'
-                }));
+                socket.send(
+                    JSON.stringify({
+                        action: "download"
+                    })
+                );
             };
 
             socket.onclose = () => {
@@ -684,24 +690,25 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: this.STATUS.FAILED,
-                    error: 'test failed',
+                    error: "test failed"
                 });
             };
 
             socket.onopen = () => {
-                this.scope.setTimeout(
-                    () => {
-                        socket.send(JSON.stringify({
-                            'action': 'prepare',
-                            'size': this.config.download.websocket.size
-                        }));
+                this.scope.setTimeout(() => {
+                    socket.send(
+                        JSON.stringify({
+                            action: "prepare",
+                            size: this.config.download.websocket.size
+                        })
+                    );
 
-                        socket.send(JSON.stringify({
-                            'action': 'download'
-                        }));
-                    },
-                    delay
-                );
+                    socket.send(
+                        JSON.stringify({
+                            action: "download"
+                        })
+                    );
+                }, delay);
             };
         });
     }
@@ -727,9 +734,12 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = this.config.download.xhr.endpoint +
-                '?' + new Date().getTime() +
-                '&size=' + size;
+            const endpoint =
+                this.config.download.xhr.endpoint +
+                "?" +
+                new Date().getTime() +
+                "&size=" +
+                size;
 
             const xhr = new XMLHttpRequest();
             this.test.requests[index] = xhr;
@@ -738,7 +748,7 @@ export default class SpeedTestWorker {
             });
 
             let sizeLoaded = 0;
-            xhr.open('GET', endpoint, true);
+            xhr.open("GET", endpoint, true);
             xhr.onprogress = e => {
                 if (this.STATUS.ABORTED === this.test.status) {
                     this.clearXMLHttpRequest(xhr);
@@ -775,14 +785,11 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: this.STATUS.FAILED,
-                    error: 'test failed',
+                    error: "test failed"
                 });
             };
 
-            this.scope.setTimeout(
-                () => xhr.send(null),
-                delay
-            );
+            this.scope.setTimeout(() => xhr.send(null), delay);
         });
     }
 
@@ -794,13 +801,14 @@ export default class SpeedTestWorker {
         const durationFromStart = (Date.now() - this.download.startDate) / 1000;
         const progress = durationFromInit / this.config.download.duration;
 
-        const {
-            bitBandwidth: bandwidth
-        } = this.computeBandwidth(this.download.size, durationFromStart);
+        const { bitBandwidth: bandwidth } = this.computeBandwidth(
+            this.download.size,
+            durationFromStart
+        );
 
         this.test.results.download = {
             speed: +bandwidth.toFixed(2),
-            progress: progress,
+            progress: progress
         };
     }
 
@@ -819,10 +827,7 @@ export default class SpeedTestWorker {
         const dataSize = this.config.upload[this.config.mode].size;
         let data = new Float32Array(new ArrayBuffer(dataSize));
         for (let i = 0; i < data.byteLength / buffer.byteLength; i++) {
-            data.set(
-                buffer,
-                i * buffer.length
-            );
+            data.set(buffer, i * buffer.length);
         }
 
         return data;
@@ -834,12 +839,9 @@ export default class SpeedTestWorker {
      * @returns {Blob}
      */
     getRandomBlob() {
-        return new Blob(
-            [this.getRandomData()],
-            {
-                type: 'application/octet-stream'
-            }
-        );
+        return new Blob([this.getRandomData()], {
+            type: "application/octet-stream"
+        });
     }
 
     /**
@@ -849,9 +851,9 @@ export default class SpeedTestWorker {
      */
     testUploadSpeed() {
         const run = (size, delay = 0) =>
-            'websocket' === this.config.mode ?
-                this.testUploadSpeedWebSocket(size, delay) :
-                this.testUploadSpeedXHR(size, delay);
+            "websocket" === this.config.mode
+                ? this.testUploadSpeedWebSocket(size, delay)
+                : this.testUploadSpeedXHR(size, delay);
 
         this.upload = {
             initDate: Date.now(),
@@ -868,7 +870,11 @@ export default class SpeedTestWorker {
         };
 
         this.upload.test.promises = [];
-        for (let index = 0; index < this.config.upload[this.config.mode].streams; index++) {
+        for (
+            let index = 0;
+            index < this.config.upload[this.config.mode].streams;
+            index++
+        ) {
             const testPromise = run(
                 this.config.upload[this.config.mode].size,
                 index * 100
@@ -876,20 +882,14 @@ export default class SpeedTestWorker {
             this.upload.test.promises.push(testPromise);
         }
 
-        this.scope.setTimeout(
-            () => {
-                this.upload.status = this.STATUS.RUNNING;
-                this.upload.startDate = Date.now();
-            },
-            this.config.upload.gracetime * 1000
-        );
-        this.scope.setTimeout(
-            () => {
-                this.upload.status = this.STATUS.DONE;
-                this.upload.running = false;
-            },
-            this.config.upload.duration * 1000
-        );
+        this.scope.setTimeout(() => {
+            this.upload.status = this.STATUS.RUNNING;
+            this.upload.startDate = Date.now();
+        }, this.config.upload.gracetime * 1000);
+        this.scope.setTimeout(() => {
+            this.upload.status = this.STATUS.DONE;
+            this.upload.running = false;
+        }, this.config.upload.duration * 1000);
 
         return Promise.all(this.upload.test.promises)
             .then(() => this.processUploadSpeedResults)
@@ -902,7 +902,7 @@ export default class SpeedTestWorker {
                 this.clearRequests(this.test.requests);
 
                 if (this.upload.error) {
-                    throw (this.upload.error);
+                    throw this.upload.error;
                 }
             });
     }
@@ -928,9 +928,13 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${this.config.websocket.host}:${this.config.websocket.port}/${this.config.upload.websocket.path}`;
+            const endpoint = `${this.config.websocket.protocol}://${
+                this.config.websocket.host
+            }:${this.config.websocket.port}/${
+                this.config.upload.websocket.path
+            }`;
             const socket = new WebSocket(endpoint);
-            socket.binaryType = 'arraybuffer';
+            socket.binaryType = "arraybuffer";
 
             this.test.requests[index] = socket;
             socket.onmessage = e => {
@@ -968,17 +972,14 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: this.STATUS.FAILED,
-                    error: 'test failed',
+                    error: "test failed"
                 });
             };
 
             socket.onopen = () => {
-                this.scope.setTimeout(
-                    () => {
-                        socket.send(this.upload.test.blob);
-                    },
-                    delay
-                );
+                this.scope.setTimeout(() => {
+                    socket.send(this.upload.test.blob);
+                }, delay);
             };
         });
     }
@@ -1004,16 +1005,16 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = this.config.upload.xhr.endpoint +
-                '?' + new Date().getTime();
+            const endpoint =
+                this.config.upload.xhr.endpoint + "?" + new Date().getTime();
 
             const xhr = new XMLHttpRequest();
 
             this.test.requests[index] = xhr;
 
             let sizeLoaded = 0;
-            xhr.open('POST', endpoint, true);
-            xhr.setRequestHeader('Content-Encoding', 'identity');
+            xhr.open("POST", endpoint, true);
+            xhr.setRequestHeader("Content-Encoding", "identity");
             xhr.upload.onprogress = e => {
                 if (this.STATUS.ABORTED === this.test.status) {
                     this.clearXMLHttpRequest(xhr);
@@ -1055,16 +1056,13 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: this.STATUS.FAILED,
-                    error: 'test failed',
+                    error: "test failed"
                 });
             };
 
-            this.scope.setTimeout(
-                () => {
-                    xhr.send(this.upload.test.blob);
-                },
-                delay
-            );
+            this.scope.setTimeout(() => {
+                xhr.send(this.upload.test.blob);
+            }, delay);
         });
     }
 
@@ -1076,13 +1074,14 @@ export default class SpeedTestWorker {
         const durationFromStart = (Date.now() - this.upload.startDate) / 1000;
         const progress = durationFromInit / this.config.upload.duration;
 
-        const {
-            bitBandwidth: bandwidth
-        } = this.computeBandwidth(this.upload.size, durationFromStart);
+        const { bitBandwidth: bandwidth } = this.computeBandwidth(
+            this.upload.size,
+            durationFromStart
+        );
 
         this.test.results.upload = {
             speed: +bandwidth.toFixed(2),
-            progress: progress,
+            progress: progress
         };
     }
 
@@ -1095,13 +1094,12 @@ export default class SpeedTestWorker {
      */
     computeBandwidth(size, duration) {
         const byteBandwidth =
-            (size / duration) *
-            this.config.overheadCompensation;
+            (size / duration) * this.config.overheadCompensation;
         const bitBandwidth = 8 * byteBandwidth;
 
         return {
             byteBandwidth: byteBandwidth,
-            bitBandwidth: bitBandwidth,
+            bitBandwidth: bitBandwidth
         };
     }
 
@@ -1115,7 +1113,7 @@ export default class SpeedTestWorker {
             return new Promise((resolve, reject) => {
                 reject({
                     status: this.test.status,
-                    error: 'Stop the current test before starting another one.',
+                    error: "Stop the current test before starting another one."
                 });
             });
         }
@@ -1136,8 +1134,8 @@ export default class SpeedTestWorker {
             results: {
                 latency: null,
                 download: null,
-                upload: null,
-            },
+                upload: null
+            }
         };
 
         this.test.status = this.STATUS.RUNNING;
@@ -1169,10 +1167,10 @@ export default class SpeedTestWorker {
                 this.clearRequests(this.test.requests);
 
                 if (this.STATUS.DONE !== this.test.status) {
-                    throw ({
+                    throw {
                         status: this.test.status,
-                        error: this.test.error,
-                    });
+                        error: this.test.error
+                    };
                 }
             });
     }
