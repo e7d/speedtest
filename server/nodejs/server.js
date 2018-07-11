@@ -39,7 +39,8 @@ const server = http.createServer((request, response) => {
         switch (uri) {
             case '/ip':
                 response.writeHead(200);
-                const ip = /\:\:ffff\:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/.test(request.connection.remoteAddress)
+                const ipRegex = /\:\:ffff\:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
+                const ip =  ipRegex.test(request.headers['x-forwarded-for'] || request.connection.remoteAddress)
                     ? request.connection.remoteAddress.replace('::ffff:', '')
                     : request.connection.remoteAddress;
                 ipInfo(`${ip}/org`, (err, org) => {
