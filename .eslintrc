@@ -3,8 +3,7 @@
         "browser": true,
         "node": true,
         "es6": true,
-        "jest": true,
-        "jquery": true
+        "jest": true
     },
     "parser": "babel-eslint",
     "parserOptions": {
@@ -36,9 +35,6 @@
             "experimentalObjectRestSpread": true
         }
     },
-    "plugins": [
-        "react"
-    ],
     "rules": {
         "strict": 0
     }

@@ -10,6 +10,15 @@ export default class WebUI {
      * Create an instance of WebUI.
      */
     constructor() {
+        this.STATUS = {
+            WAITING: 0,
+            STARTING: 1,
+            RUNNING: 2,
+            DONE: 3,
+            ABORTED: 4,
+            FAILED: -1
+        };
+
         this.statusInterval = null;
 
         this.config = {
@@ -17,7 +26,7 @@ export default class WebUI {
             endless: false // false
         };
 
-        this.worker = new Worker('worker.js');
+        this.worker = new Worker("worker.js");
         this.worker.onmessage = event => {
             this.processResponse(event);
         };
@@ -40,10 +49,14 @@ export default class WebUI {
      * Start a speed test.
      */
     startTest() {
+        if (this.running) {
+            return;
+        }
+
         this.running = true;
 
-        this.$startButton.hidden = true;
-        this.$stopButton.hidden = false;
+        this.$startButton.setAttribute("hidden", "");
+        this.$stopButton.removeAttribute("hidden");
 
         this.resetMeters();
         this.resetResults();
@@ -62,14 +75,17 @@ export default class WebUI {
      * Abort a running speed test.
      */
     stopTest() {
+        if (!this.running) {
+            return;
+        }
+
         this.running = false;
 
         window.clearInterval(this.statusInterval);
         this.statusInterval = null;
 
         if (this.worker) {
-            this.worker.scope.postMessage("abort");
-            // this.worker.processMessage({data: 'abort'});
+            this.worker.postMessage("abort");
         }
 
         this.resetMeters();
@@ -82,12 +98,11 @@ export default class WebUI {
      */
     processResponse(event) {
         switch (event.data.status) {
-            case "running":
+            case this.STATUS.RUNNING:
                 this.processData(event.data || {});
                 break;
-            case "done":
+            case this.STATUS.DONE:
                 window.clearInterval(this.statusInterval);
-                this.statusInterval = null;
 
                 this.processData(event.data || {});
                 if (this.config.endless) {
@@ -97,16 +112,17 @@ export default class WebUI {
 
                 this.resetMeters();
 
-                this.$startButton.hidden = false;
-                this.$stopButton.hidden = true;
+                this.$startButton.removeAttribute("hidden");
+                this.$stopButton.setAttribute("hidden", "");
+
+                this.running = false;
                 break;
-            case "aborted":
+            case this.STATUS.ABORTED:
                 window.clearInterval(this.statusInterval);
-                this.statusInterval = null;
 
                 this.processData(event.data || {});
-                this.$startButton.hidden = false;
-                this.$stopButton.hidden = true;
+                this.$startButton.removeAttribute("hidden");
+                this.$stopButton.setAttribute("hidden", "");
                 break;
         }
     }
@@ -144,8 +160,8 @@ export default class WebUI {
                 this.$ipValue.innerHTML = data.results.ip;
                 break;
             case "latency":
-                this.$latencyValue.innerHTML = data.results.latency.avg;
-                this.$jitterValue.innerHTML = data.results.latency.jitter;
+                this.$latencyValue.innerHTML = data.results.latency.avg || "";
+                this.$jitterValue.innerHTML = data.results.latency.jitter || "";
                 this.setProgressBar(data.results.latency.progress);
                 break;
             case "download":

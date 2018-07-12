@@ -5,12 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}/web/dist",
+            "sourceMaps": true,
+            // "sourceMapPathOverrides": {
+            //     "top/webpack:///./src/*": "${workspaceFolder}/web/src/*",
+            //     "worker.js/webpack:///./src/*": "${workspaceFolder}/web/src/*",
+            // }
+        },
+        {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Server",
             "program": "${workspaceFolder}/server/nodejs/server.js",
             "args": [
-                "8123",
+                "8080",
                 "web/dist"
             ]
         }
