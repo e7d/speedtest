@@ -4,6 +4,7 @@ const fs = require('fs');
 const http = require('http');
 const ipInfo = require('ipinfo');
 const path = require('path');
+const requestIp = require('request-ip');
 const url = require('url');
 const WebSocketServer = require('websocket').server;
 const port = process.argv[2] || 80;
@@ -38,12 +39,12 @@ const server = http.createServer((request, response) => {
     try {
         switch (uri) {
             case '/ip':
-                response.writeHead(200);
                 const ipRegex = /\:\:ffff\:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
-                const ip =  ipRegex.test(request.headers['x-forwarded-for'] || request.connection.remoteAddress)
+                const ip = ipRegex.test(requestIp.getClientIp(request))
                     ? request.connection.remoteAddress.replace('::ffff:', '')
                     : request.connection.remoteAddress;
                 ipInfo(`${ip}/org`, (err, org) => {
+                    response.writeHead(200);
                     response.write(org ? `${ip} (${org})` : ip);
                     response.end();
                 });
