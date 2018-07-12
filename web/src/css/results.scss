@@ -1,3 +1,5 @@
+@import "./vars";
+
 #results {
     display: grid;
     grid-template-areas: "i i i i"
@@ -40,19 +42,19 @@
 
     label {
         display: block;
-        font-size: 20px;
+        font-size: 1.5rem;
         margin-bottom: 0.5rem;
     }
 
     .value {
         display: block;
-        font-size: 36px;
+        font-size: 2rem;
         font-weight: lighter;
         color: $primaryColor;
 
         &::after {
             display: block;
-            font-size: 16px;
+            font-size: 1rem;
             color: $black;
             margin-top: -0.5rem;
         }
@@ -70,7 +72,7 @@
         }
 
         &.bandwidth::after {
-            content: " Mb/s";
+            content: " Mbps";
         }
     }
 }

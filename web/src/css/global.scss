@@ -1,5 +1,13 @@
+@import "./vars";
+
 body {
     margin: 0;
+    font-family: $fontFamilySansSerif;
+    font-Size: $fontSize;
+}
+
+[hidden] {
+    display: none;
 }
 
 #speedtest {
@@ -14,7 +22,7 @@ body {
 
     h1 {
         grid-area: h;
-        font-size: 2em;
+        font-size: 2rem;
     }
 
     #commands {
