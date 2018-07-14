@@ -266,6 +266,8 @@ export default class SpeedTestWorker {
                     resolve();
                 };
                 xhr.onerror = () => {
+                    this.clearXMLHttpRequest(xhr);
+
                     reject({
                         status: this.STATUS.FAILED,
                         error: "test failed"
@@ -797,11 +799,15 @@ export default class SpeedTestWorker {
                 this.processDownloadSpeedResults();
             };
             xhr.onload = () => {
+                this.clearXMLHttpRequest(xhr);
+
                 this.testDownloadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
             };
             xhr.onerror = () => {
+                this.clearXMLHttpRequest(xhr);
+
                 if (this.config.ignoreErrors) {
                     this.testDownloadSpeedXHR(size)
                         .then(resolve)
@@ -1080,17 +1086,16 @@ export default class SpeedTestWorker {
             };
 
             xhr.upload.onload = () => {
-                // this.scope.setTimeout(
-                //     () => {
-                //         this.clearXMLHttpRequest(xhr);
-                //     }
-                // );
+                this.clearXMLHttpRequest(xhr);
+
                 this.testUploadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
             };
 
             xhr.upload.onerror = () => {
+                this.clearXMLHttpRequest(xhr);
+
                 if (this.config.ignoreErrors) {
                     this.testUploadSpeedXHR(size)
                         .then(resolve)
