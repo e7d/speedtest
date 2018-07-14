@@ -9,4 +9,4 @@ rm -rf $PWD/web/node_modules
 
 # Build latest version of Web UI
 docker run --rm --user $(id -u):$(id -g) -v $PWD/web:/app -w /app node:10-alpine npm run dist
-docker build -t e7d/speedtest:node -f node.Dockerfile .
+docker build -t e7db/speedtest:node -f node.Dockerfile .

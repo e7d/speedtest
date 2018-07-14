@@ -10,6 +10,10 @@ const WebSocketServer = require('websocket').server;
 const port = process.argv[2] || 80;
 const basePath = process.argv[3] || 'web';
 
+process.on('SIGINT', function() {
+    process.exit();
+});
+
 // prepare a random data buffer of 128KB
 const buffer = Buffer.alloc(128 * 1024);
 for (let bufferIndex = 0; bufferIndex < buffer.byteLength; bufferIndex++) {

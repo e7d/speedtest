@@ -35,6 +35,6 @@ function getMimeType($file) {
         'html'=> 'text/html',
         'js' => 'application/javascript',
         'json' => 'application/json',
-        'css' => 'test/css'
+        'css' => 'text/css'
     ][pathinfo($file, PATHINFO_EXTENSION)] ?? 'application/octet-stream';
 }
