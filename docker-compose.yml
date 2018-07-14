@@ -1,21 +1,9 @@
-nodejs-server:
+node-server:
     image: node:10-alpine
     working_dir: /app
     command: sh -c "npm install && node server.js 8080"
     volumes:
-        - ./server/nodejs:/app
+        - ./server/node:/app
         - ./web/dist:/app/web
     ports:
         - 8080:8080
-
-# php-server:
-#     image: php:7-alpine
-#     user: ${DOCKER_USER}
-#     working_dir: /app
-#     command: php -S 0.0.0.0:8080
-#     volumes:
-#         - ./server/php:/app
-#         - ./web/dist:/app/web
-#     ports:
-#         - 8080:8080
-
