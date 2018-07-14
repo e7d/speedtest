@@ -3,7 +3,6 @@
 // remove max execution time
 set_time_limit(0);
 
-
 // Read input
 $chunkSize = 1 * 1024 * 1024;
 $size = intval($_GET['size'] ?? 0);
@@ -22,7 +21,7 @@ header('Content-Type: application/octet-stream');
 header('Content-Disposition: attachment; filename=random.dat');
 header('Content-Transfer-Encoding: binary');
 if ($size > 0) {
-    header('Content-Length: ' . $size * $chunkSize);
+    header('Content-Length: ' . $size);
 }
 
 // Disable cache

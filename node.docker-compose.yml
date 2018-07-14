@@ -1,4 +1,4 @@
-node-server:
+node:
     image: node:10-alpine
     working_dir: /app
     command: sh -c "npm install && node server.js 8080"

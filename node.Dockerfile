@@ -10,5 +10,5 @@ COPY web/dist ./web
 RUN npm install \
     && npm cache clean --force
 
-EXPOSE 80 443
+EXPOSE 80
 CMD [ "node", "server.js" ]
