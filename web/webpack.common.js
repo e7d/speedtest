@@ -5,8 +5,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     entry: {
-        app: "./build/app",
-        worker: "./build/worker"
+        app: "./build/app"
     },
     watchOptions: {
         ignored: /node_modules/,
@@ -20,7 +19,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.app\.js$/,
+                test: /\..*\.js$/,
                 exclude: /(node_modules)/,
                 use: {
                     loader: "babel-loader",

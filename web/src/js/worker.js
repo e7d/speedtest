@@ -1,5 +1,7 @@
 //@ts-check
 
+import Config from "./worker/config";
+
 /**
  * Speed Test worker
  *
@@ -27,11 +29,8 @@ export default class SpeedTestWorker {
             DOWNLOAD: "download",
             UPLOAD: "upload"
         };
-        this.OVERHEAD = {
-            "TCP+IPv4+ETH": 1500 / (1500 - 20 - 20 - 14),
-            "TCP+IPv6+ETH": 1500 / (1500 - 40 - 20 - 14)
-        };
 
+        this.config = Config.defaultConfig;
         this.test = {
             running: false,
             status: this.STATUS.WAITING,
@@ -39,65 +38,6 @@ export default class SpeedTestWorker {
             error: false,
             data: {},
             requests: []
-        };
-
-        this.config = {
-            ignoreErrors: true,
-            optimize: false,
-            mode: "xhr", // 'websocket' or 'xhr'
-            websocket: {
-                protocol: null, // 'ws' or 'wss'
-                host: null // "localhost:8080"
-            },
-            overheadCompensation: this.OVERHEAD["TCP+IPv4+ETH"],
-            ip: {
-                endpoint: "ip"
-            },
-            latency: {
-                websocket: {
-                    path: "/ping"
-                },
-                xhr: {
-                    endpoint: "ping"
-                },
-                count: null,
-                delay: 0,
-                duration: 5,
-                gracetime: 1
-            },
-            download: {
-                websocket: {
-                    path: "/download",
-                    streams: 20,
-                    size: 1 * 1024 * 1024
-                },
-                xhr: {
-                    endpoint: "download",
-                    streams: 10,
-                    delay: 300,
-                    size: 20 * 1024 * 1024,
-                    responseType: "arraybuffer" // 'arraybuffer' or 'blob'
-                },
-                delay: 2,
-                duration: 10,
-                gracetime: 2
-            },
-            upload: {
-                websocket: {
-                    path: "/upload",
-                    streams: 20,
-                    size: 1 * 1024 * 1024
-                },
-                xhr: {
-                    endpoint: "upload",
-                    streams: 3,
-                    delay: 300,
-                    size: 20 * 1024 * 1024
-                },
-                delay: 2,
-                duration: 10,
-                gracetime: 2
-            }
         };
 
         this.scope.addEventListener("message", this.processMessage.bind(this));
@@ -1269,3 +1209,5 @@ export default class SpeedTestWorker {
         return uuid;
     }
 }
+
+new SpeedTestWorker(self);

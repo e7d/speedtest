@@ -1,5 +1,7 @@
 //@ts-check
 
+import SpeedTestWorker from "worker-loader!./worker";
+
 /**
  * Speed Test web UI
  *
@@ -22,11 +24,11 @@ export default class WebUI {
         this.statusInterval = null;
 
         this.config = {
-            updateDelay: 200, // 100
+            updateDelay: 150,
             endless: false // false
         };
 
-        this.worker = new Worker("worker.js");
+        this.worker = new SpeedTestWorker();
         this.worker.onmessage = event => {
             this.processResponse(event);
         };
@@ -197,3 +199,5 @@ export default class WebUI {
         this.$progressBar.style.width = progress * 100 + "%";
     }
 }
+
+new WebUI();
