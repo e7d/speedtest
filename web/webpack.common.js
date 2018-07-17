@@ -14,7 +14,7 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "[name].js"
+        filename: "[name].[chunkhash].js"
     },
     module: {
         rules: [
@@ -54,6 +54,6 @@ module.exports = {
                 collapseWhitespace: true
             }
         }),
-        new CopyWebpackPlugin([{ from: "assets/*" }])
+        new CopyWebpackPlugin([{ from: "src/assets/", to: "." }])
     ]
 };
