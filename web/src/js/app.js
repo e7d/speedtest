@@ -199,5 +199,3 @@ export default class WebUI {
         this.$progressBar.style.width = progress * 100 + "%";
     }
 }
-
-new WebUI();
