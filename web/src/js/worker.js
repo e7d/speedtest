@@ -1,6 +1,9 @@
 //@ts-check
 
+import Bandwidth from "./utils/bandwidth";
 import Config from "./worker/config";
+import Performance from "./utils/performance";
+import Uuid from "./utils/uuid";
 
 /**
  * Speed Test worker
@@ -93,32 +96,6 @@ export default class SpeedTestWorker {
     }
 
     /**
-     * Read browser most recent PerformanceEntry matching a given path
-     *
-     * @param {any} path
-     * @returns {PerformanceNavigationTiming}
-     */
-    getPerformanceEntry(path) {
-        let performanceEntry = null;
-
-        // TODO: Fix for Firefox and IE 11 as they have partial performance object in scope
-        this.scope.performance
-            .getEntries()
-            .reverse()
-            .forEach(entry => {
-                if (new RegExp(path.replace("?", "\\?")).test(entry.name)) {
-                    performanceEntry = entry;
-                }
-            }, this);
-
-        if (this.scope.performance.getEntries().length > 120) {
-            this.scope.performance.clearResourceTimings();
-        }
-
-        return performanceEntry;
-    }
-
-    /**
      * Clear a collection of WebSocket/XHR
      *
      * @param {any} requests
@@ -195,7 +172,7 @@ export default class SpeedTestWorker {
     testIP() {
         const run = () => {
             return new Promise((resolve, reject) => {
-                const endpoint = this.config.ip.endpoint + "?" + this.uuid();
+                const endpoint = this.config.ip.endpoint + "?" + Uuid.v4();
                 const xhr = new XMLHttpRequest();
 
                 xhr.open("GET", endpoint, true);
@@ -408,8 +385,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint =
-                this.config.latency.xhr.endpoint + "?" + this.uuid();
+            const endpoint = this.config.latency.xhr.endpoint + "?" + Uuid.v4();
             const xhr = new XMLHttpRequest();
             this.test.requests[index] = xhr;
 
@@ -426,7 +402,10 @@ export default class SpeedTestWorker {
                 }
 
                 if (this.STATUS.RUNNING === this.latency.status) {
-                    const performanceEntry = this.getPerformanceEntry(endpoint);
+                    const performanceEntry = Performance.getEntry(
+                        this.scope,
+                        endpoint
+                    );
                     let networkLatency =
                         null !== performanceEntry
                             ? performanceEntry.responseStart -
@@ -706,7 +685,7 @@ export default class SpeedTestWorker {
             const endpoint =
                 this.config.download.xhr.endpoint +
                 "?" +
-                this.uuid() +
+                Uuid.v4() +
                 "&size=" +
                 size;
 
@@ -787,7 +766,7 @@ export default class SpeedTestWorker {
             return;
         }
 
-        const { bitBandwidth: bandwidth } = this.computeBandwidth(
+        const { bitBandwidth: bandwidth } = Bandwidth.compute(
             this.download.size,
             durationFromStart
         );
@@ -995,8 +974,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint =
-                this.config.upload.xhr.endpoint + "?" + this.uuid();
+            const endpoint = this.config.upload.xhr.endpoint + "?" + Uuid.v4();
 
             const xhr = new XMLHttpRequest();
 
@@ -1077,31 +1055,13 @@ export default class SpeedTestWorker {
             return;
         }
 
-        const { bitBandwidth: bandwidth } = this.computeBandwidth(
+        const { bitBandwidth: bandwidth } = Bandwidth.compute(
             this.upload.size,
             durationFromStart
         );
         this.test.results.upload = {
             speed: +bandwidth.toFixed(2),
             progress: progress
-        };
-    }
-
-    /**
-     * Compute the bandwidth used from data use over time
-     *
-     * @param {number} size
-     * @param {number} duration
-     * @returns {Object}
-     */
-    computeBandwidth(size, duration) {
-        const byteBandwidth =
-            (size / duration) * this.config.overheadCompensation;
-        const bitBandwidth = 8 * byteBandwidth;
-
-        return {
-            byteBandwidth: byteBandwidth,
-            bitBandwidth: bitBandwidth
         };
     }
 
@@ -1184,29 +1144,6 @@ export default class SpeedTestWorker {
         this.test.running = false;
 
         this.clearRequests(this.test.requests);
-    }
-
-    /**
-     * Generate a RFC4122 compliant UUID
-     * @see http://www.ietf.org/rfc/rfc4122.txt
-     *
-     * @returns {String}
-     */
-    uuid() {
-        let uuid = "",
-            i,
-            random;
-        for (i = 0; i < 32; i++) {
-            random = (Math.random() * 16) | 0;
-            if (i == 8 || i == 12 || i == 16 || i == 20) uuid += "-";
-            uuid += (i == 12
-                ? 4
-                : i == 16
-                    ? (random & 3) | 8
-                    : random
-            ).toString(16);
-        }
-        return uuid;
     }
 }
 
