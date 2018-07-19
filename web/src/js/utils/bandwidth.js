@@ -6,9 +6,9 @@ export default class Bandwidth {
      * @param {number} duration
      * @returns {Object}
      */
-    static compute(size, duration) {
+    static compute(size, duration, overheadCompensation) {
         const byteBandwidth =
-            (size / duration) * this.config.overheadCompensation;
+            (size / duration) * overheadCompensation;
         const bitBandwidth = 8 * byteBandwidth;
 
         return {

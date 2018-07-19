@@ -699,7 +699,8 @@ export default class SpeedTestWorker {
 
         const { bitBandwidth: bandwidth } = Bandwidth.compute(
             this.download.size,
-            durationFromStart
+            durationFromStart,
+            this.config.overheadCompensation
         );
         Object.assign(this.results.download, {
             speed: +bandwidth.toFixed(2)
@@ -988,7 +989,8 @@ export default class SpeedTestWorker {
 
         const { bitBandwidth: bandwidth } = Bandwidth.compute(
             this.upload.size,
-            durationFromStart
+            durationFromStart,
+            this.config.overheadCompensation
         );
         this.results.upload = {
             speed: +bandwidth.toFixed(2),
