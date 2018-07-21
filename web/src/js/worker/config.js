@@ -12,7 +12,7 @@ class Config {
         return {
             ignoreErrors: true,
             optimize: false,
-            mode: "websocket", // "websocket" or "xhr"
+            mode: "xhr", // "websocket" or "xhr"
             websocket: {
                 protocol: null, // null, "ws" or "wss"
                 host: null // null or value (ie: "example.com:8080")
