@@ -23,14 +23,14 @@ class Config {
             },
             overheadCompensation: Config.OVERHEAD["TCP+IPv4+ETH"],
             ip: {
-                endpoint: "ip"
+                path: "ip"
             },
             latency: {
                 websocket: {
-                    path: "/ping"
+                    path: "ping"
                 },
                 xhr: {
-                    endpoint: "ping"
+                    path: "ping"
                 },
                 count: null,
                 delay: 0,
@@ -39,12 +39,12 @@ class Config {
             },
             download: {
                 websocket: {
-                    path: "/download",
+                    path: "download",
                     streams: 20,
                     size: 1 * 1024 * 1024
                 },
                 xhr: {
-                    endpoint: "download",
+                    path: "download",
                     streams: 3,
                     delay: 300,
                     size: 20 * 1024 * 1024,
@@ -56,12 +56,12 @@ class Config {
             },
             upload: {
                 websocket: {
-                    path: "/upload",
+                    path: "upload",
                     streams: 20,
                     size: 1 * 1024 * 1024
                 },
                 xhr: {
-                    endpoint: "upload",
+                    path: "upload",
                     streams: 3,
                     delay: 300,
                     size: 20 * 1024 * 1024
