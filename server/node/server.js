@@ -168,9 +168,7 @@ wsServer.on('request', request => {
                         connection.send(downloadData);
                         break;
                 }
-            } catch (error) {
-                // nothing
-            }
+            } finally { }
         }
 
         if (message.type === 'binary') {

@@ -524,7 +524,7 @@ export default class SpeedTestWorker {
                 this.config.download.websocket.path
             }`;
             const socket = new WebSocket(endpoint);
-            socket.binaryType = 'arraybuffer';
+            socket.binaryType = this.config.download.websocket.binaryType;
             this.requests[index] = socket;
             socket.onmessage = e => {
                 if (STATUS.ABORTED === this.status) {
