@@ -34,7 +34,7 @@ export default class SpeedTestWorker {
     constructor(scope = self) {
         this.scope = scope;
 
-        this.config = Config.defaultConfig;
+        Config.loadConfig().then(config => this.config = config);
         this.running = false;
         this.status = STATUS.WAITING;
         this.step = null;
@@ -222,10 +222,9 @@ export default class SpeedTestWorker {
 
             const endpoint = `${this.config.websocket.protocol ||
                 this.scope.location.protocol.replace("http", "ws")}/${this
-                .config.websocket.host || this.scope.location.host}/${
+                .config.websocket.host || this.scope.location.host}${
                 this.config.latency.websocket.path
             }`;
-            console.log(endpoint);
             const socket = new WebSocket(endpoint);
             this.requests[index] = socket;
 
@@ -524,7 +523,7 @@ export default class SpeedTestWorker {
 
             const endpoint = `${this.config.websocket.protocol ||
                 this.scope.location.protocol.replace("http", "ws")}/${this
-                .config.websocket.host || this.scope.location.host}/${
+                .config.websocket.host || this.scope.location.host}${
                 this.config.download.websocket.path
             }`;
             const socket = new WebSocket(endpoint);
@@ -831,7 +830,7 @@ export default class SpeedTestWorker {
 
             const endpoint = `${this.config.websocket.protocol ||
                 this.scope.location.protocol.replace("http", "ws")}/${this
-                .config.websocket.host || this.scope.location.host}/${
+                .config.websocket.host || this.scope.location.host}${
                 this.config.upload.websocket.path
             }`;
             const socket = new WebSocket(endpoint);

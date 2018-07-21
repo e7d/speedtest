@@ -1,14 +1,25 @@
 //@ts-check
 
 class Config {
+    static get OVERHEAD() {
+        return {
+            "TCP+IPv4+ETH": 1500 / (1500 - 20 - 20 - 14),
+            "TCP+IPv6+ETH": 1500 / (1500 - 40 - 20 - 14)
+        };
+    }
+
     static get defaultConfig() {
         return {
             ignoreErrors: true,
             optimize: false,
-            mode: "xhr", // 'websocket' or 'xhr'
+            mode: "websocket", // "websocket" or "xhr"
             websocket: {
-                protocol: null, // 'ws' or 'wss'
-                host: null // "localhost:8080"
+                protocol: null, // null, "ws" or "wss"
+                host: null // null or value (ie: "example.com:8080")
+            },
+            xhr: {
+                protocol: null, // null, "http" or "https"
+                host: null // null or value (ie: "example.com:8080")
             },
             overheadCompensation: Config.OVERHEAD["TCP+IPv4+ETH"],
             ip: {
@@ -62,11 +73,42 @@ class Config {
         };
     }
 
-    static get OVERHEAD() {
-        return {
-            "TCP+IPv4+ETH": 1500 / (1500 - 20 - 20 - 14),
-            "TCP+IPv6+ETH": 1500 / (1500 - 40 - 20 - 14)
+    static loadConfig() {
+        return new Promise((resolve, reject) => {
+            const endpoint = "/config.json";
+            const xhr = new XMLHttpRequest();
+
+            xhr.open("GET", endpoint, true);
+            xhr.onload = () => resolve(this.extend(this.defaultConfig, JSON.parse(xhr.response)));
+            xhr.onerror = e => reject(e.message);
+            xhr.send();
+        });
+    }
+
+    static extend(...objects) {
+        const extended = {};
+        let i = 0;
+
+        const merge = object => {
+            for (const property in object) {
+                if (!object.hasOwnProperty(property)) {
+                    continue;
+                }
+
+                if (typeof object[property] === "object") {
+                    extended[property] = this.extend(extended[property], object[property]);
+                    continue;
+                }
+
+                extended[property] = object[property];
+            }
         };
+
+        for (; i < objects.length; i++) {
+            merge(objects[i]);
+        }
+
+        return extended;
     }
 }
 
