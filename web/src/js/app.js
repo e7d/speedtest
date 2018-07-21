@@ -66,11 +66,9 @@ export default class WebUI {
         if (this.config.updateDelay && !this.statusInterval) {
             this.statusInterval = window.setInterval(() => {
                 this.worker.postMessage("status");
-                // this.worker.processMessage({data: 'status'});
             }, this.config.updateDelay);
         }
         this.worker.postMessage("start");
-        // this.worker.processMessage({data: 'start'});
     }
 
     /**
