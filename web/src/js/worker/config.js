@@ -95,7 +95,7 @@ class Config {
                     continue;
                 }
 
-                if (typeof object[property] === "object") {
+                if (Object.prototype.isPrototypeOf(object[property])) {
                     extended[property] = this.extend(extended[property], object[property]);
                     continue;
                 }
