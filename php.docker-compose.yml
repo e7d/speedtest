@@ -1,7 +1,7 @@
 php:
     image: php:7-alpine
     working_dir: /app
-    command: sh -c "php -S 0.0.0.0:8080 router.php"
+    command: sh -c "php -S 0.0.0.0:8080 -t web/ router.php"
     volumes:
         - ./server/php:/app
         - ./web/dist:/app/web

@@ -1,6 +1,8 @@
 <?php
 
-switch ($_SERVER['PHP_SELF']) {
+$urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+switch ($urlPath) {
     case '/ip':
         require 'ip.php';
         break;
@@ -15,10 +17,10 @@ switch ($_SERVER['PHP_SELF']) {
         break;
 
     case '/':
-        $_SERVER['PHP_SELF'] = 'index.html';
+        $urlPath = '/index.html';
 
     default:
-        $file = 'web/'.$_SERVER['PHP_SELF'];
+        $file = $_SERVER['DOCUMENT_ROOT'] . $urlPath;
         if (file_exists($file) && is_file($file)) {
             header('Content-Type: '.getMimeType($file));
             header('Content-Length: '.filesize($file));

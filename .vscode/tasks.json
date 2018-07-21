@@ -4,6 +4,38 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Server: NodeJS (Docker)",
+            "type": "shell",
+            "command": [
+                "docker-compose -f node.docker-compose.yml up"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Server: NodeJS",
+            "type": "shell",
+            "command": [
+                "node server/node/server.js 8080 web/dist"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Server: PHP (Docker)",
+            "type": "shell",
+            "command": [
+                "docker-compose -f php.docker-compose.yml up"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Server: PHP",
+            "type": "shell",
+            "command": [
+                "php -S 0.0.0.0:8080 -t web/dist/ server/php/router.php"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Web: watch",
             "type": "npm",
             "script": "watch",
@@ -24,15 +56,20 @@
             "problemMatcher": [
                 "$eslint-stylish"
             ],
-            "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
-            "label": "Server: NodeJS",
-            "type": "shell",
-            "command": [
-                "docker-compose up"
+            "label": "Web: dist",
+            "type": "npm",
+            "script": "dist",
+            "path": "web/",
+            "problemMatcher": [
+                "$eslint-stylish"
             ],
-            "problemMatcher": []
+            "group": "build"
         }
     ]
 }
