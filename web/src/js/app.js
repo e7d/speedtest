@@ -60,10 +60,11 @@ export default class WebUI {
         this.$startButton.setAttribute("hidden", "");
         this.$stopButton.removeAttribute("hidden");
 
-        this.resetMeters();
+        this.setProgressBar(0);
         this.resetResults();
 
-        if (this.config.updateDelay && !this.statusInterval) {
+        window.clearInterval(this.statusInterval);
+        if (this.config.updateDelay) {
             this.statusInterval = window.setInterval(() => {
                 this.worker.postMessage("status");
             }, this.config.updateDelay);
@@ -88,7 +89,7 @@ export default class WebUI {
             this.worker.postMessage("abort");
         }
 
-        this.resetMeters();
+        this.setProgressBar(0);
     }
 
     /**
@@ -110,7 +111,7 @@ export default class WebUI {
                     return;
                 }
 
-                this.resetMeters();
+                this.setProgressBar(0);
 
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
@@ -125,13 +126,6 @@ export default class WebUI {
                 this.$stopButton.setAttribute("hidden", "");
                 break;
         }
-    }
-
-    /**
-     * Reset the current meters.
-     */
-    resetMeters() {
-        this.setProgressBar(0);
     }
 
     /**
