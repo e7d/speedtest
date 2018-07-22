@@ -24,7 +24,7 @@ export default class WebUI {
         this.statusInterval = null;
 
         this.config = {
-            updateDelay: 150,
+            updateDelay: "auto", // 150
             endless: false // false
         };
 
@@ -63,13 +63,21 @@ export default class WebUI {
         this.setProgressBar(0);
         this.resetResults();
 
-        window.clearInterval(this.statusInterval);
-        if (this.config.updateDelay) {
-            this.statusInterval = window.setInterval(() => {
-                this.worker.postMessage("status");
-            }, this.config.updateDelay);
-        }
+
         this.worker.postMessage("start");
+
+        if (!this.config.updateDelay) {
+            return;
+        }
+
+        if (this.config.updateDelay === "auto") {
+            this.worker.postMessage("status");
+        }
+
+        window.clearInterval(this.statusInterval);
+        this.statusInterval = window.setInterval(() => {
+            this.worker.postMessage("status");
+        }, this.config.updateDelay);
     }
 
     /**
@@ -125,6 +133,12 @@ export default class WebUI {
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
                 break;
+        }
+
+        if (this.config.updateDelay == "auto") {
+            window.requestAnimationFrame(
+                this.worker.postMessage.bind(this, "status")
+            );
         }
     }
 
@@ -186,6 +200,9 @@ export default class WebUI {
      * @param {*} mode
      */
     setProgressBar(progress, mode = "") {
+        if (this.config.updateDelay === "auto") {
+            this.$progressBar.style.transition = "unset";
+        }
         this.$progress.style.flexDirection =
             mode === "download" ? "row-reverse" : "row";
         this.$progressBar.style.width = progress * 100 + "%";
