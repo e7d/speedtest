@@ -48,7 +48,7 @@ class Config {
                     path: "download",
                     streams: 6,
                     delay: 150,
-                    size: 8 * 1024 * 1024,
+                    size: 20 * 1024 * 1024,
                     responseType: "arraybuffer" // "arraybuffer" or "blob"
                 },
                 delay: 2,
