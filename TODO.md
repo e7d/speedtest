@@ -1,5 +1,5 @@
 Server:
-- Add a route to check for dependencies (ie: OpenSSL module for PHP server)
+- Nothing for now
 
 Web UI:
 - Nothing for now
