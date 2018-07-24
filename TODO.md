@@ -2,7 +2,7 @@ Server:
 - Nothing for now
 
 Web UI:
-- Nothing for now
+- Fix "auto" delay refresh mode
 
 Worker:
 - Ensure configuration validity

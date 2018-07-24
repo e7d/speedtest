@@ -24,7 +24,7 @@ export default class WebUI {
         this.statusInterval = null;
 
         this.config = {
-            updateDelay: "auto", // 150
+            updateDelay: 150,
             endless: false // false
         };
 
