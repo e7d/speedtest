@@ -10,7 +10,7 @@
     "scripts": {
         "watch": "npm install && webpack --env=dev --progress --profile --colors --watch",
         "build": "npm install && webpack --env=dev --progress --profile --colors",
-        "dist": "npm install && webpack --env=prod --progress --profile --colors",
+        "prod": "npm ci && webpack --env=prod --progress --profile --colors",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "e7d",
