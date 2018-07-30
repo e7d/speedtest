@@ -156,11 +156,6 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     testLatency() {
-        const run = (delay = 0) =>
-            "websocket" === this.config.mode
-                ? this.testLatencyWebSocket(delay)
-                : this.testLatencyXHR(delay);
-
         this.test.latency = {
             initDate: null,
             status: STATUS.WAITING,
@@ -183,7 +178,7 @@ export default class SpeedTestWorker {
             this.test.latency.running = false;
         }, this.config.latency.delay * 1000 + this.config.latency.duration * 1000);
 
-        return run(this.config.latency.delay * 1000)
+        return this.testLatencyXHR(this.config.latency.delay * 1000)
             .then(() => this.processLatencyResults)
             .catch(reason => {
                 this.test.latency.error = reason;
@@ -197,101 +192,6 @@ export default class SpeedTestWorker {
                     throw this.test.latency.error;
                 }
             });
-    }
-
-    /**
-     * Run the WebSocket based latency test
-     *
-     * @param {number} [delay=0]
-     * @returns {Promise}
-     */
-    testLatencyWebSocket(delay = 0) {
-        let index = 0;
-
-        return new Promise((resolve, reject) => {
-            if (STATUS.ABORTED === this.status) {
-                return reject({
-                    status: STATUS.ABORTED
-                });
-            }
-
-            if (STATUS.DONE === this.test.latency.status) {
-                return resolve();
-            }
-
-            const endpoint = `${this.config.websocket.protocol ||
-                this.scope.location.protocol.replace("http", "ws")}//${this
-                .config.websocket.host || this.scope.location.host}/${
-                this.config.latency.websocket.path
-            }`;
-            const socket = new WebSocket(endpoint);
-            this.requests[index] = socket;
-
-            socket.onmessage = e => {
-                if (STATUS.ABORTED === this.status) {
-                    socket.close();
-                    return reject({ status: STATUS.ABORTED });
-                }
-
-                if (STATUS.DONE === this.test.latency.status) {
-                    socket.close();
-                    return resolve();
-                }
-
-                if (STATUS.RUNNING === this.test.latency.status) {
-                    const data = JSON.parse(e.data);
-                    const index = data.index;
-                    let networkLatency =
-                        Date.now() - this.test.latency.pingDate[index];
-                    networkLatency = +networkLatency.toFixed(2);
-                    this.test.latency.data.push(networkLatency);
-                }
-
-                this.processLatencyResults();
-
-                index += 1;
-                this.test.latency.pingDate[index] = Date.now();
-                socket.send(
-                    JSON.stringify({
-                        action: "ping",
-                        index: index
-                    })
-                );
-            };
-
-            socket.onclose = () => {
-                Request.clearWebSocket(socket);
-            };
-
-            socket.onerror = () => {
-                if (this.config.ignoreErrors) {
-                    this.testLatencyWebSocket()
-                        .then(resolve)
-                        .catch(reject);
-                    return;
-                }
-
-                Request.clearWebSocket(socket);
-
-                reject({
-                    status: STATUS.FAILED,
-                    error: "test failed"
-                });
-            };
-
-            socket.onopen = () => {
-                this.scope.setTimeout(() => {
-                    index += 1;
-                    this.test.latency.pingDate[index] = +new Date();
-                    socket.send(
-                        JSON.stringify({
-                            action: "ping",
-                            index: index
-                        })
-                    );
-                }, delay);
-            };
-        });
     }
 
     /**
@@ -438,11 +338,6 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     testDownloadSpeed() {
-        const run = (size, delay = 0) =>
-            "websocket" === this.config.mode
-                ? this.testDownloadSpeedWebSocket(size, delay)
-                : this.testDownloadSpeedXHR(size, delay);
-
         this.test.download = {
             initDate: null,
             status: STATUS.WAITING,
@@ -456,13 +351,13 @@ export default class SpeedTestWorker {
         this.test.download.promises = [];
         for (
             let index = 0;
-            index < this.config.download[this.config.mode].streams;
+            index < this.config.download.xhr.streams;
             index++
         ) {
-            const testPromise = run(
-                this.config.download[this.config.mode].size,
+            const testPromise = this.testDownloadSpeedXHR(
+                this.config.download.xhr.size,
                 this.config.download.delay * 1000 +
-                    index * this.config.download[this.config.mode].delay
+                    index * this.config.download.xhr.delay
             );
             this.test.download.promises.push(testPromise);
         }
@@ -495,97 +390,6 @@ export default class SpeedTestWorker {
                     throw this.test.download.error;
                 }
             });
-    }
-
-    /**
-     * Run the WebSocket based download speed test
-     *
-     * @param {any} size
-     * @param {number} [delay=0]
-     * @returns {Promise}
-     */
-    testDownloadSpeedWebSocket(size, delay = 0) {
-        const index = this.test.download.index++;
-
-        return new Promise((resolve, reject) => {
-            if (STATUS.ABORTED === this.status) {
-                return reject({
-                    status: STATUS.ABORTED
-                });
-            }
-
-            if (STATUS.DONE === this.test.download.status) {
-                return resolve();
-            }
-
-            const endpoint = `${this.config.websocket.protocol ||
-                this.scope.location.protocol.replace("http", "ws")}//${this
-                .config.websocket.host || this.scope.location.host}/${
-                this.config.download.websocket.path
-            }`;
-            const socket = new WebSocket(endpoint);
-            socket.binaryType = this.config.download.websocket.binaryType;
-            this.requests[index] = socket;
-            socket.onmessage = e => {
-                if (STATUS.ABORTED === this.status) {
-                    socket.close();
-                    return reject({ status: STATUS.ABORTED });
-                }
-
-                if (STATUS.DONE === this.test.download.status) {
-                    socket.close();
-                    return resolve();
-                }
-
-                if (STATUS.RUNNING === this.test.download.status) {
-                    this.test.download.size += e.data.size;
-                }
-                this.processDownloadSpeedResults();
-
-                socket.send(
-                    JSON.stringify({
-                        action: "download"
-                    })
-                );
-            };
-
-            socket.onclose = () => {
-                Request.clearWebSocket(socket);
-            };
-
-            socket.onerror = () => {
-                if (this.config.ignoreErrors) {
-                    this.testDownloadSpeedWebSocket(size)
-                        .then(resolve)
-                        .catch(reject);
-                    return;
-                }
-
-                Request.clearWebSocket(socket);
-
-                reject({
-                    status: STATUS.FAILED,
-                    error: "test failed"
-                });
-            };
-
-            socket.onopen = () => {
-                this.scope.setTimeout(() => {
-                    socket.send(
-                        JSON.stringify({
-                            action: "prepare",
-                            size: this.config.download.websocket.size
-                        })
-                    );
-
-                    socket.send(
-                        JSON.stringify({
-                            action: "download"
-                        })
-                    );
-                }, delay);
-            };
-        });
     }
 
     /**
@@ -715,7 +519,7 @@ export default class SpeedTestWorker {
             buffer[index] = Math.random();
         }
 
-        const dataSize = this.config.upload[this.config.mode].size;
+        const dataSize = this.config.upload.xhr.size;
         let data = new Float32Array(new ArrayBuffer(dataSize));
         for (let i = 0; i < data.byteLength / buffer.byteLength; i++) {
             data.set(buffer, i * buffer.length);
@@ -741,11 +545,6 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     testUploadSpeed() {
-        const run = (size, delay = 0) =>
-            "websocket" === this.config.mode
-                ? this.testUploadSpeedWebSocket(size, delay)
-                : this.testUploadSpeedXHR(size, delay);
-
         this.test.upload = {
             initDate: null,
             status: STATUS.WAITING,
@@ -761,13 +560,13 @@ export default class SpeedTestWorker {
         this.test.upload.promises = [];
         for (
             let index = 0;
-            index < this.config.upload[this.config.mode].streams;
+            index < this.config.upload.xhr.streams;
             index++
         ) {
-            const testPromise = run(
-                this.config.upload[this.config.mode].size,
+            const testPromise = this.testUploadSpeedXHR(
+                this.config.upload.xhr.size,
                 this.config.upload.delay * 1000 +
-                    index * this.config.upload[this.config.mode].delay
+                    index * this.config.upload.xhr.delay
             );
             this.test.upload.promises.push(testPromise);
         }
@@ -800,83 +599,6 @@ export default class SpeedTestWorker {
                     throw this.test.upload.error;
                 }
             });
-    }
-
-    /**
-     * Run the WebSocket based upload speed test
-     *
-     * @param {any} size
-     * @param {number} [delay=0]
-     * @returns {Promise}
-     */
-    testUploadSpeedWebSocket(size, delay = 0) {
-        const index = this.test.upload.index++;
-
-        return new Promise((resolve, reject) => {
-            if (STATUS.ABORTED === this.status) {
-                return reject({
-                    status: STATUS.ABORTED
-                });
-            }
-
-            if (STATUS.DONE === this.test.upload.status) {
-                return resolve();
-            }
-
-            const endpoint = `${this.config.websocket.protocol ||
-                this.scope.location.protocol.replace("http", "ws")}//${this
-                .config.websocket.host || this.scope.location.host}/${
-                this.config.upload.websocket.path
-            }`;
-            const socket = new WebSocket(endpoint);
-            socket.binaryType = "arraybuffer";
-
-            this.requests[index] = socket;
-            socket.onmessage = e => {
-                if (STATUS.ABORTED === this.status) {
-                    socket.close();
-                    return reject({ status: STATUS.ABORTED });
-                }
-
-                if (STATUS.DONE === this.test.upload.status) {
-                    socket.close();
-                    return resolve();
-                }
-
-                if (STATUS.RUNNING === this.test.upload.status) {
-                    this.test.upload.size += this.test.upload.blob.size;
-                }
-                this.processUploadSpeedResults();
-
-                socket.send(this.test.upload.blob);
-            };
-
-            socket.onclose = () => {
-                Request.clearWebSocket(socket);
-            };
-
-            socket.onerror = () => {
-                if (this.config.ignoreErrors) {
-                    this.testUploadSpeedWebSocket(size)
-                        .then(resolve)
-                        .catch(reject);
-                    return;
-                }
-
-                Request.clearWebSocket(socket);
-
-                reject({
-                    status: STATUS.FAILED,
-                    error: "test failed"
-                });
-            };
-
-            socket.onopen = () => {
-                this.scope.setTimeout(() => {
-                    socket.send(this.test.upload.blob);
-                }, delay);
-            };
-        });
     }
 
     /**

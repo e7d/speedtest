@@ -12,11 +12,6 @@ class Config {
         return {
             ignoreErrors: true,
             optimize: false,
-            mode: "xhr", // "websocket" or "xhr"
-            websocket: {
-                protocol: null, // null, "ws" or "wss"
-                host: null // null or value (ie: "example.com:8080")
-            },
             xhr: {
                 protocol: null, // null, "http" or "https"
                 host: null // null or value (ie: "example.com:8080")
@@ -26,9 +21,6 @@ class Config {
                 path: "ip"
             },
             latency: {
-                websocket: {
-                    path: "ping"
-                },
                 xhr: {
                     path: "ping"
                 },
@@ -38,12 +30,6 @@ class Config {
                 gracetime: 1
             },
             download: {
-                websocket: {
-                    path: "download",
-                    streams: 20,
-                    size: 8 * 1024 * 1024,
-                    binaryType: "blob" // "arraybuffer" or "blob"
-                },
                 xhr: {
                     path: "download",
                     streams: 6,
@@ -56,11 +42,6 @@ class Config {
                 gracetime: 2
             },
             upload: {
-                websocket: {
-                    path: "upload",
-                    streams: 20,
-                    size: 1 * 1024 * 1024
-                },
                 xhr: {
                     path: "upload",
                     streams: 6,
