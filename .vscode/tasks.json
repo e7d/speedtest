@@ -15,7 +15,7 @@
             "label": "Server: NodeJS",
             "type": "shell",
             "command": [
-                "node server/node/server.js 8080 web/dist"
+                "npx nodemon server/node/server.js 8080 web/dist"
             ],
             "problemMatcher": []
         },
