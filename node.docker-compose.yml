@@ -1,9 +1,9 @@
 node:
     image: node:10-alpine
     working_dir: /app
-    command: sh -c "npm install && npx nodemon server.js 8080"
+    command: sh -c "npm install && npx nodemon server.js"
     volumes:
         - ./server/node:/app
         - ./web/dist:/app/web
     ports:
-        - 8080:8080
+        - 8080:80

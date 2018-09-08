@@ -4,6 +4,22 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Server: Go (Docker)",
+            "type": "shell",
+            "command": [
+                "docker-compose -f go.docker-compose.yml up"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Server: Go",
+            "type": "shell",
+            "command": [
+                "go run server/go/main.go 8080 web/dist"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Server: NodeJS (Docker)",
             "type": "shell",
             "command": [

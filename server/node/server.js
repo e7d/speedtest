@@ -35,7 +35,7 @@ function writeIP(request, response) {
     const ip = ipRegex.test(requestIp.getClientIp(request))
         ? request.connection.remoteAddress.replace("::ffff:", "")
         : request.connection.remoteAddress;
-    ipInfo(`${ip}/org`, (err, org) => {
+    ipInfo(`${ip}/org`, null, (err, org) => {
         response.writeHead(200);
         response.write(org ? `${ip} (${org})` : ip);
         response.end();

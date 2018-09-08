@@ -1,0 +1,9 @@
+go:
+    image: golang:1-alpine
+    working_dir: /app
+    command: sh -c "go run main.go"
+    volumes:
+        - ./server/go:/app
+        - ./web/dist:/app/web
+    ports:
+        - 8080:80
