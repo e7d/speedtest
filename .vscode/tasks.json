@@ -7,7 +7,7 @@
             "label": "Server: Go (Docker)",
             "type": "shell",
             "command": [
-                "docker-compose -f go.docker-compose.yml up"
+                "docker-compose -f server/go.docker-compose.yml up"
             ],
             "problemMatcher": []
         },
@@ -23,7 +23,7 @@
             "label": "Server: NodeJS (Docker)",
             "type": "shell",
             "command": [
-                "docker-compose -f node.docker-compose.yml up"
+                "docker-compose -f server/node.docker-compose.yml up"
             ],
             "problemMatcher": []
         },
@@ -39,7 +39,7 @@
             "label": "Server: PHP (Docker)",
             "type": "shell",
             "command": [
-                "docker-compose -f php.docker-compose.yml up"
+                "docker-compose -f server/php.docker-compose.yml up"
             ],
             "problemMatcher": []
         },
@@ -48,6 +48,22 @@
             "type": "shell",
             "command": [
                 "php -S 0.0.0.0:8080 -t web/dist/ server/php/router.php"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Server: Python (Docker)",
+            "type": "shell",
+            "command": [
+                "docker-compose -f server/python.docker-compose.yml up"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Server: Python",
+            "type": "shell",
+            "command": [
+                "python server/python/server.py 8080 web/dist"
             ],
             "problemMatcher": []
         },
