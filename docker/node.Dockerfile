@@ -7,7 +7,8 @@ COPY server/node/package*.json ./
 COPY server/node/server.js ./
 COPY web/dist ./web
 
-RUN npm install \
+RUN npm install --production \
+    && npm ci \
     && npm cache clean --force
 
 EXPOSE 80
