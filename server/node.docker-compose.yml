@@ -3,7 +3,7 @@ node:
     working_dir: /app
     command: sh -c "npm install && npx nodemon server.js"
     volumes:
-        - ./server/node:/app
-        - ./web/dist:/app/web
+        - ./node:/app
+        - ../web/dist:/app/web
     ports:
         - 8080:80

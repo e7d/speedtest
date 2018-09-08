@@ -3,7 +3,7 @@ php:
     working_dir: /app
     command: sh -c "php -S 0.0.0.0:80 -t web/ router.php"
     volumes:
-        - ./server/php:/app
-        - ./web/dist:/app/web
+        - ./php:/app
+        - ../web/dist:/app/web
     ports:
         - 8080:8080
