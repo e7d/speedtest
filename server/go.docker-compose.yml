@@ -1,7 +1,7 @@
 go:
     image: golang:1-alpine
     working_dir: /app
-    command: sh -c "go run main.go"
+    command: sh -c "go run main.go 80 /app/web"
     volumes:
         - ./go:/app
         - ../web/dist:/app/web
