@@ -7,4 +7,4 @@ COPY server/go/* ./
 COPY web/dist ./web
 
 EXPOSE 80
-CMD [ "go", "run", "main.go", "80", "web" ]
+CMD [ "go", "run", "server.go", "80", "web" ]

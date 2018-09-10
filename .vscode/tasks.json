@@ -15,7 +15,7 @@
             "label": "Server: Go",
             "type": "shell",
             "command": [
-                "go run server/go/main.go 8080 web/dist"
+                "go run server/go/server.go 8080 web/dist"
             ],
             "problemMatcher": []
         },
