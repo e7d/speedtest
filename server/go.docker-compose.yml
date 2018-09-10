@@ -1,9 +1,9 @@
 go:
     image: golang:1-alpine
     working_dir: /app
-    command: sh -c "go run main.go 80 /app/web"
+    command: go run main.go 8080 web
     volumes:
         - ./go:/app
         - ../web/dist:/app/web
     ports:
-        - 8080:80
+        - 8080:8080
