@@ -26,7 +26,8 @@ while true; do
         "go") dockerBuild go; break;;
         "node") dockerBuild node; break;;
         "php") dockerBuild php; break;;
-        * ) echo "Please answer \"go\", \"node\" or \"php\".";;
+        "python") dockerBuild php; break;;
+        * ) echo "Please answer \"go\", \"node\", \"php\" or \"python\".";;
     esac
     read -p "What to build? " cmd
 done
