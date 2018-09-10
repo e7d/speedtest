@@ -1,0 +1,9 @@
+python:
+    image: python:2-alpine
+    working_dir: /app
+    command: python server.py 8080 web
+    volumes:
+        - ./python:/app
+        - ../web/dist:/app/web
+    ports:
+        - 8080:8080

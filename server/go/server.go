@@ -49,6 +49,7 @@ func main() {
 	if len(os.Args) > 2 {
 		basePath = os.Args[2]
 	}
+
 	http.Handle("/", http.FileServer(http.Dir(basePath)))
 	http.HandleFunc("/download", download)
 	http.HandleFunc("/ip", ip)

@@ -1,47 +1,94 @@
 #!/usr/bin/python
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from os import curdir, sep
-import sys
+from os import path, sep
+from sys import argv
+from urlparse import parse_qs, urlparse
+
 
 PORT = 80
-if len(sys.argv) > 1:
-    PORT = int(sys.argv[1])
+if len(argv) > 1:
+    PORT = int(argv[1])
 BASEPATH = 'web'
-if len(sys.argv) > 2:
-    BASEPATH = sys.argv[2]
+if len(argv) > 2:
+    BASEPATH = argv[2]
+
 
 class httpHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/ip':
-            self.wfile.write("ip")
+        if self.path.startswith('/download'):
+            self.send_response(200)
+            self.end_headers()
+            size = 128 * 1024
+            try:
+                params = parse_qs(urlparse(self.path).query)
+                size = int(params.get('size')[0])
+            except:
+                print("Use default size")
+            chunkSize = 64 * 1024
+            try:
+                params = parse_qs(urlparse(self.path).query)
+                chunkSize = int(params.get('chunkSize')[0])
+            except:
+                print("Use default chunkSize")
+            data = bytearray(chunkSize)
+            chunks = size / chunkSize
+            for _ in range(chunks):
+                self.wfile.write(data)
+                pass
+            return
+
+        if self.path.startswith('/ip'):
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(self.client_address[0])
+            return
+
+        if self.path.startswith('/ping'):
+            self.send_response(200)
+            self.end_headers()
             return
 
         if self.path == '/':
             self.path = '/index.html'
 
         try:
+            filePath = BASEPATH + sep + self.path
             sendReply = False
             if self.path.endswith('.css'):
-                mimetype='text/css'
+                mimetype = 'text/css'
                 sendReply = True
             if self.path.endswith('.html'):
-                mimetype='text/html'
+                mimetype = 'text/html'
                 sendReply = True
             if self.path.endswith('.js'):
-                mimetype='application/javascript'
+                mimetype = 'application/javascript'
+                sendReply = True
+            if self.path.endswith('.json'):
+                mimetype = 'application/json'
                 sendReply = True
 
-            if sendReply == True:
-                f = open(BASEPATH + sep + self.path)
+            if sendReply == True and path.isfile(filePath):
+                f = open(filePath)
                 self.send_response(200)
                 self.send_header('Content-type', mimetype)
                 self.end_headers()
                 self.wfile.write(f.read())
                 f.close()
-            return
+                return
 
         except IOError:
             self.send_error(404, 'File Not Found: %s' % self.path)
+
+        self.send_error(404, 'Not Found: %s' % self.path)
+
+    def do_POST(self):
+        if self.path.startswith('/upload'):
+            self.send_response(200)
+            self.end_headers()
+            return
+
+        self.send_error(404, 'Not Found: %s' % self.path)
+
 
 try:
     server = HTTPServer(('', PORT), httpHandler)
