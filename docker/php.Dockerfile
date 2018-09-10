@@ -7,4 +7,4 @@ COPY server/php ./
 COPY web/dist ./web
 
 EXPOSE 80
-CMD [ "php", "-S", "0.0.0.0:80", "router.php" ]
+CMD [ "php", "-S", "0.0.0.0:80", "server.php" ]

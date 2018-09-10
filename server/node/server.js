@@ -12,34 +12,19 @@ const basePath = process.argv[3] || "web";
 process.on("SIGINT", function() {
     process.exit();
 });
-
-function getBuffer(size = 128 * 1024) {
-    const buffer = Buffer.alloc(size);
-    for (let bufferIndex = 0; bufferIndex < buffer.byteLength; bufferIndex++) {
-        buffer[bufferIndex] = Math.random();
+function* getData(query) {
+    const data = Buffer.alloc(+query.chunkSize);
+    const chunks = +query.size / +query.chunkSize;
+    for (let index = 0; index < chunks; index++) {
+        yield data;
     }
-    return buffer;
 }
 
-function getRandomData(size = 8 * 1024 * 1024, bufferSize = 128 * 1024) {
-    const buffer = getBuffer(bufferSize);
-    const data = Buffer.alloc(size);
-    for (let dataIndex = 0; dataIndex * buffer.byteLength < size; dataIndex++) {
-        data.set(buffer, dataIndex * buffer.byteLength);
-    }
-    return data;
-}
-
-function writeIP(request, response) {
+function getIP(request) {
     const ipRegex = /\:\:ffff\:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
-    const ip = ipRegex.test(requestIp.getClientIp(request))
+    return ipRegex.test(requestIp.getClientIp(request))
         ? request.connection.remoteAddress.replace("::ffff:", "")
         : request.connection.remoteAddress;
-    ipInfo(`${ip}/org`, null, (err, org) => {
-        response.writeHead(200);
-        response.write(org ? `${ip} (${org})` : ip);
-        response.end();
-    });
 }
 
 function loadFile(uri, response) {
@@ -98,7 +83,9 @@ const httpServer = http
         try {
             switch (uri) {
                 case "/ip":
-                    writeIP(request, response);
+                    response.writeHead(200);
+                    response.write(getIP(request));
+                    response.end();
                     break;
                 case "/ping":
                 case "/upload":
@@ -106,12 +93,17 @@ const httpServer = http
                     response.end();
                     break;
                 case "/download":
-                    const data = getRandomData(+query.size);
                     response.writeHead(200, {
-                        "Content-Type": "application/octet-stream",
-                        "Content-Length": data.byteLength
+                        "Content-Type": "application/octet-stream"
+                        // "Content-Length": data.byteLength
                     });
-                    response.write(data, "binary");
+                    for (let chunk of getData({
+                        size: 8 * 1024 * 1024,
+                        chunkSize: 64 * 1024,
+                        ...query
+                    })) {
+                        response.write(chunk, "binary");
+                    }
                     response.end();
                     break;
                 default:

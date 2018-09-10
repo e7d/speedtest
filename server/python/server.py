@@ -14,21 +14,24 @@ if len(argv) > 2:
 
 
 class httpHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        return
+
     def do_GET(self):
         if self.path.startswith('/download'):
             self.send_response(200)
             self.end_headers()
-            size = 128 * 1024
+            size = 8 * 1024 * 1024
             try:
                 params = parse_qs(urlparse(self.path).query)
                 size = int(params.get('size')[0])
-            except:
+            finally:
                 print("Use default size")
             chunkSize = 64 * 1024
             try:
                 params = parse_qs(urlparse(self.path).query)
                 chunkSize = int(params.get('chunkSize')[0])
-            except:
+            finally:
                 print("Use default chunkSize")
             data = bytearray(chunkSize)
             chunks = size / chunkSize
@@ -51,33 +54,25 @@ class httpHandler(BaseHTTPRequestHandler):
         if self.path == '/':
             self.path = '/index.html'
 
-        try:
-            filePath = BASEPATH + sep + self.path
-            sendReply = False
+        filePath = BASEPATH + sep + self.path
+        if path.isfile(filePath):
+            mimetype = 'application/octet-stream'
             if self.path.endswith('.css'):
                 mimetype = 'text/css'
-                sendReply = True
             if self.path.endswith('.html'):
                 mimetype = 'text/html'
-                sendReply = True
             if self.path.endswith('.js'):
                 mimetype = 'application/javascript'
-                sendReply = True
             if self.path.endswith('.json'):
                 mimetype = 'application/json'
-                sendReply = True
 
-            if sendReply == True and path.isfile(filePath):
-                f = open(filePath)
-                self.send_response(200)
-                self.send_header('Content-type', mimetype)
-                self.end_headers()
-                self.wfile.write(f.read())
-                f.close()
-                return
-
-        except IOError:
-            self.send_error(404, 'File Not Found: %s' % self.path)
+            f = open(filePath)
+            self.send_response(200)
+            self.send_header('Content-type', mimetype)
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+            return
 
         self.send_error(404, 'Not Found: %s' % self.path)
 

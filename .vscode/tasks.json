@@ -47,7 +47,7 @@
             "label": "Server: PHP",
             "type": "shell",
             "command": [
-                "php -S 0.0.0.0:8080 -t web/dist/ server/php/router.php"
+                "php -S 0.0.0.0:8080 -t web/dist/ server/php/server.php"
             ],
             "problemMatcher": []
         },

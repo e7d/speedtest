@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func download(w http.ResponseWriter, r *http.Request) {
+func getData(w http.ResponseWriter, r *http.Request) {
 	size, err := strconv.Atoi(r.URL.Query().Get("size"))
 	if err != nil {
 		size = 8 * 1024 * 1024
@@ -23,11 +23,11 @@ func download(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func empty(w http.ResponseWriter, r *http.Request) {
+func setEmpty(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(""))
 }
 
-func ip(w http.ResponseWriter, r *http.Request) {
+func getIP(w http.ResponseWriter, r *http.Request) {
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		return
@@ -51,10 +51,10 @@ func main() {
 	}
 
 	http.Handle("/", http.FileServer(http.Dir(basePath)))
-	http.HandleFunc("/download", download)
-	http.HandleFunc("/ip", ip)
-	http.HandleFunc("/ping", empty)
-	http.HandleFunc("/upload", empty)
+	http.HandleFunc("/download", getData)
+	http.HandleFunc("/ip", getIP)
+	http.HandleFunc("/ping", setEmpty)
+	http.HandleFunc("/upload", setEmpty)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		panic(err)
 	}
