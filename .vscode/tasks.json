@@ -68,6 +68,22 @@
             "problemMatcher": []
         },
         {
+            "label": "Server: Ruby (Docker)",
+            "type": "shell",
+            "command": [
+                "docker-compose -f server/ruby.docker-compose.yml up"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Server: Ruby",
+            "type": "shell",
+            "command": [
+                "ruby server/ruby/server.rb 8080 web/dist"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Web: watch",
             "type": "npm",
             "script": "watch",

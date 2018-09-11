@@ -1,8 +1,5 @@
 #!/bin/sh
 
-
-cd `dirname $0`/..
-
 build()
 {
     webBuild
@@ -20,6 +17,7 @@ webBuild()
     docker run -it --rm --user $(id -u):$(id -g) -v $PWD/web:/app -w /app node:10-alpine npm run prod
 }
 
+cd `dirname $0`/..
 cmd=$1
 while true; do
     case $cmd in

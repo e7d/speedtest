@@ -1,0 +1,9 @@
+ruby:
+    image: ruby:2-alpine
+    working_dir: /app
+    command: ruby server.rb 8080 web
+    volumes:
+        - ./ruby:/app
+        - ../web/dist:/app/web
+    ports:
+        - 8080:8080
