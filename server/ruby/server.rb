@@ -37,7 +37,7 @@ loop do
   socket = server.accept
   begin
     request = socket.gets
-    request.nil? && throw('Null request')
+    request.nil? && next
 
     request_uri = request.split(' ')[1]
     if request_uri.start_with?('/ip')
@@ -51,10 +51,10 @@ loop do
     if request_uri.start_with?('/download')
       query = URI.parse(request_uri).query || ''
       params = CGI.parse(query)
-      size = params['size'][0] || 20 * 1024**2
-      chunk_size = params['chunkSize'][0] || 64 * 1024
-      data = ('\x00' * chunk_size)
-      chunks = size / chunk_size
+      size = Integer(params['size'][0] || 20 * 1024**2)
+      chunk_size = Integer(params['chunkSize'][0] || 64 * 1024)
+      data = ("\x00" * chunk_size)
+      chunks = (size / chunk_size)
       socket.print write_response(
         mime_type: 'application/octet-stream',
         length: size
