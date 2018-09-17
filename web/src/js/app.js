@@ -38,6 +38,7 @@ export default class WebUI {
         this.$progress = document.querySelector("#progress");
         this.$progressBar = document.querySelector("#progress .progress-bar");
         this.$ipValue = document.querySelector("#ip span.value");
+        this.$ipDetails = document.querySelector("#ip span.details");
         this.$latencyValue = document.querySelector("#latency span.value");
         this.$jitterValue = document.querySelector("#jitter span.value");
         this.$downloadValue = document.querySelector("#download span.value");
@@ -62,7 +63,6 @@ export default class WebUI {
 
         this.setProgressBar(0);
         this.resetResults();
-
 
         this.worker.postMessage("start");
 
@@ -166,6 +166,17 @@ export default class WebUI {
         switch (data.step) {
             case "ip":
                 this.$ipValue.innerHTML = data.results.ip;
+                this.$ipDetails.innerHTML = '';
+                this.getIpInfo(data.results.ip).then(info => {
+                    if (info.bogon) return;
+
+                    const details = [];
+                    if (info.org) details.push(info.org);
+                    if (info.country) details.push(info.country);
+                    if (info.loc) details.push(`<a href="https://www.google.com/maps/search/${info.loc}" target="_blank">🗺️</a>`);
+
+                    this.$ipDetails.innerHTML = details.join(' - ')
+                });
                 break;
             case "latency":
                 this.$latencyValue.innerHTML = data.results.latency.avg || "";
@@ -206,5 +217,22 @@ export default class WebUI {
         this.$progress.style.flexDirection =
             mode === "download" ? "row-reverse" : "row";
         this.$progressBar.style.width = progress * 100 + "%";
+    }
+
+    getIpInfo(ip) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        resolve(JSON.parse(xhr.responseText));
+                    } else {
+                        reject(xhr.statusText);
+                    }
+                }
+            };
+            xhr.open("GET", `//ipinfo.io/${ip}/json`, true);
+            xhr.send(null);
+        });
     }
 }

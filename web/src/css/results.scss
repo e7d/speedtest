@@ -75,4 +75,16 @@
             content: " Mbps";
         }
     }
+
+    .details {
+        display: block;
+        height: 1.2rem;
+        font-size: 1.2rem;
+        font-weight: lighter;
+        color: $black;
+
+        a {
+            text-decoration: none;
+        }
+    }
 }
