@@ -12,7 +12,6 @@ BASEPATH = 'web'
 if len(argv) > 2:
     BASEPATH = argv[2]
 
-
 class httpHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         return
@@ -24,13 +23,17 @@ class httpHandler(BaseHTTPRequestHandler):
             size = 8 * 1024 * 1024
             try:
                 params = parse_qs(urlparse(self.path).query)
-                size = int(params.get('size')[0])
+                sizeParam = params.get('size')
+                if sizeParam:
+                    size = int(sizeParam[0])
             finally:
                 print("Use default size")
             chunkSize = 64 * 1024
             try:
                 params = parse_qs(urlparse(self.path).query)
-                chunkSize = int(params.get('chunkSize')[0])
+                chunkSizeParam = params.get('chunkSize')
+                if chunkSizeParam:
+                    chunkSize = int(chunkSizeParam[0])
             finally:
                 print("Use default chunkSize")
             data = bytearray(chunkSize)
