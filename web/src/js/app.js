@@ -166,16 +166,17 @@ export default class WebUI {
         switch (data.step) {
             case "ip":
                 this.$ipValue.innerHTML = data.results.ip;
-                this.$ipDetails.innerHTML = '';
+                this.$ipDetails.innerHTML = "";
                 this.getIpInfo(data.results.ip).then(info => {
                     if (info.bogon) return;
 
                     const details = [];
                     if (info.org) details.push(info.org);
                     if (info.country) details.push(info.country);
-                    if (info.loc) details.push(`<a href="https://www.google.com/maps/search/${info.loc}" target="_blank">🗺️</a>`);
+                    if (info.loc)
+                        details.push(`<a href="https://www.google.com/maps/search/${info.loc},10Z" target="_blank">🗺️</a>`);
 
-                    this.$ipDetails.innerHTML = details.join(' - ')
+                    this.$ipDetails.innerHTML = details.join(" - ");
                 });
                 break;
             case "latency":

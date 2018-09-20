@@ -34,7 +34,7 @@ export default class SpeedTestWorker {
     constructor(scope = self) {
         this.scope = scope;
 
-        Config.loadConfig().then(config => this.config = config);
+        Config.loadConfig().then(config => (this.config = config));
         this.running = false;
         this.status = STATUS.WAITING;
         this.step = null;
@@ -293,7 +293,8 @@ export default class SpeedTestWorker {
             return;
         }
 
-        const durationFromInit = (Date.now() - this.test.latency.initDate) / 1000;
+        const durationFromInit =
+            (Date.now() - this.test.latency.initDate) / 1000;
         const progress = durationFromInit / this.config.latency.duration;
         Object.assign(this.results.latency, {
             progress: progress
@@ -327,9 +328,7 @@ export default class SpeedTestWorker {
             this.results.latency.jitter +=
                 (deltaPing - this.results.latency.jitter) / 16.0;
         }, this);
-        this.results.latency.jitter = +this.results.latency.jitter.toFixed(
-            2
-        );
+        this.results.latency.jitter = +this.results.latency.jitter.toFixed(2);
     }
 
     /**
@@ -349,11 +348,7 @@ export default class SpeedTestWorker {
         };
 
         this.test.download.promises = [];
-        for (
-            let index = 0;
-            index < this.config.download.xhr.streams;
-            index++
-        ) {
+        for (let index = 0; index < this.config.download.xhr.streams; index++) {
             const testPromise = this.testDownloadSpeedXHR(
                 this.config.download.xhr.size,
                 this.config.download.delay * 1000 +
@@ -487,8 +482,10 @@ export default class SpeedTestWorker {
             return;
         }
 
-        const durationFromInit = (Date.now() - this.test.download.initDate) / 1000;
-        const durationFromStart = (Date.now() - this.test.download.startDate) / 1000;
+        const durationFromInit =
+            (Date.now() - this.test.download.initDate) / 1000;
+        const durationFromStart =
+            (Date.now() - this.test.download.startDate) / 1000;
         const progress = durationFromInit / this.config.download.duration;
         Object.assign(this.results.download, {
             progress: progress
@@ -557,11 +554,7 @@ export default class SpeedTestWorker {
         };
 
         this.test.upload.promises = [];
-        for (
-            let index = 0;
-            index < this.config.upload.xhr.streams;
-            index++
-        ) {
+        for (let index = 0; index < this.config.upload.xhr.streams; index++) {
             const testPromise = this.testUploadSpeedXHR(
                 this.config.upload.xhr.size,
                 this.config.upload.delay * 1000 +
@@ -693,8 +686,10 @@ export default class SpeedTestWorker {
             return;
         }
 
-        const durationFromInit = (Date.now() - this.test.upload.initDate) / 1000;
-        const durationFromStart = (Date.now() - this.test.upload.startDate) / 1000;
+        const durationFromInit =
+            (Date.now() - this.test.upload.initDate) / 1000;
+        const durationFromStart =
+            (Date.now() - this.test.upload.startDate) / 1000;
         const progress = durationFromInit / this.config.upload.duration;
         Object.assign(this.results.upload, {
             progress: progress
