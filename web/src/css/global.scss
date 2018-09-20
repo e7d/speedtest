@@ -12,10 +12,10 @@ body {
 
 #speedtest {
     display: grid;
-    grid-template-areas: "h c"
-                         "r r"
-                         "p p";
-    grid-template-columns: repeat(2, 50%);
+    grid-template-areas: "h h h c"
+                         "r r r r"
+                         "p p p p";
+    grid-template-columns: repeat(2, 25%);
     max-width: 800px;
     margin: auto;
     padding: 20px;
