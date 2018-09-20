@@ -553,7 +553,6 @@ export default class SpeedTestWorker {
             size: 0,
             index: 0,
             promises: [],
-            // data: this.getRandomData(),
             blob: this.getRandomBlob()
         };
 
@@ -593,6 +592,7 @@ export default class SpeedTestWorker {
             })
             .then(() => {
                 this.test.upload.running = false;
+                delete this.test.upload.blob;
                 Request.clearRequests(this.requests);
 
                 if (this.test.upload.error) {
