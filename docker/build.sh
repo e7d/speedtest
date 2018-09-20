@@ -1,11 +1,5 @@
 #!/bin/sh
 
-build()
-{
-    # webBuild
-    dockerBuild $1
-}
-
 dockerBuild()
 {
     docker build --no-cache -t e7db/speedtest:$1 -f $PWD/docker/$1.Dockerfile $PWD
@@ -20,12 +14,13 @@ cd `dirname $0`/..
 cmd=$1
 while true; do
     case $cmd in
-        "go") build go; break;;
-        "node") build node; break;;
-        "php") build php; break;;
-        "python") build python; break;;
-        "ruby") build ruby; break;;
-        * ) echo "Please answer \"go\", \"node\", \"php\", \"python\" or \"ruby\".";;
+        "go") dockerBuild go; break;;
+        "node") dockerBuild node; break;;
+        "php") dockerBuild php; break;;
+        "python") dockerBuild python; break;;
+        "ruby") dockerBuild ruby; break;;
+        "web") webBuild; break;;
+        * ) echo "Please answer \"go\", \"node\", \"php\", \"python\", \"ruby\" or \"web\".";;
     esac
     read -p "What to build? " cmd
 done
