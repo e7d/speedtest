@@ -2,7 +2,6 @@
 
 const fs = require("fs");
 const http = require("http");
-const ipInfo = require("ipinfo");
 const path = require("path");
 const requestIp = require("request-ip");
 const url = require("url");
