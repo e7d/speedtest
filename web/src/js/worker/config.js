@@ -13,8 +13,8 @@ class Config {
             ignoreErrors: true,
             optimize: false,
             xhr: {
-                protocol: null, // null, "http" or "https"
-                host: null // null or value (ie: "example.com:8080")
+                protocol: self.location.protocol.replace(":", ""),
+                host: `${self.location.host}`
             },
             overheadCompensation: Config.OVERHEAD["TCP+IPv4+ETH"],
             ip: {
@@ -57,12 +57,21 @@ class Config {
 
     static loadConfig() {
         return new Promise((resolve, reject) => {
-            const endpoint = "/config.json";
             const xhr = new XMLHttpRequest();
 
-            xhr.open("GET", endpoint, true);
-            xhr.onload = () => resolve(this.extend(this.defaultConfig, JSON.parse(xhr.response)));
-            xhr.onerror = e => reject(e.message);
+            xhr.open("GET", "/config.json", true);
+            xhr.onload = () => {
+                const config = this.extend(
+                    this.defaultConfig,
+                    JSON.parse(xhr.response)
+                );
+                config.xhr.endpoint = `${config.xhr.protocol}://${
+                    config.xhr.host
+                }`;
+                resolve(config);
+            };
+            xhr.onerror = () =>
+                reject("Could not load configuration file (config.json)");
             xhr.send();
         });
     }
@@ -78,7 +87,10 @@ class Config {
                 }
 
                 if (Object.prototype.isPrototypeOf(object[property])) {
-                    extended[property] = this.extend(extended[property], object[property]);
+                    extended[property] = this.extend(
+                        extended[property],
+                        object[property]
+                    );
                     continue;
                 }
 
