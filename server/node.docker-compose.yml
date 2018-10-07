@@ -1,7 +1,7 @@
 node:
     image: node:10-alpine
     working_dir: /app
-    command: npm install && npx nodemon server.js 8080 web
+    command: npm run docker
     volumes:
         - ./node:/app
         - ../web/dist:/app/web
