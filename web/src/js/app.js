@@ -165,6 +165,7 @@ export default class WebUI {
 
         switch (data.step) {
             case "ip":
+                if (!data.results.ip) return;
                 this.$ipValue.innerHTML = data.results.ip;
                 this.$ipDetails.innerHTML = "";
                 this.getIpInfo(data.results.ip).then(info => {
@@ -174,7 +175,11 @@ export default class WebUI {
                     if (info.org) details.push(info.org);
                     if (info.country) details.push(info.country);
                     if (info.loc)
-                        details.push(`<a href="https://www.google.com/maps/search/${info.loc},10Z" target="_blank">🗺️</a>`);
+                        details.push(
+                            `<a href="https://www.google.com/maps/search/${
+                                info.loc
+                            },10Z" target="_blank">🗺️</a>`
+                        );
 
                     this.$ipDetails.innerHTML = details.join(" - ");
                 });
