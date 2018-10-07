@@ -798,10 +798,6 @@ export default class SpeedTestWorker {
         this.status = STATUS.ABORTED;
         this.running = false;
 
-        // for (let i = 0; i < this.test.timeouts.length; i++) {
-        //     this.scope.clearTimeout(this.test.timeouts[i]);
-        //     delete this.test.timeouts[i];
-        // }
         this.test.timeouts.forEach((timeoutIndex, index) => {
             this.scope.clearTimeout(timeoutIndex);
             delete this.test.timeouts[index];
