@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -55,6 +56,8 @@ func main() {
 	http.HandleFunc("/ip", getIP)
 	http.HandleFunc("/ping", setEmpty)
 	http.HandleFunc("/upload", setEmpty)
+
+	fmt.Print("Server listening at http://0.0.0.0:" + port + "\n")
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		panic(err)
 	}
