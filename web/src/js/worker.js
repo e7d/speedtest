@@ -104,7 +104,9 @@ export default class SpeedTestWorker {
     testIP() {
         const run = () => {
             return new Promise((resolve, reject) => {
-                const endpoint = this.config.ip.path + "?" + Uuid.v4();
+                const endpoint = `${this.config.xhr.endpoint}/${
+                    this.config.ip.path
+                }?${Uuid.v4()}`;
                 const xhr = new XMLHttpRequest();
 
                 xhr.open("GET", endpoint, true);
@@ -165,18 +167,18 @@ export default class SpeedTestWorker {
         };
 
         this.processLatencyResults();
-        this.scope.setTimeout(() => {
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.latency.status = STATUS.STARTING;
             this.test.latency.initDate = Date.now();
-        }, this.config.latency.delay * 1000);
-        this.scope.setTimeout(() => {
+        }, this.config.latency.delay * 1000));
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.latency.status = STATUS.RUNNING;
             this.test.latency.startDate = Date.now();
-        }, this.config.latency.delay * 1000 + this.config.latency.gracetime * 1000);
-        this.scope.setTimeout(() => {
+        }, this.config.latency.delay * 1000 + this.config.latency.gracetime * 1000));
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.latency.status = STATUS.DONE;
             this.test.latency.running = false;
-        }, this.config.latency.delay * 1000 + this.config.latency.duration * 1000);
+        }, this.config.latency.delay * 1000 + this.config.latency.duration * 1000));
 
         return this.testLatencyXHR(this.config.latency.delay * 1000)
             .then(() => this.processLatencyResults)
@@ -201,6 +203,7 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     testLatencyXHR(delay = 0) {
+        let pingDate, pongDate;
         const index = this.test.latency.index++;
 
         return new Promise((resolve, reject) => {
@@ -214,14 +217,20 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = this.config.latency.xhr.path + "?" + Uuid.v4();
+            const endpoint = `${this.config.xhr.endpoint}/${
+                this.config.latency.xhr.path
+            }?${Uuid.v4()}`;
             const xhr = new XMLHttpRequest();
             this.requests[index] = xhr;
 
             xhr.open("GET", endpoint, true);
+            xhr.onloadstart = () => {
+                pingDate = Date.now();
+            };
+            xhr.onreadystatechange = e => {
+                if (!pongDate && xhr.readyState >= 2) pongDate = Date.now();
+            }
             xhr.onload = () => {
-                const pongDate = Date.now();
-
                 if (STATUS.ABORTED === this.status) {
                     return reject({ status: STATUS.ABORTED });
                 }
@@ -231,14 +240,15 @@ export default class SpeedTestWorker {
                 }
 
                 if (STATUS.RUNNING === this.test.latency.status) {
-                    const performanceEntry = Performance.getEntry(
+                    const performance = Performance.getEntry(
                         this.scope,
                         endpoint
                     );
                     let networkLatency =
-                        null !== performanceEntry
-                            ? performanceEntry.responseStart -
-                              performanceEntry.requestStart
+                        null !== performance
+                            ? performance.responseStart -
+                                  performance.requestStart ||
+                              performance.duration
                             : pongDate - pingDate;
 
                     networkLatency = +networkLatency.toFixed(2);
@@ -271,11 +281,10 @@ export default class SpeedTestWorker {
                 });
             };
 
-            let pingDate;
-            this.scope.setTimeout(() => {
+            this.test.timeouts.push(this.scope.setTimeout(() => {
                 xhr.send();
                 pingDate = Date.now();
-            }, delay);
+            }, delay));
         });
     }
 
@@ -358,18 +367,18 @@ export default class SpeedTestWorker {
         }
 
         this.processDownloadSpeedResults();
-        this.scope.setTimeout(() => {
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.download.status = STATUS.STARTING;
             this.test.download.initDate = Date.now();
-        }, this.config.download.delay * 1000);
-        this.scope.setTimeout(() => {
+        }, this.config.download.delay * 1000));
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.download.status = STATUS.RUNNING;
             this.test.download.startDate = Date.now();
-        }, this.config.download.delay * 1000 + this.config.download.gracetime * 1000);
-        this.scope.setTimeout(() => {
+        }, this.config.download.delay * 1000 + this.config.download.gracetime * 1000));
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.download.status = STATUS.DONE;
             this.test.download.running = false;
-        }, this.config.download.delay * 1000 + this.config.download.duration * 1000);
+        }, this.config.download.delay * 1000 + this.config.download.duration * 1000));
 
         return Promise.all(this.test.download.promises)
             .then(() => this.processDownloadSpeedResults)
@@ -408,12 +417,9 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint =
-                this.config.download.xhr.path +
-                "?" +
-                Uuid.v4() +
-                "&size=" +
-                size;
+            const endpoint = `${this.config.xhr.endpoint}/${
+                this.config.download.xhr.path
+            }?${Uuid.v4()}&size=${size}`;
 
             const xhr = new XMLHttpRequest();
             this.requests[index] = xhr;
@@ -466,7 +472,7 @@ export default class SpeedTestWorker {
                 });
             };
 
-            this.scope.setTimeout(() => xhr.send(null), delay);
+            this.test.timeouts.push(this.scope.setTimeout(() => xhr.send(null), delay));
         });
     }
 
@@ -564,18 +570,18 @@ export default class SpeedTestWorker {
         }
 
         this.processUploadSpeedResults();
-        this.scope.setTimeout(() => {
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.upload.status = STATUS.STARTING;
             this.test.upload.initDate = Date.now();
-        }, this.config.upload.delay * 1000);
-        this.scope.setTimeout(() => {
+        }, this.config.upload.delay * 1000));
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.upload.status = STATUS.RUNNING;
             this.test.upload.startDate = Date.now();
-        }, this.config.upload.delay * 1000 + this.config.upload.gracetime * 1000);
-        this.scope.setTimeout(() => {
+        }, this.config.upload.delay * 1000 + this.config.upload.gracetime * 1000));
+        this.test.timeouts.push(this.scope.setTimeout(() => {
             this.test.upload.status = STATUS.DONE;
             this.test.upload.running = false;
-        }, this.config.upload.delay * 1000 + this.config.upload.duration * 1000);
+        }, this.config.upload.delay * 1000 + this.config.upload.duration * 1000));
 
         return Promise.all(this.test.upload.promises)
             .then(() => this.processUploadSpeedResults)
@@ -615,7 +621,9 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = this.config.upload.xhr.path + "?" + Uuid.v4();
+            const endpoint = `${this.config.xhr.endpoint}/${
+                this.config.upload.xhr.path
+            }?${Uuid.v4()}`;
 
             const xhr = new XMLHttpRequest();
 
@@ -668,9 +676,9 @@ export default class SpeedTestWorker {
                 });
             };
 
-            this.scope.setTimeout(() => {
+            this.test.timeouts.push(this.scope.setTimeout(() => {
                 xhr.send(this.test.upload.blob);
-            }, delay);
+            }, delay));
         });
     }
 
@@ -736,6 +744,9 @@ export default class SpeedTestWorker {
             error: null,
             data: [],
             requests: [],
+            test: {
+                timeouts: []
+            },
             results: {
                 latency: null,
                 download: null,
@@ -786,6 +797,15 @@ export default class SpeedTestWorker {
     abort() {
         this.status = STATUS.ABORTED;
         this.running = false;
+
+        // for (let i = 0; i < this.test.timeouts.length; i++) {
+        //     this.scope.clearTimeout(this.test.timeouts[i]);
+        //     delete this.test.timeouts[i];
+        // }
+        this.test.timeouts.forEach((timeoutIndex, index) => {
+            this.scope.clearTimeout(timeoutIndex);
+            delete this.test.timeouts[index];
+        });
 
         Request.clearRequests(this.requests);
     }
