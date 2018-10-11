@@ -6,7 +6,7 @@ WORKDIR /app
 COPY server/go/* ./
 COPY web/dist ./web
 
-RUN go build -o serve server.go \
+RUN go build -o server server.go \
     && rm server.go
 
 EXPOSE 80
