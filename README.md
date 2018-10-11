@@ -5,7 +5,7 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 ## Compatibility
 
 | Chrome | Edge | Firefox | IE | Opera | Safari | 
-|--------|------|---------|-------------------|-------|--------|
+|--------|------|---------|----|-------|--------|
 | 43     | *    | 48.0    | 11 | 12.10 | 6.0    |
 
 ## Features
@@ -29,6 +29,7 @@ docker run --name speedtest -d -p 80:80 e7db/speedtest
 ```
 
 Available versions:
+
 | Server language  | Tags             |
 |------------------|------------------|
 | Go               | `go`             |
@@ -70,13 +71,14 @@ php -S 0.0.0.0:80 -t ../../web/dist server.php
 
 ### Custom server script
 
-You may also run a server based on your own backend script. You should comply to the following routes, for the web UI to work properly: 
-| Endpoint  | Arguments           | Expected behavior         |
-|-----------|---------------------|---------------------------|
-| /ip       |                     | Returns the user IP       |
-| /ping     |                     | Returns an empty response |
-| /upload   |                     | Returns an empty response |
-| /download | `size`, `chunkSize` | Returns binary data as long as `size`, with chunks of `chunkSize` |
+You may also run a server based on your own backend script. You should comply to the following routes, for the web UI to work properly:
+
+| Endpoint    | Arguments           | Expected behavior         |
+|-------------|---------------------|---------------------------|
+| `/ip`       |                     | Returns the user IP       |
+| `/ping`     |                     | Returns an empty response |
+| `/upload`   |                     | Returns an empty response |
+| `/download` | `size`, `chunkSize` | Returns binary data as long as `size`, with chunks of `chunkSize` |
 
 ## License 
 
