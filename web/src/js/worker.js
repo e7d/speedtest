@@ -1,5 +1,3 @@
-//@ts-check
-
 import Bandwidth from "./utils/bandwidth";
 import Config from "./worker/config";
 import Performance from "./utils/performance";
@@ -34,7 +32,6 @@ export default class SpeedTestWorker {
     constructor(scope = self) {
         this.scope = scope;
 
-        Config.loadConfig().then(config => (this.config = config));
         this.running = false;
         this.status = STATUS.WAITING;
         this.step = null;
@@ -43,6 +40,19 @@ export default class SpeedTestWorker {
         this.requests = [];
         this.test = {};
         this.results = {};
+        this.alerts = {};
+        if (this.scope.location.protocol === "https:") {
+            this.alerts = {
+                https:
+                    "Speed test is loaded through HTTPS propocol, results may be impacted."
+            };
+            console.warn(this.alerts.https);
+        }
+
+        Config.loadConfig().then(config =>{
+            this.config = config;
+            this.postStatus();
+        });
 
         this.scope.addEventListener("message", this.processMessage.bind(this));
 
@@ -90,9 +100,11 @@ export default class SpeedTestWorker {
      */
     postStatus() {
         this.postMessage({
+            config: this.config,
             status: this.status,
             step: this.step,
-            results: this.results
+            results: this.results,
+            alerts: this.alerts
         });
     }
 
@@ -167,18 +179,24 @@ export default class SpeedTestWorker {
         };
 
         this.processLatencyResults();
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.latency.status = STATUS.STARTING;
-            this.test.latency.initDate = Date.now();
-        }, this.config.latency.delay * 1000));
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.latency.status = STATUS.RUNNING;
-            this.test.latency.startDate = Date.now();
-        }, this.config.latency.delay * 1000 + this.config.latency.gracetime * 1000));
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.latency.status = STATUS.DONE;
-            this.test.latency.running = false;
-        }, this.config.latency.delay * 1000 + this.config.latency.duration * 1000));
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.latency.status = STATUS.STARTING;
+                this.test.latency.initDate = Date.now();
+            }, this.config.latency.delay * 1000)
+        );
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.latency.status = STATUS.RUNNING;
+                this.test.latency.startDate = Date.now();
+            }, this.config.latency.delay * 1000 + this.config.latency.gracetime * 1000)
+        );
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.latency.status = STATUS.DONE;
+                this.test.latency.running = false;
+            }, this.config.latency.delay * 1000 + this.config.latency.duration * 1000)
+        );
 
         return this.testLatencyXHR(this.config.latency.delay * 1000)
             .then(() => this.processLatencyResults)
@@ -229,7 +247,7 @@ export default class SpeedTestWorker {
             };
             xhr.onreadystatechange = e => {
                 if (!pongDate && xhr.readyState >= 2) pongDate = Date.now();
-            }
+            };
             xhr.onload = () => {
                 if (STATUS.ABORTED === this.status) {
                     return reject({ status: STATUS.ABORTED });
@@ -281,10 +299,12 @@ export default class SpeedTestWorker {
                 });
             };
 
-            this.test.timeouts.push(this.scope.setTimeout(() => {
-                xhr.send();
-                pingDate = Date.now();
-            }, delay));
+            this.test.timeouts.push(
+                this.scope.setTimeout(() => {
+                    xhr.send();
+                    pingDate = Date.now();
+                }, delay)
+            );
         });
     }
 
@@ -367,18 +387,24 @@ export default class SpeedTestWorker {
         }
 
         this.processDownloadSpeedResults();
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.download.status = STATUS.STARTING;
-            this.test.download.initDate = Date.now();
-        }, this.config.download.delay * 1000));
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.download.status = STATUS.RUNNING;
-            this.test.download.startDate = Date.now();
-        }, this.config.download.delay * 1000 + this.config.download.gracetime * 1000));
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.download.status = STATUS.DONE;
-            this.test.download.running = false;
-        }, this.config.download.delay * 1000 + this.config.download.duration * 1000));
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.download.status = STATUS.STARTING;
+                this.test.download.initDate = Date.now();
+            }, this.config.download.delay * 1000)
+        );
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.download.status = STATUS.RUNNING;
+                this.test.download.startDate = Date.now();
+            }, this.config.download.delay * 1000 + this.config.download.gracetime * 1000)
+        );
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.download.status = STATUS.DONE;
+                this.test.download.running = false;
+            }, this.config.download.delay * 1000 + this.config.download.duration * 1000)
+        );
 
         return Promise.all(this.test.download.promises)
             .then(() => this.processDownloadSpeedResults)
@@ -472,7 +498,9 @@ export default class SpeedTestWorker {
                 });
             };
 
-            this.test.timeouts.push(this.scope.setTimeout(() => xhr.send(null), delay));
+            this.test.timeouts.push(
+                this.scope.setTimeout(() => xhr.send(null), delay)
+            );
         });
     }
 
@@ -570,18 +598,24 @@ export default class SpeedTestWorker {
         }
 
         this.processUploadSpeedResults();
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.upload.status = STATUS.STARTING;
-            this.test.upload.initDate = Date.now();
-        }, this.config.upload.delay * 1000));
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.upload.status = STATUS.RUNNING;
-            this.test.upload.startDate = Date.now();
-        }, this.config.upload.delay * 1000 + this.config.upload.gracetime * 1000));
-        this.test.timeouts.push(this.scope.setTimeout(() => {
-            this.test.upload.status = STATUS.DONE;
-            this.test.upload.running = false;
-        }, this.config.upload.delay * 1000 + this.config.upload.duration * 1000));
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.upload.status = STATUS.STARTING;
+                this.test.upload.initDate = Date.now();
+            }, this.config.upload.delay * 1000)
+        );
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.upload.status = STATUS.RUNNING;
+                this.test.upload.startDate = Date.now();
+            }, this.config.upload.delay * 1000 + this.config.upload.gracetime * 1000)
+        );
+        this.test.timeouts.push(
+            this.scope.setTimeout(() => {
+                this.test.upload.status = STATUS.DONE;
+                this.test.upload.running = false;
+            }, this.config.upload.delay * 1000 + this.config.upload.duration * 1000)
+        );
 
         return Promise.all(this.test.upload.promises)
             .then(() => this.processUploadSpeedResults)
@@ -676,9 +710,11 @@ export default class SpeedTestWorker {
                 });
             };
 
-            this.test.timeouts.push(this.scope.setTimeout(() => {
-                xhr.send(this.test.upload.blob);
-            }, delay));
+            this.test.timeouts.push(
+                this.scope.setTimeout(() => {
+                    xhr.send(this.test.upload.blob);
+                }, delay)
+            );
         });
     }
 

@@ -32,17 +32,18 @@ export default class WebUI {
         this.worker.onmessage = event => {
             this.processResponse(event);
         };
-
         this.$startButton = document.querySelector("#commands button#start");
         this.$stopButton = document.querySelector("#commands button#stop");
-        this.$progress = document.querySelector("#progress");
-        this.$progressBar = document.querySelector("#progress .progress-bar");
+        this.$httpsAlertMessage = document.querySelector("#https-alert");
         this.$ipValue = document.querySelector("#ip span.value");
         this.$ipDetails = document.querySelector("#ip span.details");
         this.$latencyValue = document.querySelector("#latency span.value");
         this.$jitterValue = document.querySelector("#jitter span.value");
         this.$downloadValue = document.querySelector("#download span.value");
         this.$uploadValue = document.querySelector("#upload span.value");
+        this.$progress = document.querySelector("#progress");
+        this.$progressBar = document.querySelector("#progress .progress-bar");
+        this.$credits = document.querySelector("#credits");
 
         this.$startButton.addEventListener("click", this.startTest.bind(this));
         this.$stopButton.addEventListener("click", this.stopTest.bind(this));
@@ -52,10 +53,7 @@ export default class WebUI {
      * Start a speed test.
      */
     startTest() {
-        if (this.running) {
-            return;
-        }
-
+        if (this.running) return;
         this.running = true;
 
         this.$startButton.setAttribute("hidden", "");
@@ -66,14 +64,10 @@ export default class WebUI {
 
         this.worker.postMessage("start");
 
-        if (!this.config.updateDelay) {
-            return;
-        }
-
+        if (!this.config.updateDelay) return;
         if (this.config.updateDelay === "auto") {
             this.worker.postMessage("status");
         }
-
         window.clearInterval(this.statusInterval);
         this.statusInterval = window.setInterval(() => {
             this.worker.postMessage("status");
@@ -84,18 +78,13 @@ export default class WebUI {
      * Abort a running speed test.
      */
     stopTest() {
-        if (!this.running) {
-            return;
-        }
-
+        if (!this.running) return;
         this.running = false;
 
         window.clearInterval(this.statusInterval);
         this.statusInterval = null;
 
-        if (this.worker) {
-            this.worker.postMessage("abort");
-        }
+        if (this.worker) this.worker.postMessage("abort");
 
         this.setProgressBar(0);
     }
@@ -107,6 +96,16 @@ export default class WebUI {
      */
     processResponse(event) {
         switch (event.data.status) {
+            case this.STATUS.WAITING:
+                if (!event.data.config.hideCredits){
+                    this.$credits.style.display = "block";
+                }
+
+                if (event.data.alerts.https) {
+                    this.$httpsAlertMessage.style.display = "block";
+                    this.$httpsAlertMessage.innerHTML = event.data.alerts.https;
+                }
+                break;
             case this.STATUS.RUNNING:
                 this.processData(event.data || {});
                 break;
