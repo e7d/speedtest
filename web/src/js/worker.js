@@ -1,23 +1,11 @@
 import Bandwidth from "./utils/bandwidth";
-import Config from "./worker/config";
 import Performance from "./utils/performance";
 import Request from "./utils/request";
 import Uuid from "./utils/uuid";
 
-const STATUS = {
-    WAITING: 0,
-    STARTING: 1,
-    RUNNING: 2,
-    DONE: 3,
-    ABORTED: 4,
-    FAILED: -1
-};
-const STEP = {
-    IP: "ip",
-    LATENCY: "latency",
-    DOWNLOAD: "download",
-    UPLOAD: "upload"
-};
+import Config from "./worker/config";
+import STATUS from "./worker/status";
+import STEP from "./worker/step";
 
 /**
  * Speed Test worker
