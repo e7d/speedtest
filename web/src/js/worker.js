@@ -113,7 +113,7 @@ export default class SpeedTestWorker {
      *
      * @returns {Promise}
      */
-    testIP() {
+    async testIP() {
         const run = () => {
             return new Promise((resolve, reject) => {
                 const endpoint = `${this.config.xhr.endpoint}/${
@@ -169,7 +169,7 @@ export default class SpeedTestWorker {
      *
      * @returns {Promise}
      */
-    testLatency() {
+    async testLatency() {
         this.test.latency = {
             initDate: null,
             status: STATUS.WAITING,
@@ -365,7 +365,7 @@ export default class SpeedTestWorker {
      *
      * @returns {Promise}
      */
-    testDownloadSpeed() {
+    async testDownloadSpeed() {
         this.test.download = {
             initDate: null,
             status: STATUS.WAITING,
@@ -575,7 +575,7 @@ export default class SpeedTestWorker {
      *
      * @returns {Promise}
      */
-    testUploadSpeed() {
+    async testUploadSpeed() {
         this.test.upload = {
             initDate: null,
             status: STATUS.WAITING,
@@ -758,7 +758,7 @@ export default class SpeedTestWorker {
      *
      * @returns {Promise}
      */
-    run() {
+    async run() {
         if (this.running) {
             return new Promise((resolve, reject) => {
                 reject({
