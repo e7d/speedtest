@@ -28,14 +28,6 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 docker run --name speedtest -d -p 80:80 e7db/speedtest
 ```
 
-Available versions:
-
-| Server language  | Tags             |
-|------------------|------------------|
-| Go               | `go`             |
-| NodeJS (default) | `node`, `latest` |
-| PHP              | `php`            |
-
 ### Self-hosted server
 
 Having cloned this repository, you can launch the speed test on your server in different flavors.
@@ -47,26 +39,13 @@ cd web
 npm run prod
 ```
 
-Then, different server technologies are available to run the backend side.
+Then, prepare dependencies and run the server.
 
-#### Go
-```sh
-cd server/go
-go build -o server server.go
-./server 80 ../../web/dist
-```
 
-#### NodeJS
 ```sh
-cd server/node
+cd server
 npm install
-node server.js 80 ../../web/dist
-```
-
-#### PHP
-```sh
-cd server/php
-php -S 0.0.0.0:80 -t ../../web/dist server.php
+node server.js 80 ../web/dist
 ```
 
 ### Custom server script
