@@ -12,6 +12,10 @@ class Config {
         return {
             ignoreErrors: true,
             optimize: false,
+            websocket: {
+                protocol: self.location.protocol.replace('http', 'ws').replace(":", ""),
+                host: `${self.location.host}`
+            },
             xhr: {
                 protocol: self.location.protocol.replace(":", ""),
                 host: `${self.location.host}`
@@ -21,6 +25,10 @@ class Config {
                 path: "ip"
             },
             latency: {
+                mode: "websocket", // "websocket" or "xhr"
+                websocket: {
+                    path: "ping"
+                },
                 xhr: {
                     path: "ping"
                 },
@@ -30,6 +38,13 @@ class Config {
                 gracetime: 1
             },
             download: {
+                mode: "xhr", // "websocket" or "xhr"
+                websocket: {
+                    path: "download",
+                    streams: 1,
+                    size: 8 * 1024 * 1024,
+                    binaryType: "blob" // "arraybuffer" or "blob"
+                },
                 xhr: {
                     path: "download",
                     streams: 6,
@@ -42,6 +57,12 @@ class Config {
                 gracetime: 2
             },
             upload: {
+                mode: "xhr", // "websocket" or "xhr"
+                websocket: {
+                    path: "upload",
+                    streams: 20,
+                    size: 1 * 1024 * 1024
+                },
                 xhr: {
                     path: "upload",
                     streams: 6,

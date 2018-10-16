@@ -37,7 +37,7 @@ export default class SpeedTestWorker {
             console.warn(this.alerts.https);
         }
 
-        Config.loadConfig().then(config =>{
+        Config.loadConfig().then(config => {
             this.config = config;
             this.postStatus();
         });
@@ -110,13 +110,13 @@ export default class SpeedTestWorker {
                 const xhr = new XMLHttpRequest();
 
                 xhr.open("GET", endpoint, true);
-                xhr.addEventListener('load', () => {
+                xhr.addEventListener("load", () => {
                     this.results.ip = xhr.response;
                     Request.clearXMLHttpRequest(xhr);
 
                     resolve();
                 });
-                xhr.addEventListener('error', () => {
+                xhr.addEventListener("error", () => {
                     Request.clearXMLHttpRequest(xhr);
 
                     reject({
@@ -158,6 +158,11 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     async testLatency() {
+        const run =
+            "websocket" === this.config.latency.mode
+                ? (delay = 0) => this.testLatencyWebSocket(delay)
+                : (delay = 0) => this.testLatencyXHR(delay);
+
         this.test.latency = {
             initDate: null,
             status: STATUS.WAITING,
@@ -186,7 +191,7 @@ export default class SpeedTestWorker {
             }, this.config.latency.delay * 1000 + this.config.latency.duration * 1000)
         );
 
-        return this.testLatencyXHR(this.config.latency.delay * 1000)
+        return run(this.config.latency.delay * 1000)
             .then(() => this.processLatencyResults)
             .catch(reason => {
                 this.test.latency.error = reason;
@@ -200,6 +205,99 @@ export default class SpeedTestWorker {
                     throw this.test.latency.error;
                 }
             });
+    }
+
+    /**
+     * Run the WebSocket based latency test
+     *
+     * @param {number} [delay=0]
+     * @returns {Promise}
+     */
+    testLatencyWebSocket(delay = 0) {
+        let index = 0;
+
+        return new Promise((resolve, reject) => {
+            if (STATUS.ABORTED === this.status) {
+                return reject({
+                    status: STATUS.ABORTED
+                });
+            }
+
+            if (STATUS.DONE === this.test.latency.status) {
+                return resolve();
+            }
+
+            const endpoint = `${this.config.websocket.protocol}://${
+                this.config.websocket.host
+            }/${this.config.latency.websocket.path}`;
+            const socket = new WebSocket(endpoint);
+            this.requests[index] = socket;
+
+            socket.addEventListener("message", e => {
+                if (STATUS.ABORTED === this.status) {
+                    socket.close();
+                    return reject({ status: STATUS.ABORTED });
+                }
+
+                if (STATUS.DONE === this.test.latency.status) {
+                    socket.close();
+                    return resolve();
+                }
+
+                if (STATUS.RUNNING === this.test.latency.status) {
+                    const data = JSON.parse(e.data);
+                    const index = data.index;
+                    let networkLatency =
+                        Date.now() - this.test.latency.pingDate[index];
+                    networkLatency = +networkLatency.toFixed(2);
+                    this.test.latency.data.push(networkLatency);
+                }
+
+                this.processLatencyResults();
+
+                index += 1;
+                this.test.latency.pingDate[index] = Date.now();
+                socket.send(
+                    JSON.stringify({
+                        action: "ping",
+                        index: index
+                    })
+                );
+            });
+
+            socket.addEventListener("close", () => {
+                Request.clearWebSocket(socket);
+            });
+
+            socket.addEventListener("error", () => {
+                if (this.config.ignoreErrors) {
+                    this.testLatencyWebSocket()
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
+
+                Request.clearWebSocket(socket);
+
+                reject({
+                    status: STATUS.FAILED,
+                    error: "test failed"
+                });
+            });
+
+            socket.addEventListener("open", () => {
+                this.scope.setTimeout(() => {
+                    index += 1;
+                    this.test.latency.pingDate[index] = +new Date();
+                    socket.send(
+                        JSON.stringify({
+                            action: "ping",
+                            index: index
+                        })
+                    );
+                }, delay);
+            });
+        });
     }
 
     /**
@@ -230,13 +328,13 @@ export default class SpeedTestWorker {
             this.requests[index] = xhr;
 
             xhr.open("GET", endpoint, true);
-            xhr.addEventListener('loadstart', () => {
+            xhr.addEventListener("loadstart", () => {
                 pingDate = Date.now();
             });
-            xhr.addEventListener('readystatechange', e => {
+            xhr.addEventListener("readystatechange", e => {
                 if (!pongDate && xhr.readyState >= 2) pongDate = Date.now();
             });
-            xhr.addEventListener('load', () => {
+            xhr.addEventListener("load", () => {
                 if (STATUS.ABORTED === this.status) {
                     return reject({ status: STATUS.ABORTED });
                 }
@@ -273,7 +371,7 @@ export default class SpeedTestWorker {
                     .then(resolve)
                     .catch(reject);
             });
-            xhr.addEventListener('error', () => {
+            xhr.addEventListener("error", () => {
                 if (this.config.ignoreErrors) {
                     this.testLatencyXHR()
                         .then(resolve)
@@ -354,6 +452,12 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     async testDownloadSpeed() {
+        const run =
+            "websocket" === this.config.download.mode
+                ? (size, delay = 0) =>
+                      this.testDownloadSpeedWebSocket(size, delay)
+                : (size, delay = 0) => this.testDownloadSpeedXHR(size, delay);
+
         this.test.download = {
             initDate: null,
             status: STATUS.WAITING,
@@ -366,7 +470,7 @@ export default class SpeedTestWorker {
 
         this.test.download.promises = [];
         for (let index = 0; index < this.config.download.xhr.streams; index++) {
-            const testPromise = this.testDownloadSpeedXHR(
+            const testPromise = run(
                 this.config.download.xhr.size,
                 this.config.download.delay * 1000 +
                     index * this.config.download.xhr.delay
@@ -411,6 +515,97 @@ export default class SpeedTestWorker {
     }
 
     /**
+     * Run the WebSocket based download speed test
+     *
+     * @param {any} size
+     * @param {number} [delay=0]
+     * @returns {Promise}
+     */
+    testDownloadSpeedWebSocket(size, delay = 0) {
+        const index = this.test.download.index++;
+
+        return new Promise((resolve, reject) => {
+            if (STATUS.ABORTED === this.status) {
+                return reject({
+                    status: STATUS.ABORTED
+                });
+            }
+
+            if (STATUS.DONE === this.test.download.status) {
+                return resolve();
+            }
+
+            const endpoint = `${this.config.websocket.protocol}://${this
+                .config.websocket.host}/${
+                this.config.download.websocket.path
+            }`;
+            const socket = new WebSocket(endpoint);
+            socket.binaryType = this.config.download.websocket.binaryType;
+            this.requests[index] = socket;
+            socket.addEventListener("message", e => {
+                if (STATUS.ABORTED === this.status) {
+                    socket.close();
+                    return reject({ status: STATUS.ABORTED });
+                }
+
+                if (STATUS.DONE === this.test.download.status) {
+                    socket.close();
+                    return resolve();
+                }
+
+                if (STATUS.RUNNING === this.test.download.status) {
+                    this.test.download.size += e.data.length;
+                }
+                this.processDownloadSpeedResults();
+
+                socket.send(
+                    JSON.stringify({
+                        action: "download"
+                    })
+                );
+            });
+
+            socket.addEventListener("close", () => {
+                Request.clearWebSocket(socket);
+            });
+
+            socket.addEventListener("error", () => {
+                if (this.config.ignoreErrors) {
+                    this.testDownloadSpeedWebSocket(size)
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
+
+                Request.clearWebSocket(socket);
+
+                reject({
+                    status: STATUS.FAILED,
+                    error: "test failed"
+                });
+            });
+
+            socket.addEventListener("open", () => {
+                this.scope.setTimeout(() => {
+                    socket.send(
+                        JSON.stringify({
+                            action: "prepare",
+                            size: this.config.download.websocket.size,
+                            chunkSize: this.config.download.websocket.chunkSize
+                        })
+                    );
+
+                    socket.send(
+                        JSON.stringify({
+                            action: "download"
+                        })
+                    );
+                }, delay);
+            });
+        });
+    }
+
+    /**
      * Run the XHR based download speed test
      *
      * @param {any} size
@@ -443,7 +638,7 @@ export default class SpeedTestWorker {
 
             let sizeLoaded = 0;
             xhr.open("GET", endpoint, true);
-            xhr.addEventListener('progress', e => {
+            xhr.addEventListener("progress", e => {
                 if (STATUS.ABORTED === this.status) {
                     Request.clearXMLHttpRequest(xhr);
                     reject({ status: STATUS.ABORTED });
@@ -463,14 +658,14 @@ export default class SpeedTestWorker {
                 }
                 this.processDownloadSpeedResults();
             });
-            xhr.addEventListener('load', () => {
+            xhr.addEventListener("load", () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 this.testDownloadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
             });
-            xhr.addEventListener('error', () => {
+            xhr.addEventListener("error", () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 if (this.config.ignoreErrors) {
@@ -564,6 +759,12 @@ export default class SpeedTestWorker {
      * @returns {Promise}
      */
     async testUploadSpeed() {
+        const run =
+            "websocket" === this.config.upload.mode
+                ? (size, delay = 0) =>
+                      this.testUploadSpeedWebSocket(size, delay)
+                : (size, delay = 0) => this.testUploadSpeedXHR(size, delay);
+
         this.test.upload = {
             initDate: null,
             status: STATUS.WAITING,
@@ -577,7 +778,7 @@ export default class SpeedTestWorker {
 
         this.test.upload.promises = [];
         for (let index = 0; index < this.config.upload.xhr.streams; index++) {
-            const testPromise = this.testUploadSpeedXHR(
+            const testPromise = run(
                 this.config.upload.xhr.size,
                 this.config.upload.delay * 1000 +
                     index * this.config.upload.xhr.delay
@@ -623,6 +824,82 @@ export default class SpeedTestWorker {
     }
 
     /**
+     * Run the WebSocket based upload speed test
+     *
+     * @param {any} size
+     * @param {number} [delay=0]
+     * @returns {Promise}
+     */
+    testUploadSpeedWebSocket(size, delay = 0) {
+        const index = this.test.upload.index++;
+
+        return new Promise((resolve, reject) => {
+            if (STATUS.ABORTED === this.status) {
+                return reject({
+                    status: STATUS.ABORTED
+                });
+            }
+
+            if (STATUS.DONE === this.test.upload.status) {
+                return resolve();
+            }
+
+            const endpoint = `${this.config.websocket.protocol}://${this
+                .config.websocket.host}/${
+                this.config.upload.websocket.path
+            }`;
+            const socket = new WebSocket(endpoint);
+            socket.binaryType = "arraybuffer";
+
+            this.requests[index] = socket;
+            socket.addEventListener('message', () => {
+                if (STATUS.ABORTED === this.status) {
+                    socket.close();
+                    return reject({ status: STATUS.ABORTED });
+                }
+
+                if (STATUS.DONE === this.test.upload.status) {
+                    socket.close();
+                    return resolve();
+                }
+
+                if (STATUS.RUNNING === this.test.upload.status) {
+                    this.test.upload.size += this.test.upload.blob.size;
+                }
+                this.processUploadSpeedResults();
+
+                socket.send(this.test.upload.blob);
+            });
+
+            socket.addEventListener('close', () => {
+                Request.clearWebSocket(socket);
+            });
+
+            socket.addEventListener('error', () => {
+                if (this.config.ignoreErrors) {
+                    this.testUploadSpeedWebSocket(size)
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
+
+                Request.clearWebSocket(socket);
+
+                reject({
+                    status: STATUS.FAILED,
+                    error: "test failed"
+                });
+            });
+
+            socket.addEventListener('open', () => {
+                this.scope.setTimeout(() => {
+                    socket.send(this.test.upload.blob);
+                }, delay);
+            });
+        });
+    }
+
+    /**
      * Run the XHR based upload speed test
      *
      * @param {any} size
@@ -654,7 +931,7 @@ export default class SpeedTestWorker {
             let sizeLoaded = 0;
             xhr.open("POST", endpoint, true);
             xhr.setRequestHeader("Content-Encoding", "identity");
-            xhr.upload.addEventListener('progress', e => {
+            xhr.upload.addEventListener("progress", e => {
                 if (STATUS.ABORTED === this.status) {
                     Request.clearXMLHttpRequest(xhr);
                     return reject({ status: STATUS.ABORTED });
@@ -674,7 +951,7 @@ export default class SpeedTestWorker {
                 this.processUploadSpeedResults();
             });
 
-            xhr.upload.addEventListener('load', () => {
+            xhr.upload.addEventListener("load", () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 this.testUploadSpeedXHR(size)
@@ -682,7 +959,7 @@ export default class SpeedTestWorker {
                     .catch(reject);
             });
 
-            xhr.upload.addEventListener('error', () => {
+            xhr.upload.addEventListener("error", () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 if (this.config.ignoreErrors) {
