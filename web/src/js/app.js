@@ -1,5 +1,6 @@
 //@ts-check
 
+import html2canvas from "html2canvas";
 import SpeedTestWorker from "worker-loader!./worker";
 
 /**
@@ -32,25 +33,30 @@ export default class WebUI {
         this.worker.addEventListener("message", event => {
             this.processResponse(event);
         });
-        this.$shareButton = document.querySelector("#commands button#share");
+        this.$shareButton = document.querySelector("#commands a#share");
         this.$startButton = document.querySelector("#commands button#start");
         this.$stopButton = document.querySelector("#commands button#stop");
         this.$httpsAlertMessage = document.querySelector("#https-alert");
-        this.$ipResult = document.querySelector('#ip');
+        this.$results = document.querySelector("#results");
+        this.$ipResult = document.querySelector("#ip");
         this.$ipValue = document.querySelector("#ip span.value");
         this.$ipDetails = document.querySelector("#ip span.details");
-        this.$latencyResult = document.querySelector('#latency');
+        this.$latencyResult = document.querySelector("#latency");
         this.$latencyValue = document.querySelector("#latency span.value");
-        this.$jitterResult = document.querySelector('#jitter');
+        this.$jitterResult = document.querySelector("#jitter");
         this.$jitterValue = document.querySelector("#jitter span.value");
-        this.$downloadResult = document.querySelector('#download');
+        this.$downloadResult = document.querySelector("#download");
         this.$downloadValue = document.querySelector("#download span.value");
-        this.$uploadResult = document.querySelector('#upload');
+        this.$uploadResult = document.querySelector("#upload");
         this.$uploadValue = document.querySelector("#upload span.value");
         this.$progress = document.querySelector("#progress");
         this.$progressBar = document.querySelector("#progress .progress-bar");
         this.$credits = document.querySelector("#credits");
 
+        this.$shareButton.addEventListener(
+            "click",
+            this.shareResults.bind(this)
+        );
         this.$startButton.addEventListener("click", this.startTest.bind(this));
         this.$stopButton.addEventListener("click", this.stopTest.bind(this));
     }
@@ -127,7 +133,18 @@ export default class WebUI {
 
                 this.setProgressBar(0);
 
-                this.$shareButton.removeAttribute("hidden");
+                html2canvas(this.$results, {
+                    scale: 1,
+                    windowWidth: 480
+                }).then(canvas => {
+                    this.$shareButton.href = canvas
+                        .toDataURL("image/png")
+                        .replace(
+                            /^data:image\/[^;]/,
+                            "data:application/octet-stream"
+                        );
+                    this.$shareButton.removeAttribute("hidden");
+                });
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
 
@@ -164,12 +181,9 @@ export default class WebUI {
     /**
      * Process a set of data.
      *
-     * @param {any} data
+     * @param {Object} data
      */
     processData(data) {
-        document
-            .querySelectorAll(".result")
-            .forEach(elem => elem.classList.remove("active"));
         if (!this.running) {
             return;
         }
@@ -178,32 +192,22 @@ export default class WebUI {
             case "ip":
                 if (!data.results.ip) return;
                 this.$ipValue.innerHTML = data.results.ip;
+                this.$ipDetails.style.display = "none";
                 this.$ipDetails.innerHTML = "";
                 this.getIpInfo(data.results.ip).then(info => {
                     if (info.bogon) return;
+                    if (!info.org) return;
 
-                    const details = [];
-                    if (info.org) details.push(info.org);
-                    if (info.country) details.push(info.country);
-                    if (info.loc)
-                        details.push(
-                            `<a href="https://www.google.com/maps/search/${
-                                info.loc
-                            },10Z" target="_blank">🗺️</a>`
-                        );
-
-                    this.$ipDetails.innerHTML = details.join(" - ");
+                    this.$ipDetails.style.display = "block";
+                    this.$ipDetails.innerHTML = info.org;
                 });
                 break;
             case "latency":
-                this.$latencyResult.classList.add("active");
-                this.$jitterResult.classList.add("active");
                 this.$latencyValue.innerHTML = data.results.latency.avg || "";
                 this.$jitterValue.innerHTML = data.results.latency.jitter || "";
                 this.setProgressBar(data.results.latency.progress);
                 break;
             case "download":
-                this.$downloadResult.classList.add("active");
                 const downloadValue = data.results.download
                     ? +data.results.download.speed / (1024 * 1024)
                     : 0;
@@ -213,7 +217,6 @@ export default class WebUI {
                 this.setProgressBar(data.results.download.progress, "download");
                 break;
             case "upload":
-                this.$uploadResult.classList.add("active");
                 const uploadValue = data.results.upload
                     ? +data.results.upload.speed / (1024 * 1024)
                     : 0;
@@ -223,13 +226,41 @@ export default class WebUI {
                 this.setProgressBar(data.results.upload.progress);
                 break;
         }
+
+        if (this.previousStep !== data.step) this.highlightStep(data.step);
+        this.previousStep = data.step;
+    }
+
+    /**
+     * Highlights the curren running step.
+     * @param {String} step
+     */
+    highlightStep(step) {
+        console.log(step);
+
+        document
+            .querySelectorAll(".result")
+            .forEach(elem => elem.classList.remove("active"));
+
+        switch (step) {
+            case "latency":
+                this.$latencyResult.classList.add("active");
+                this.$jitterResult.classList.add("active");
+                break;
+            case "download":
+                this.$downloadResult.classList.add("active");
+                break;
+            case "upload":
+                this.$uploadResult.classList.add("active");
+                break;
+        }
     }
 
     /**
      * Set a value on the progress bar
      *
-     * @param {*} progress
-     * @param {*} mode
+     * @param {Number} progress
+     * @param {String} mode
      */
     setProgressBar(progress, mode = "") {
         if (this.config.updateDelay === "auto") {
@@ -240,6 +271,11 @@ export default class WebUI {
         this.$progressBar.style.width = progress * 100 + "%";
     }
 
+    /**
+     * Get IP information from "ipinfo.io"
+     *
+     * @param {String} ip
+     */
     getIpInfo(ip) {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
