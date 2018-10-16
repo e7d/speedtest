@@ -13,6 +13,10 @@
                                  "l l j j"
                                  "d d u u";
             grid-template-columns: repeat(4, 25%);
+
+            i {
+                display: block;
+            }
         }
     }
 
