@@ -1,9 +1,0 @@
-node:
-    image: node:10-alpine
-    working_dir: /app
-    command: npm run docker
-    volumes:
-        - ./node:/app
-        - ../web/dist:/app/web
-    ports:
-        - 8080:8080

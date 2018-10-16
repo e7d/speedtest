@@ -10,7 +10,7 @@
     "url": "https://github.com/e7d/speedtest.git"
   },
   "scripts": {
-    "docker": "npm install && npx nodemon server.js 8080 web",
+    "prod": "npm install --production && npm ci",
     "start": "node server.js"
   },
   "dependencies": {

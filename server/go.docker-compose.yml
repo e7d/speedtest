@@ -1,9 +1,0 @@
-go:
-    image: golang:1-alpine
-    working_dir: /app
-    command: go run server.go 8080 web
-    volumes:
-        - ./go:/app
-        - ../web/dist:/app/web
-    ports:
-        - 8080:8080

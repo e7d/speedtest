@@ -1,9 +1,0 @@
-php:
-    image: php:7-alpine
-    working_dir: /app
-    command: php -S 0.0.0.0:8080 -t web server.php
-    volumes:
-        - ./php:/app
-        - ../web/dist:/app/web
-    ports:
-        - 8080:8080

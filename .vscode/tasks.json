@@ -4,82 +4,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Server: Go (Docker)",
+            "label": "Server",
             "type": "shell",
             "command": [
-                "docker-compose -f server/go.docker-compose.yml up"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: Go",
-            "type": "shell",
-            "command": [
-                "go run server/go/server.go 8080 web/dist"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: NodeJS (Docker)",
-            "type": "shell",
-            "command": [
-                "docker-compose -f server/node.docker-compose.yml up"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: NodeJS",
-            "type": "shell",
-            "command": [
-                "npx nodemon server/node/server.js 8080 web/dist"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: PHP (Docker)",
-            "type": "shell",
-            "command": [
-                "docker-compose -f server/php.docker-compose.yml up"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: PHP",
-            "type": "shell",
-            "command": [
-                "php -S 0.0.0.0:8080 -t web/dist/ server/php/server.php"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: Python (Docker)",
-            "type": "shell",
-            "command": [
-                "docker-compose -f server/python.docker-compose.yml up"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: Python",
-            "type": "shell",
-            "command": [
-                "python server/python/server.py 8080 web/dist"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: Ruby (Docker)",
-            "type": "shell",
-            "command": [
-                "docker-compose -f server/ruby.docker-compose.yml up"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Server: Ruby",
-            "type": "shell",
-            "command": [
-                "ruby server/ruby/server.rb 8080 web/dist"
+                "npx nodemon server/server.js 8080 web/dist"
             ],
             "problemMatcher": []
         },
