@@ -110,20 +110,20 @@ export default class SpeedTestWorker {
                 const xhr = new XMLHttpRequest();
 
                 xhr.open("GET", endpoint, true);
-                xhr.onload = () => {
+                xhr.addEventListener('load', () => {
                     this.results.ip = xhr.response;
                     Request.clearXMLHttpRequest(xhr);
 
                     resolve();
-                };
-                xhr.onerror = () => {
+                });
+                xhr.addEventListener('error', () => {
                     Request.clearXMLHttpRequest(xhr);
 
                     reject({
                         status: STATUS.FAILED,
                         error: "test failed"
                     });
-                };
+                });
                 xhr.send();
             });
         };
@@ -230,13 +230,13 @@ export default class SpeedTestWorker {
             this.requests[index] = xhr;
 
             xhr.open("GET", endpoint, true);
-            xhr.onloadstart = () => {
+            xhr.addEventListener('loadstart', () => {
                 pingDate = Date.now();
-            };
-            xhr.onreadystatechange = e => {
+            });
+            xhr.addEventListener('readystatechange', e => {
                 if (!pongDate && xhr.readyState >= 2) pongDate = Date.now();
-            };
-            xhr.onload = () => {
+            });
+            xhr.addEventListener('load', () => {
                 if (STATUS.ABORTED === this.status) {
                     return reject({ status: STATUS.ABORTED });
                 }
@@ -272,8 +272,8 @@ export default class SpeedTestWorker {
                 this.testLatencyXHR()
                     .then(resolve)
                     .catch(reject);
-            };
-            xhr.onerror = () => {
+            });
+            xhr.addEventListener('error', () => {
                 if (this.config.ignoreErrors) {
                     this.testLatencyXHR()
                         .then(resolve)
@@ -285,7 +285,7 @@ export default class SpeedTestWorker {
                     status: STATUS.FAILED,
                     error: "test failed"
                 });
-            };
+            });
 
             this.test.timeouts.push(
                 this.scope.setTimeout(() => {
@@ -443,7 +443,7 @@ export default class SpeedTestWorker {
 
             let sizeLoaded = 0;
             xhr.open("GET", endpoint, true);
-            xhr.onprogress = e => {
+            xhr.addEventListener('progress', e => {
                 if (STATUS.ABORTED === this.status) {
                     Request.clearXMLHttpRequest(xhr);
                     reject({ status: STATUS.ABORTED });
@@ -462,15 +462,15 @@ export default class SpeedTestWorker {
                     this.test.download.size += loadDiff;
                 }
                 this.processDownloadSpeedResults();
-            };
-            xhr.onload = () => {
+            });
+            xhr.addEventListener('load', () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 this.testDownloadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
-            };
-            xhr.onerror = () => {
+            });
+            xhr.addEventListener('error', () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 if (this.config.ignoreErrors) {
@@ -484,7 +484,7 @@ export default class SpeedTestWorker {
                     status: STATUS.FAILED,
                     error: "test failed"
                 });
-            };
+            });
 
             this.test.timeouts.push(
                 this.scope.setTimeout(() => xhr.send(null), delay)
@@ -654,7 +654,7 @@ export default class SpeedTestWorker {
             let sizeLoaded = 0;
             xhr.open("POST", endpoint, true);
             xhr.setRequestHeader("Content-Encoding", "identity");
-            xhr.upload.onprogress = e => {
+            xhr.upload.addEventListener('progress', e => {
                 if (STATUS.ABORTED === this.status) {
                     Request.clearXMLHttpRequest(xhr);
                     return reject({ status: STATUS.ABORTED });
@@ -672,17 +672,17 @@ export default class SpeedTestWorker {
                     this.test.upload.size += loadDiff;
                 }
                 this.processUploadSpeedResults();
-            };
+            });
 
-            xhr.upload.onload = () => {
+            xhr.upload.addEventListener('load', () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 this.testUploadSpeedXHR(size)
                     .then(resolve)
                     .catch(reject);
-            };
+            });
 
-            xhr.upload.onerror = () => {
+            xhr.upload.addEventListener('error', () => {
                 Request.clearXMLHttpRequest(xhr);
 
                 if (this.config.ignoreErrors) {
@@ -696,7 +696,7 @@ export default class SpeedTestWorker {
                     status: STATUS.FAILED,
                     error: "test failed"
                 });
-            };
+            });
 
             this.test.timeouts.push(
                 this.scope.setTimeout(() => {
