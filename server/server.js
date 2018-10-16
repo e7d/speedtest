@@ -5,6 +5,8 @@ const http = require("http");
 const path = require("path");
 const requestIp = require("request-ip");
 const url = require("url");
+const WebSocketServer = require("websocket").server;
+
 const port = process.argv[2] || 80;
 const basePath = process.argv[3] || "web";
 
@@ -123,3 +125,53 @@ if (!httpServer.listening) {
     throw new Error(`Server failed listening on port ${port}`);
 }
 console.log(`Server listening at http://0.0.0.0:${port}/`);
+
+new WebSocketServer({
+    httpServer,
+    maxReceivedFrameSize: 20 * 1024 * 1024
+}).on("request", request => {
+    let downloadData = "";
+    const connection = request.accept(null, request.origin);
+
+    // handle messages
+    connection.on("message", message => {
+        if (message.type === "utf8") {
+            try {
+                const data = JSON.parse(message.utf8Data);
+
+                switch (data.action) {
+                    case "ping":
+                        connection.send(
+                            JSON.stringify({
+                                action: "pong",
+                                index: data.index
+                            })
+                        );
+                        break;
+                    case "prepare":
+                        for (let chunk of getData({
+                            size: 8 * 1024 * 1024,
+                            chunkSize: 64 * 1024,
+                            ...data
+                        })) {
+                            downloadData += chunk;
+                        }
+                        break;
+                    case "download":
+                        connection.send(downloadData);
+                        break;
+                }
+            } finally {
+            }
+        }
+
+        if (message.type === "binary") {
+            connection.send("");
+            return;
+        }
+    });
+
+    connection.on("close", () => {
+        downloadData = null;
+    });
+});

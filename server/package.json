@@ -14,7 +14,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "request-ip": "^2.1.1"
+    "request-ip": "^2.1.1",
+    "websocket": "^1.0.26"
   },
   "devDependencies": {
     "nodemon": "^1.18.4"
