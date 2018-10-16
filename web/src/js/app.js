@@ -29,17 +29,23 @@ export default class WebUI {
         };
 
         this.worker = new SpeedTestWorker();
-        this.worker.onmessage = event => {
+        this.worker.addEventListener("message", event => {
             this.processResponse(event);
-        };
+        });
+        this.$shareButton = document.querySelector("#commands button#share");
         this.$startButton = document.querySelector("#commands button#start");
         this.$stopButton = document.querySelector("#commands button#stop");
         this.$httpsAlertMessage = document.querySelector("#https-alert");
+        this.$ipResult = document.querySelector('#ip');
         this.$ipValue = document.querySelector("#ip span.value");
         this.$ipDetails = document.querySelector("#ip span.details");
+        this.$latencyResult = document.querySelector('#latency');
         this.$latencyValue = document.querySelector("#latency span.value");
+        this.$jitterResult = document.querySelector('#jitter');
         this.$jitterValue = document.querySelector("#jitter span.value");
+        this.$downloadResult = document.querySelector('#download');
         this.$downloadValue = document.querySelector("#download span.value");
+        this.$uploadResult = document.querySelector('#upload');
         this.$uploadValue = document.querySelector("#upload span.value");
         this.$progress = document.querySelector("#progress");
         this.$progressBar = document.querySelector("#progress .progress-bar");
@@ -56,6 +62,7 @@ export default class WebUI {
         if (this.running) return;
         this.running = true;
 
+        this.$shareButton.setAttribute("hidden", "");
         this.$startButton.setAttribute("hidden", "");
         this.$stopButton.removeAttribute("hidden");
 
@@ -97,7 +104,7 @@ export default class WebUI {
     processResponse(event) {
         switch (event.data.status) {
             case this.STATUS.WAITING:
-                if (!event.data.config.hideCredits){
+                if (!event.data.config.hideCredits) {
                     this.$credits.style.display = "block";
                 }
 
@@ -120,6 +127,7 @@ export default class WebUI {
 
                 this.setProgressBar(0);
 
+                this.$shareButton.removeAttribute("hidden");
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
 
@@ -129,6 +137,7 @@ export default class WebUI {
                 window.clearInterval(this.statusInterval);
 
                 this.processData(event.data || {});
+                this.$shareButton.setAttribute("hidden", "");
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
                 break;
@@ -158,6 +167,9 @@ export default class WebUI {
      * @param {any} data
      */
     processData(data) {
+        document
+            .querySelectorAll(".result")
+            .forEach(elem => elem.classList.remove("active"));
         if (!this.running) {
             return;
         }
@@ -184,11 +196,14 @@ export default class WebUI {
                 });
                 break;
             case "latency":
+                this.$latencyResult.classList.add("active");
+                this.$jitterResult.classList.add("active");
                 this.$latencyValue.innerHTML = data.results.latency.avg || "";
                 this.$jitterValue.innerHTML = data.results.latency.jitter || "";
                 this.setProgressBar(data.results.latency.progress);
                 break;
             case "download":
+                this.$downloadResult.classList.add("active");
                 const downloadValue = data.results.download
                     ? +data.results.download.speed / (1024 * 1024)
                     : 0;
@@ -198,6 +213,7 @@ export default class WebUI {
                 this.setProgressBar(data.results.download.progress, "download");
                 break;
             case "upload":
+                this.$uploadResult.classList.add("active");
                 const uploadValue = data.results.upload
                     ? +data.results.upload.speed / (1024 * 1024)
                     : 0;
@@ -227,7 +243,7 @@ export default class WebUI {
     getIpInfo(ip) {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = () => {
+            xhr.addEventListener("readystatechange", () => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         resolve(JSON.parse(xhr.responseText));
@@ -235,7 +251,7 @@ export default class WebUI {
                         reject(xhr.statusText);
                     }
                 }
-            };
+            });
             xhr.open("GET", `//ipinfo.io/${ip}/json`, true);
             xhr.send(null);
         });

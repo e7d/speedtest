@@ -11,7 +11,7 @@ body {
 }
 
 a {
-    color: #007bff;
+    color: $alternativeColor;
     text-decoration: none;
 
     &:focus, &:hover {
@@ -27,7 +27,7 @@ a {
                          "p p p p"
                          "f f f f";
     grid-template-columns: repeat(2, 25%);
-    padding: 0 1.25rem;
+    padding: 0 2rem;
     max-width: 800px;
     margin: auto;
 
@@ -52,6 +52,7 @@ a {
 
     #progress {
         grid-area: p;
+        margin: 1rem 0;
     }
 
     footer {

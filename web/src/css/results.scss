@@ -42,53 +42,59 @@
 
     .result {
         padding: 20px;
-    }
 
-    label {
-        display: block;
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .value {
-        display: block;
-        font-size: 2rem;
-        font-weight: lighter;
-        color: $primaryColor;
-
-        &::after {
+        label {
             display: block;
-            font-size: 1rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
             color: $black;
-            margin-top: -0.5rem;
+            transition: color 0.6s ease;
         }
 
-        &:empty::before {
-            content: "––"
+        &.active label {
+            color: $alternativeColor;
         }
 
-        &.ip:empty::before {
-            content: "___.___.___.___"
+        .value {
+            display: block;
+            font-size: 2rem;
+            font-weight: lighter;
+            color: $primaryColor;
+
+            &::after {
+                display: block;
+                font-size: 1rem;
+                color: $black;
+                margin-top: -0.5rem;
+            }
+
+            &:empty::before {
+                content: "––"
+            }
+
+            &.ip:empty::before {
+                content: "___.___.___.___"
+            }
+
+            &.time::after {
+                content: " ms";
+            }
+
+            &.bandwidth::after {
+                content: " Mbps";
+            }
         }
 
-        &.time::after {
-            content: " ms";
-        }
+        .details {
+            display: block;
+            height: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: lighter;
+            color: $black;
 
-        &.bandwidth::after {
-            content: " Mbps";
-        }
-    }
-
-    .details {
-        display: block;
-        height: 1.2rem;
-        font-size: 1.2rem;
-        font-weight: lighter;
-        color: $black;
-
-        a {
-            text-decoration: none;
+            a {
+                text-decoration: none;
+            }
         }
     }
 }
