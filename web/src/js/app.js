@@ -129,18 +129,7 @@ export default class WebUI {
 
                 this.setProgressBar(0);
 
-                html2canvas(this.$results, {
-                    scale: 1,
-                    windowWidth: 480
-                }).then(canvas => {
-                    this.$shareButton.href = canvas
-                        .toDataURL("image/png")
-                        .replace(
-                            /^data:image\/[^;]/,
-                            "data:application/octet-stream"
-                        );
-                    this.$shareButton.removeAttribute("hidden");
-                });
+                window.setTimeout(this.shareResults.bind(this), 1000);
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
 
@@ -232,8 +221,6 @@ export default class WebUI {
      * @param {String} step
      */
     highlightStep(step) {
-        console.log(step);
-
         document
             .querySelectorAll(".result")
             .forEach(elem => elem.classList.remove("active"));
@@ -286,6 +273,19 @@ export default class WebUI {
             });
             xhr.open("GET", `//ipinfo.io/${ip}/json`, true);
             xhr.send(null);
+        });
+    }
+
+    shareResults() {
+        html2canvas(this.$results, {
+            logging: false,
+            scale: 1,
+            onclone: doc => doc.querySelector("#results").classList.add("share")
+        }).then(canvas => {
+            this.$shareButton.href = canvas
+                .toDataURL("image/png")
+                .replace(/^data:image\/[^;]/, "data:application/octet-stream");
+            this.$shareButton.removeAttribute("hidden");
         });
     }
 }

@@ -41,12 +41,12 @@
     }
 
     .result {
-        padding: 20px;
+        padding: 1em 0;
 
         label {
             display: block;
-            font-size: 1.5rem;
-            margin-bottom: 0.2rem;
+            font-size: 1.5em;
+            margin-bottom: 0.2em;
             color: $black;
             transition: color 0.6s ease;
         }
@@ -56,44 +56,62 @@
         }
 
         .value {
-            display: block;
-            font-size: 2rem;
+            font-size: 2em;
             font-weight: lighter;
             color: $primaryColor;
 
-            &::after {
-                display: block;
-                font-size: 1rem;
-                color: $black;
-                margin-top: -0.5rem;
-            }
-
             &:empty::before {
-                content: "––"
+                content: "–.––"
             }
 
             &.ip:empty::before {
-                content: "___.___.___.___"
+                content: "–––.–––.–––.–––"
             }
+        }
 
-            &.time::after {
-                content: " ms";
-            }
-
-            &.bandwidth::after {
-                content: " Mbps";
-            }
+        .unit {
+            font-size: 1em;
+            font-weight: lighter;
+            color: $black;
+            margin-left: 0.1em;
         }
 
         .details {
             display: none;
-            height: 1.2rem;
-            font-size: 1.2rem;
+            font-size: 1.2em;
             font-weight: lighter;
             color: $black;
 
             a {
                 text-decoration: none;
+            }
+        }
+    }
+
+    &.share {
+        width: 320px;
+        grid-template-areas: "i i i i"
+                             "l l j j"
+                             "d d u u";
+        grid-template-columns: repeat(4, 25%);
+
+        .result {
+            padding: 0.6em 0;
+
+            label {
+                font-size: 1.2em;
+            }
+
+            .value {
+                font-size: 1.8em;
+            }
+
+            .unit{
+                font-size: 1em;
+            }
+
+            .details {
+                font-size: 0.8em;
             }
         }
     }
