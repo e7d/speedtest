@@ -9,7 +9,7 @@ COPY web /opt/speedtest/web
 RUN ( cd /opt/speedtest/server && npm run prod ) && \
     mv /opt/speedtest/server/* /app/ && \
     ( cd /opt/speedtest/web && npm run prod ) && \
-    mv /opt/speedtest/web/dist/* /app/web && \
+    mv /opt/speedtest/web/dist /app/web && \
     npm cache clean --force && \
     rm -rf /opt/speedtest && \
     rm -rf /root/.npm/node-sass && \
