@@ -53,10 +53,6 @@ export default class WebUI {
         this.$progressBar = document.querySelector("#progress .progress-bar");
         this.$credits = document.querySelector("#credits");
 
-        this.$shareButton.addEventListener(
-            "click",
-            this.shareResults.bind(this)
-        );
         this.$startButton.addEventListener("click", this.startTest.bind(this));
         this.$stopButton.addEventListener("click", this.stopTest.bind(this));
     }
