@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:8080",
+            "url": "http://localhost:8888",
             "webRoot": "${workspaceFolder}/web/dist",
             "sourceMaps": true,
             // "sourceMapPathOverrides": {
@@ -22,7 +22,7 @@
             "name": "Launch Server",
             "program": "${workspaceFolder}/server/nodejs/server.js",
             "args": [
-                "8080",
+                "8888",
                 "web/dist"
             ]
         }

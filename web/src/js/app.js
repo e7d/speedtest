@@ -13,6 +13,8 @@ export default class WebUI {
      * Create an instance of WebUI.
      */
     constructor() {
+        this.page = "home";
+
         this.STATUS = {
             WAITING: 0,
             STARTING: 1,
@@ -34,9 +36,17 @@ export default class WebUI {
             this.processResponse(event);
         });
         this.$shareButton = document.querySelector("#commands a#share");
+        this.$toggleHistoryButton = document.querySelector(
+            "#commands button#toggle-history"
+        );
         this.$startButton = document.querySelector("#commands button#start");
         this.$stopButton = document.querySelector("#commands button#stop");
-        this.$httpsAlertMessage = document.querySelector("#https-alert");
+        this.$httpsAlert = document.querySelector("#https-alert");
+        this.$httpsAlertMessage = document.querySelector(
+            "#https-alert .message"
+        );
+        this.$history = document.querySelector("#history");
+        this.$historyResults = document.querySelector("#history table tbody");
         this.$results = document.querySelector("#results");
         this.$ipResult = document.querySelector("#ip");
         this.$ipValue = document.querySelector("#ip span.value");
@@ -52,9 +62,35 @@ export default class WebUI {
         this.$progress = document.querySelector("#progress");
         this.$progressBar = document.querySelector("#progress .progress-bar");
         this.$credits = document.querySelector("#credits");
+        this.$closeButtons = document.querySelectorAll("button.close");
 
+        this.$toggleHistoryButton.addEventListener("click", () => {
+            this.toggleResults();
+        });
         this.$startButton.addEventListener("click", this.startTest.bind(this));
         this.$stopButton.addEventListener("click", this.stopTest.bind(this));
+        this.$closeButtons.forEach($closeButton =>
+            $closeButton.addEventListener("click", this.closeAlert.bind(this))
+        );
+
+        if (window.location.hash === "#results") {
+            this.showResults();
+        }
+        window.addEventListener("popstate", e => {
+            switch (document.location.hash) {
+                case "#results":
+                    this.showResults();
+                    break;
+
+                case "#run":
+                    this.startTest();
+                    break;
+
+                default:
+                    this.showHome();
+                    break;
+            }
+        });
     }
 
     /**
@@ -62,6 +98,9 @@ export default class WebUI {
      */
     startTest() {
         if (this.running) return;
+
+        this.showHome();
+        window.history.pushState({}, "Speed Test - Run", "/#run");
         this.running = true;
 
         this.$shareButton.setAttribute("hidden", "");
@@ -107,11 +146,11 @@ export default class WebUI {
         switch (event.data.status) {
             case this.STATUS.WAITING:
                 if (!event.data.config.hideCredits) {
-                    this.$credits.style.display = "block";
+                    this.$credits.removeAttribute("hidden");
                 }
 
                 if (event.data.alerts.https) {
-                    this.$httpsAlertMessage.style.display = "block";
+                    this.$httpsAlert.removeAttribute("hidden");
                     this.$httpsAlertMessage.innerHTML = event.data.alerts.https;
                 }
                 break;
@@ -127,13 +166,14 @@ export default class WebUI {
                     return;
                 }
 
+                this.running = false;
+                this.storeResults(event.data.results);
                 this.setProgressBar(0);
 
                 window.setTimeout(this.shareResults.bind(this), 1000);
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
 
-                this.running = false;
                 break;
             case this.STATUS.ABORTED:
                 window.clearInterval(this.statusInterval);
@@ -276,6 +316,9 @@ export default class WebUI {
         });
     }
 
+    /**
+     * Prepare the share results button with a PNG image
+     */
     shareResults() {
         html2canvas(this.$results, {
             logging: false,
@@ -286,6 +329,102 @@ export default class WebUI {
                 .toDataURL("image/png")
                 .replace(/^data:image\/[^;]/, "data:application/octet-stream");
             this.$shareButton.removeAttribute("hidden");
+        });
+    }
+
+    /**
+     * Close alert boxes on click
+     *
+     * @param {MouseEvent} e
+     */
+    closeAlert(e) {
+        console.log("close", e);
+        e.target.parentElement.setAttribute("hidden", "");
+    }
+
+    /**
+     * Store a speed test run results to the local storage
+     *
+     * @param {Object} results
+     */
+    storeResults(results) {
+        const history = JSON.parse(localStorage.getItem("history")) || {};
+        history[new Date().getTime()] = {
+            latency: {
+                avg: results.latency.avg,
+                jitter: results.latency.jitter
+            },
+            download: results.download.speed,
+            upload: results.upload.speed,
+            ip: results.ip
+        };
+        localStorage.setItem("history", JSON.stringify(history));
+    }
+
+    /**
+     * Show history results
+     */
+    showHome() {
+        this.page = "home";
+
+        this.$results.removeAttribute("hidden");
+        this.$history.setAttribute("hidden", "");
+
+        this.stopTest();
+    }
+
+    /**
+     * Toggle history results
+     */
+    toggleResults() {
+        if (this.page === "results") {
+            this.showHome();
+            window.history.pushState({}, "Speed Test", "/");
+
+            return;
+        }
+        this.showResults();
+        window.history.pushState({}, "Speed Test - Results", "/#results");
+    }
+
+    /**
+     * Show history results
+     */
+    showResults() {
+        this.page = "results";
+
+        this.stopTest();
+
+        this.$history.removeAttribute("hidden");
+        this.$results.setAttribute("hidden", "");
+
+        this.$historyResults.innerHTML = "";
+        this.readHistory();
+    }
+
+    readHistory() {
+        const history = JSON.parse(localStorage.getItem("history")) || {};
+
+        if (Object.entries(history).length === 0) {
+            const $resultsRow = document.createElement("tr");
+            $resultsRow.innerHTML = '<td class="text-center" colspan="6">No results.<br><a href="#run">Run a speed test</a> now.</td>';
+            this.$historyResults.appendChild($resultsRow);
+
+            return;
+        }
+
+        Object.entries(history).forEach(([timestamp, result]) => {
+            const date = new Date(+timestamp);
+            const $resultsRow = document.createElement("tr");
+            $resultsRow.innerHTML = `
+                <td>${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}</td>
+                <td>${result.latency.avg} ms</td>
+                <td>${result.latency.jitter} ms</td>
+                <td>${(result.download / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${(result.upload / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${result.ip}</td>
+            `;
+            this.$historyResults.appendChild($resultsRow);
         });
     }
 }

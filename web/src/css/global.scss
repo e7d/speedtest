@@ -6,8 +6,12 @@ body {
     font-Size: $fontSize;
 }
 
+table {
+    border-collapse: collapse;
+}
+
 [hidden] {
-    display: none;
+    display: none !important;
 }
 
 a {
@@ -19,51 +23,12 @@ a {
     }
 }
 
+.text-center {
+    text-align: center;
+}
+
 #speedtest {
-    display: grid;
-    grid-template-areas: "h h h c"
-                         "a a a a"
-                         "r r r r"
-                         "p p p p"
-                         "f f f f";
-    grid-template-columns: repeat(2, 25%);
-    padding: 0 2rem;
     max-width: 800px;
     margin: auto;
-
-    h1 {
-        grid-area: h;
-        font-size: 2rem;
-    }
-
-    #commands {
-        grid-area: c;
-        padding: 1.75em 0;
-        text-align: right;
-    }
-
-    #alerts {
-        grid-area: a;
-    }
-
-    #results {
-        grid-area: r;
-    }
-
-    #progress {
-        grid-area: p;
-        margin: 1rem 0;
-    }
-
-    footer {
-        grid-area: f;
-        display: none;
-        margin-top: 2rem;
-        text-align: center;
-
-        i {
-            font: 18px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-            color: #dc3545;
-        }
-    }
+    padding: 0px 50px;
 }

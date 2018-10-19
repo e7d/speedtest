@@ -1,0 +1,29 @@
+header {
+    display: grid;
+    grid-template-areas: "h c";
+    grid-template-columns: repeat(2, 50%);
+
+    h1 {
+        grid-area: h;
+        font-size: 2rem;
+
+        #icon {
+            display: inline-block;
+            vertical-align: middle;
+            width: 48px;
+            height: 48px;
+        }
+
+        @media only screen and (max-width: 800px) {
+            #title {
+                display: none;
+            }
+        }
+    }
+
+    #commands {
+        grid-area: c;
+        padding: 1.75em 0;
+        text-align: right;
+    }
+}

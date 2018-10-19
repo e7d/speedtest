@@ -4,9 +4,16 @@
 @import "../../node_modules/bootstrap/scss/functions";
 @import "../../node_modules/bootstrap/scss/variables";
 @import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/utilities/text";
+@import "../../node_modules/bootstrap/scss/_alert";
 @import "../../node_modules/bootstrap/scss/_buttons";
+@import "../../node_modules/bootstrap/scss/_close";
+@import "../../node_modules/bootstrap/scss/_tables";
 @import "../../node_modules/bootstrap/scss/_progress";
 
 @import "./global";
+@import "./header";
 @import "./alerts";
+@import "./history";
 @import "./results";
+@import "./footer";

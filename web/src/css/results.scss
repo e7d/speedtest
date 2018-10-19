@@ -3,7 +3,8 @@
 #results {
     display: grid;
     grid-template-areas: "i i i i"
-                         "l j d u";
+                         "l j d u"
+                         "p p p p";
     grid-template-columns: repeat(4, 25%);
     text-align: center;
 
@@ -11,7 +12,8 @@
         & {
             grid-template-areas: "i i i i"
                                  "l l j j"
-                                 "d d u u";
+                                 "d d u u"
+                                 "p p p p";
             grid-template-columns: repeat(4, 25%);
 
             i {
@@ -40,6 +42,11 @@
         grid-area: u;
     }
 
+    #progress {
+        grid-area: p;
+        margin: 1rem 0;
+    }
+
     .result {
         padding: 1em 0;
 
@@ -61,11 +68,11 @@
             color: $primaryColor;
 
             &:empty::before {
-                content: "–.––"
+                content: "_.__"
             }
 
             &.ip:empty::before {
-                content: "–––.–––.–––.–––"
+                content: "___.___.___.___"
             }
         }
 
@@ -77,7 +84,6 @@
         }
 
         .details {
-            display: none;
             font-size: 1.2em;
             font-weight: lighter;
             color: $black;
