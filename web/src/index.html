@@ -10,16 +10,18 @@
 </head>
 
 <body>
+	<div id="loader"></div>
+
 	<article id="speedtest">
 		<header>
 			<h1>
-				<img id="icon" src="icon.svg">
+				<span id="icon"></span>
 				<span id="title">Speed Test</span>
 			</h1>
 
 			<nav id="commands">
-				<a id="share" class="btn btn-link" href="#" download="speedtest.png" hidden><i class="icon icon-link"></a>
-				<button id="toggle-history" class="btn btn-link"><i class="icon icon-history"></button>
+				<button id="share-results" class="btn btn-link" hidden><i class="icon icon-link"></button>
+				<button id="show-results-history" class="btn btn-link"><i class="icon icon-history"></button>
 				<button id="start" class="btn btn-primary">Start</button>
 				<button id="stop" class="btn btn-danger" hidden>Stop</button>
 			</nav>
@@ -34,6 +36,26 @@
 
 		<section id="history" hidden>
 			<h2>Previous results</h2>
+
+			<div id="go-landscape">
+				<div id="device-wrapper">
+					<div id="device">
+						<div id="device-screen">
+							<ul>
+								<li></li>
+								<li></li>
+								<li></li>
+								<li></li>
+								<li></li>
+								<li></li>
+								<li></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<p>Please turn your phone in lanscape orientation.</p>
+			</div>
+
 			<table class="table">
 				<thead>
 					<tr>
@@ -47,6 +69,24 @@
 				</thead>
 				<tbody></tbody>
 			</table>
+		</section>
+
+		<section id="share" hidden>
+			<div class="form-group">
+				<label for="share-results-link">Link</label>
+				<div class="input-group">
+					<input id="share-results-link" class="form-control" type="text" readonly>
+					<div class="input-group-append">
+						<button id="share-results-link-copy" class="btn btn-outline-secondary" type="button">Copy</button>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="share-results-image">Image</label>
+				<div class="text-center">
+					<img id="share-results-image" class="img-thumbnail" alt="Speed Test results">
+				</div>
+			</div>
 		</section>
 
 		<section id="results">
@@ -82,10 +122,13 @@
 			</div>
 		</section>
 
+
+		<section id="share">
+		</section>
 		<footer id="credits" hidden>
 			made with <i class="icon icon-heart"></i>
 			by <a href="https://github.com/e7d/speedtest/" target="blank">e7d</a>
-		<footer>
+			<footer>
 	</article>
 </body>
 

@@ -1,7 +1,7 @@
 //@ts-check
 
 import html2canvas from "html2canvas";
-import SpeedTestWorker from "worker-loader!./worker";
+import SpeedTestWorker from "./worker";
 
 /**
  * Speed Test web UI
@@ -24,20 +24,25 @@ export default class WebUI {
             FAILED: -1
         };
 
-        this.statusInterval = null;
-
         this.config = {
             updateDelay: 150,
             endless: false // false
         };
+        this.resultsString = null;
+        this.queueTest = false;
+        this.statusInterval = null;
+        this.workerReady = false;
 
         this.worker = new SpeedTestWorker();
         this.worker.addEventListener("message", event => {
-            this.processResponse(event);
+            this.processWorkerResponse(event);
         });
-        this.$shareButton = document.querySelector("#commands a#share");
-        this.$toggleHistoryButton = document.querySelector(
-            "#commands button#toggle-history"
+
+        this.$shareResultsButton = document.querySelector(
+            "#commands button#share-results"
+        );
+        this.$showResultsHistoryButton = document.querySelector(
+            "#commands button#show-results-history"
         );
         this.$startButton = document.querySelector("#commands button#start");
         this.$stopButton = document.querySelector("#commands button#stop");
@@ -47,6 +52,14 @@ export default class WebUI {
         );
         this.$history = document.querySelector("#history");
         this.$historyResults = document.querySelector("#history table tbody");
+        this.$share = document.querySelector("#share");
+        this.$shareResultsLink = document.querySelector("#share-results-link");
+        this.$shareResultsLinkCopyButton = document.querySelector(
+            "#share-results-link-copy"
+        );
+        this.$shareResultsImage = document.querySelector(
+            "#share-results-image"
+        );
         this.$results = document.querySelector("#results");
         this.$ipResult = document.querySelector("#ip");
         this.$ipValue = document.querySelector("#ip span.value");
@@ -64,33 +77,78 @@ export default class WebUI {
         this.$credits = document.querySelector("#credits");
         this.$closeButtons = document.querySelectorAll("button.close");
 
-        this.$toggleHistoryButton.addEventListener("click", () => {
-            this.toggleResults();
-        });
-        this.$startButton.addEventListener("click", this.startTest.bind(this));
-        this.$stopButton.addEventListener("click", this.stopTest.bind(this));
+        this.$shareResultsButton.addEventListener(
+            "click",
+            this.shareResultsButtonClickHandler.bind(this)
+        );
+        this.$showResultsHistoryButton.addEventListener(
+            "click",
+            this.showResultsHistoryButtonClickHandler.bind(this)
+        );
+        this.$startButton.addEventListener(
+            "click",
+            this.startButtonClickHandler.bind(this)
+        );
+        this.$stopButton.addEventListener(
+            "click",
+            this.stopButtonClickHandler.bind(this)
+        );
         this.$closeButtons.forEach($closeButton =>
-            $closeButton.addEventListener("click", this.closeAlert.bind(this))
+            $closeButton.addEventListener(
+                "click",
+                this.alertCloseButtonClickHandler.bind(this)
+            )
+        );
+        this.$shareResultsLink.addEventListener(
+            "click",
+            this.shareResultsLinkClickHandler.bind(this)
+        );
+        this.$shareResultsLinkCopyButton.addEventListener(
+            "click",
+            this.shareResultsLinkCopyButtonClickHandler.bind(this)
         );
 
-        if (window.location.hash === "#results") {
-            this.showResults();
-        }
-        window.addEventListener("popstate", e => {
-            switch (document.location.hash) {
-                case "#results":
-                    this.showResults();
+        window.addEventListener("popstate", () => {
+            switch (document.location.pathname) {
+                case "/result":
+                    this.loadResultsFromUri();
+                    this.showPage('results');
                     break;
 
-                case "#run":
+                case "/results":
+                    this.loadResultsHistory();
+                    this.showPage('history');
+                    break;
+
+                case "/run":
+                    this.showPage('results');
                     this.startTest();
                     break;
 
+                case "/share":
+                    this.loadResultsFromUri();
+                    this.generateShareResultsLinks();
+                    this.showPage('share');
+                    break;
+
                 default:
-                    this.showHome();
+                    this.showPage('results');;
                     break;
             }
         });
+        window.dispatchEvent(new Event("popstate"));
+    }
+
+    startButtonClickHandler() {
+        this.showPage('results');;
+        window.history.pushState({}, "Speed Test - Running...", "/run");
+        this.startTest();
+    }
+
+    stopButtonClickHandler() {
+        this.showPage('results');;
+        window.history.pushState({}, "Speed Test", "/");
+        this.stopTest();
     }
 
     /**
@@ -98,24 +156,21 @@ export default class WebUI {
      */
     startTest() {
         if (this.running) return;
-
-        this.showHome();
-        window.history.pushState({}, "Speed Test - Run", "/#run");
+        if (!this.workerReady) {
+            this.queueTest = true;
+            return;
+        }
         this.running = true;
 
-        this.$shareButton.setAttribute("hidden", "");
+        this.$shareResultsButton.setAttribute("hidden", "");
         this.$startButton.setAttribute("hidden", "");
         this.$stopButton.removeAttribute("hidden");
 
         this.setProgressBar(0);
-        this.resetResults();
+        this.clearResults();
 
         this.worker.postMessage("start");
 
-        if (!this.config.updateDelay) return;
-        if (this.config.updateDelay === "auto") {
-            this.worker.postMessage("status");
-        }
         window.clearInterval(this.statusInterval);
         this.statusInterval = window.setInterval(() => {
             this.worker.postMessage("status");
@@ -135,6 +190,7 @@ export default class WebUI {
         if (this.worker) this.worker.postMessage("abort");
 
         this.setProgressBar(0);
+        this.resetHiglightStep();
     }
 
     /**
@@ -142,18 +198,28 @@ export default class WebUI {
      *
      * @param {MessageEvent} event
      */
-    processResponse(event) {
-        switch (event.data.status) {
-            case this.STATUS.WAITING:
-                if (!event.data.config.hideCredits) {
-                    this.$credits.removeAttribute("hidden");
-                }
+    processWorkerResponse(event) {
+        if (!this.workerReady) {
+            if (!event.data.ready) return;
+            this.workerReady = event.data.ready;
 
-                if (event.data.alerts.https) {
-                    this.$httpsAlert.removeAttribute("hidden");
-                    this.$httpsAlertMessage.innerHTML = event.data.alerts.https;
-                }
-                break;
+            if (!event.data.config.hideCredits) {
+                this.$credits.removeAttribute("hidden");
+            }
+
+            if (event.data.alerts.https) {
+                this.$httpsAlert.removeAttribute("hidden");
+                this.$httpsAlertMessage.innerHTML = event.data.alerts.https;
+            }
+        }
+
+        if (this.queueTest && this.workerReady) {
+            this.queueTest = false;
+            this.startTest();
+            return;
+        }
+
+        switch (event.data.status) {
             case this.STATUS.RUNNING:
                 this.processData(event.data || {});
                 break;
@@ -167,10 +233,10 @@ export default class WebUI {
                 }
 
                 this.running = false;
-                this.storeResults(event.data.results);
-                this.setProgressBar(0);
+                event.data.results.timestamp = new Date().getTime();
+                this.storeLatestResults(event.data.results);
 
-                window.setTimeout(this.shareResults.bind(this), 1000);
+                this.setProgressBar(0);
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
 
@@ -179,23 +245,17 @@ export default class WebUI {
                 window.clearInterval(this.statusInterval);
 
                 this.processData(event.data || {});
-                this.$shareButton.setAttribute("hidden", "");
+                this.$shareResultsButton.setAttribute("hidden", "");
                 this.$startButton.removeAttribute("hidden");
                 this.$stopButton.setAttribute("hidden", "");
                 break;
-        }
-
-        if (this.config.updateDelay == "auto") {
-            window.requestAnimationFrame(
-                this.worker.postMessage.bind(this, "status")
-            );
         }
     }
 
     /**
      * Reset the current results.
      */
-    resetResults() {
+    clearResults() {
         this.$ipValue.innerHTML = "";
         this.$latencyValue.innerHTML = "";
         this.$jitterValue.innerHTML = "";
@@ -213,57 +273,65 @@ export default class WebUI {
             return;
         }
 
-        switch (data.step) {
-            case "ip":
-                if (!data.results.ip) return;
-                this.$ipValue.innerHTML = data.results.ip;
-                this.$ipDetails.style.display = "none";
-                this.$ipDetails.innerHTML = "";
-                this.getIpInfo(data.results.ip).then(info => {
-                    if (info.bogon) return;
-                    if (!info.org) return;
+        if (data.step === "ip") {
+            this.$ipValue.innerHTML = data.results.ip;
+            this.$ipDetails.style.display = "none";
+            this.$ipDetails.innerHTML = "";
+            this.getIpInfo(data.results.ip).then(info => {
+                if (info.bogon) return;
+                if (!info.org) return;
 
-                    this.$ipDetails.style.display = "block";
-                    this.$ipDetails.innerHTML = info.org;
-                });
-                break;
-            case "latency":
-                this.$latencyValue.innerHTML = data.results.latency.avg || "";
-                this.$jitterValue.innerHTML = data.results.latency.jitter || "";
-                this.setProgressBar(data.results.latency.progress);
-                break;
-            case "download":
-                const downloadValue = data.results.download
-                    ? +data.results.download.speed / (1024 * 1024)
-                    : 0;
-                this.$downloadValue.innerHTML = downloadValue
-                    ? downloadValue.toFixed(2)
-                    : "";
-                this.setProgressBar(data.results.download.progress, "download");
-                break;
-            case "upload":
-                const uploadValue = data.results.upload
-                    ? +data.results.upload.speed / (1024 * 1024)
-                    : 0;
-                this.$uploadValue.innerHTML = uploadValue
-                    ? uploadValue.toFixed(2)
-                    : "";
-                this.setProgressBar(data.results.upload.progress);
-                break;
+                this.$ipDetails.style.display = "block";
+                this.$ipDetails.innerHTML = info.org;
+            });
+
+            return;
         }
 
         if (this.previousStep !== data.step) this.highlightStep(data.step);
         this.previousStep = data.step;
+
+        this.$latencyValue.innerHTML = data.results.latency.avg || "";
+        this.$jitterValue.innerHTML = data.results.latency.jitter || "";
+        const downloadValue = data.results.download
+            ? +data.results.download.speed / (1024 * 1024)
+            : 0;
+        this.$downloadValue.innerHTML = downloadValue
+            ? downloadValue.toFixed(2)
+            : "";
+        const uploadValue = data.results.upload
+            ? +data.results.upload.speed / (1024 * 1024)
+            : 0;
+        this.$uploadValue.innerHTML = uploadValue ? uploadValue.toFixed(2) : "";
+
+        switch (data.step) {
+            case "latency":
+                this.setProgressBar(data.results.latency.progress);
+                break;
+            case "download":
+                this.setProgressBar(data.results.download.progress, "download");
+                break;
+            case "upload":
+                this.setProgressBar(data.results.upload.progress);
+                break;
+        }
     }
 
     /**
-     * Highlights the curren running step.
-     * @param {String} step
+     * Resets the highlighted step.
      */
-    highlightStep(step) {
+    resetHiglightStep() {
         document
             .querySelectorAll(".result")
             .forEach(elem => elem.classList.remove("active"));
+    }
+
+    /**
+     * Highlights the current running step.
+     * @param {String} step
+     */
+    highlightStep(step) {
+        this.resetHiglightStep();
 
         switch (step) {
             case "latency":
@@ -286,9 +354,6 @@ export default class WebUI {
      * @param {String} mode
      */
     setProgressBar(progress, mode = "") {
-        if (this.config.updateDelay === "auto") {
-            this.$progressBar.style.transition = "unset";
-        }
         this.$progress.style.flexDirection =
             mode === "download" ? "row-reverse" : "row";
         this.$progressBar.style.width = progress * 100 + "%";
@@ -316,20 +381,62 @@ export default class WebUI {
         });
     }
 
+    showPage(page) {
+        this.page = page;
+
+        this.$history.setAttribute("hidden", "");
+        this.$share.setAttribute("hidden", "");
+        this.$results.setAttribute("hidden", "");
+        this[`$${page}`].removeAttribute("hidden");
+    }
+
     /**
-     * Prepare the share results button with a PNG image
+     * Show the page to share results
      */
-    shareResults() {
+    generateShareResultsLinks() {
+        this.$shareResultsLink.value = `${window.location.origin}/result#${
+            this.resultsString
+        }`;
+
         html2canvas(this.$results, {
             logging: false,
             scale: 1,
-            onclone: doc => doc.querySelector("#results").classList.add("share")
+            onclone: doc => {
+                const $results = doc.querySelector("#results");
+                $results.removeAttribute("hidden");
+                $results.classList.add("share");
+            }
         }).then(canvas => {
-            this.$shareButton.href = canvas
-                .toDataURL("image/png")
-                .replace(/^data:image\/[^;]/, "data:application/octet-stream");
-            this.$shareButton.removeAttribute("hidden");
+            this.$shareResultsImage.src = canvas.toDataURL("image/png");
         });
+    }
+
+    /**
+     * Prepare the share results button with a PNG image
+     */
+    shareResultsButtonClickHandler() {
+        this.generateShareResultsLinks();
+        this.showPage('share');
+        window.history.pushState(
+            {},
+            "Speed Test - Share Results",
+            `/share#${this.resultsString}`
+        );
+    }
+
+    /**
+     * Select the share result link on input click
+     */
+    shareResultsLinkClickHandler() {
+        this.$shareResultsLink.select();
+    }
+
+    /**
+     * Select anc copy the share result link on "Copy" button click
+     */
+    shareResultsLinkCopyButtonClickHandler() {
+        this.$shareResultsLink.select();
+        document.execCommand("copy");
     }
 
     /**
@@ -337,8 +444,7 @@ export default class WebUI {
      *
      * @param {MouseEvent} e
      */
-    closeAlert(e) {
-        console.log("close", e);
+    alertCloseButtonClickHandler(e) {
         e.target.parentElement.setAttribute("hidden", "");
     }
 
@@ -347,9 +453,10 @@ export default class WebUI {
      *
      * @param {Object} results
      */
-    storeResults(results) {
-        const history = JSON.parse(localStorage.getItem("history")) || {};
-        history[new Date().getTime()] = {
+    storeLatestResults(results) {
+        const resultsHistory =
+            JSON.parse(localStorage.getItem("history")) || {};
+        resultsHistory[results.timestamp] = {
             latency: {
                 avg: results.latency.avg,
                 jitter: results.latency.jitter
@@ -358,73 +465,93 @@ export default class WebUI {
             upload: results.upload.speed,
             ip: results.ip
         };
-        localStorage.setItem("history", JSON.stringify(history));
+        localStorage.setItem(
+            "history",
+            JSON.stringify(this.limitResultsHistory(resultsHistory))
+        );
+
+        this.resultsString = `${results.latency.avg},${
+            results.latency.jitter
+        },${results.download.speed},${results.upload.speed},${results.ip}`;
+        this.$shareResultsButton.removeAttribute("hidden");
+        window.history.pushState(
+            {},
+            "Speed Test - Results",
+            `/result#${this.resultsString}`
+        );
+    }
+
+    limitResultsHistory(resultsHistory, maxEntries = 5) {
+        const filteredResults = {};
+        Object.keys(resultsHistory)
+            .sort((a, b) => +b - +a)
+            .slice(0, maxEntries)
+            .map(
+                timestamp =>
+                    (filteredResults[timestamp] = resultsHistory[timestamp])
+            );
+        return filteredResults;
     }
 
     /**
-     * Show history results
+     * Load the results from the currect URI
      */
-    showHome() {
-        this.page = "home";
+    loadResultsFromUri() {
+        const [
+            latency,
+            jitter,
+            download,
+            upload,
+            ip
+        ] = window.location.hash.replace("#", "").split(",");
 
-        this.$results.removeAttribute("hidden");
-        this.$history.setAttribute("hidden", "");
+        this.$ipValue.innerHTML = ip;
+        this.$latencyValue.innerHTML = latency;
+        this.$jitterValue.innerHTML = jitter;
+        this.$downloadValue.innerHTML = (+download / (1024 * 1024)).toFixed(2);
+        this.$uploadValue.innerHTML = (+upload / (1024 * 1024)).toFixed(2);
 
-        this.stopTest();
+        this.resultsString = `${latency},${jitter},${download},${upload},${ip}`;
     }
 
     /**
      * Toggle history results
      */
-    toggleResults() {
-        if (this.page === "results") {
-            this.showHome();
-            window.history.pushState({}, "Speed Test", "/");
-
-            return;
-        }
-        this.showResults();
-        window.history.pushState({}, "Speed Test - Results", "/#results");
-    }
-
-    /**
-     * Show history results
-     */
-    showResults() {
-        this.page = "results";
-
+    showResultsHistoryButtonClickHandler() {
         this.stopTest();
+        this.clearResults();
 
-        this.$history.removeAttribute("hidden");
-        this.$results.setAttribute("hidden", "");
-
-        this.$historyResults.innerHTML = "";
-        this.readHistory();
+        this.loadResultsHistory();
+        this.showPage('history');
+        window.history.pushState({}, "Speed Test - Results", "/results");
     }
 
-    readHistory() {
+    loadResultsHistory() {
         const history = JSON.parse(localStorage.getItem("history")) || {};
 
+        this.$historyResults.innerHTML = "";
         if (Object.entries(history).length === 0) {
             const $resultsRow = document.createElement("tr");
-            $resultsRow.innerHTML = '<td class="text-center" colspan="6">No results.<br><a href="#run">Run a speed test</a> now.</td>';
+            $resultsRow.innerHTML =
+                '<td class="text-center" colspan="6">No results.<br><a href="#run">Run a speed test</a> now.</td>';
             this.$historyResults.appendChild($resultsRow);
 
             return;
         }
 
-        Object.entries(history).forEach(([timestamp, result]) => {
-            const date = new Date(+timestamp);
-            const $resultsRow = document.createElement("tr");
-            $resultsRow.innerHTML = `
+        Object.entries(history)
+            .forEach(([timestamp, results]) => {
+                const date = new Date(+timestamp);
+                const $resultsRow = document.createElement("tr");
+                $resultsRow.innerHTML = `
                 <td>${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}</td>
-                <td>${result.latency.avg} ms</td>
-                <td>${result.latency.jitter} ms</td>
-                <td>${(result.download / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${(result.upload / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${result.ip}</td>
+                <td>${results.latency.avg} ms</td>
+                <td>${results.latency.jitter} ms</td>
+                <td>${(results.download / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${(results.upload / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${results.ip}</td>
             `;
-            this.$historyResults.appendChild($resultsRow);
-        });
+                this.$historyResults.appendChild($resultsRow);
+            });
     }
 }

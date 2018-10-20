@@ -10,11 +10,13 @@
 
     @media only screen and (max-width: 800px) {
         & {
-            grid-template-areas: "i i i i"
-                                 "l l j j"
-                                 "d d u u"
-                                 "p p p p";
-            grid-template-columns: repeat(4, 25%);
+            grid-template-areas: "i i"
+                                 "l j"
+                                 "d u"
+                                 "p p";
+            grid-template-columns: repeat(2, 50%);
+            max-width: 480px;
+            margin: auto;
 
             i {
                 display: block;
@@ -96,10 +98,10 @@
 
     &.share {
         width: 320px;
-        grid-template-areas: "i i i i"
-                             "l l j j"
-                             "d d u u";
-        grid-template-columns: repeat(4, 25%);
+        grid-template-areas: "l j"
+                             "d u"
+                             "i i";
+        grid-template-columns: repeat(2, 50%);
 
         .result {
             padding: 0.6em 0;
@@ -119,6 +121,10 @@
             .details {
                 font-size: 0.8em;
             }
+        }
+
+        .progress {
+            display: none
         }
     }
 }
