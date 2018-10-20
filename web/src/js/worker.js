@@ -18,6 +18,7 @@ export default class SpeedTestWorker {
      * @param {DedicatedWorkerGlobalScope} scope
      */
     constructor(scope = self) {
+        this.ready = false;
         this.scope = scope;
 
         this.running = false;
@@ -39,6 +40,7 @@ export default class SpeedTestWorker {
 
         Config.loadConfig().then(config => {
             this.config = config;
+            this.ready = true;
             this.postStatus();
         });
 
@@ -88,6 +90,7 @@ export default class SpeedTestWorker {
      */
     postStatus() {
         this.postMessage({
+            ready: this.ready,
             config: this.config,
             status: this.status,
             step: this.step,
