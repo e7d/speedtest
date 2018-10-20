@@ -5,7 +5,7 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = Merge(CommonConfig, {
-    mode: 'production',
+    mode: "production",
     module: {
         rules: [
             {
@@ -22,11 +22,19 @@ module.exports = Merge(CommonConfig, {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "[name].[chunkhash].css",
-            chunkFilename: "[id].[chunkhash].css"
+            filename: "[name].[chunkhash:8].css"
         })
     ],
     optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /node_modules/,
+                    name: "vendor",
+                    chunks: "all"
+                }
+            }
+        },
         minimizer: [
             new UglifyJsPlugin({
                 test: /\.js($|\?)/i

@@ -14,17 +14,26 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "[name].[chunkhash].js"
+        filename: "[name].[chunkhash:8].js"
     },
     module: {
         rules: [
+            {
+                test: /worker.js$/,
+                use: {
+                    loader: "worker-loader",
+                    options: {
+                        name: "[name].[chunkhash:8].js"
+                    }
+                }
+            },
             {
                 test: /\..*\.js$/,
                 exclude: /(node_modules)/,
                 use: {
                     loader: "babel-loader",
                     options: {
-                        presets: ["env"]
+                        presets: ["env"],
                     }
                 }
             },
@@ -49,7 +58,7 @@ module.exports = {
             inject: "body",
             template: "src/index.html",
             filename: "index.html",
-            chunks: ["app"],
+            chunks: ["vendor", "app"],
             minify: {
                 collapseWhitespace: true
             }
