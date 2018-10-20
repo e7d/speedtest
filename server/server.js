@@ -32,17 +32,8 @@ function loadFile(uri, response) {
     let filename = path.join(process.cwd(), basePath, uri);
 
     fs.exists(filename, exists => {
-        if (!exists) {
-            response.writeHead(404, {
-                "Content-Type": "text/plain"
-            });
-            response.write("Not Found");
-            response.end();
-            return;
-        }
-
-        if (fs.statSync(filename).isDirectory()) {
-            filename += "index.html";
+        if (!exists || uri === "/" ) {
+            filename = path.join(process.cwd(), basePath, "index.html");
         }
 
         fs.readFile(filename, "binary", (err, data) => {
