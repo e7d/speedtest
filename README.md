@@ -12,7 +12,7 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 
 * IP Address (with ISP) detection
 * Latency and jitter tests
-* Download and upload bandwidth tests over 1 Gbps
+* Download and upload bandwidth tests
 
 ## Requirements
 
