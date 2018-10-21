@@ -1,6 +1,6 @@
 @import "./vars";
 
-#results {
+#speedtest {
     display: grid;
     grid-template-areas: "i i i i"
                          "l j d u"
@@ -64,6 +64,10 @@
             color: $alternativeColor;
         }
 
+        .ip, .asn {
+            display: block;
+        }
+
         .value {
             font-size: 2em;
             font-weight: lighter;
@@ -85,14 +89,10 @@
             margin-left: 0.1em;
         }
 
-        .details {
+        .asn {
             font-size: 1.2em;
             font-weight: lighter;
             color: $black;
-
-            a {
-                text-decoration: none;
-            }
         }
     }
 

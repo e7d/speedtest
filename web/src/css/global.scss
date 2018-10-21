@@ -5,7 +5,9 @@
 }
 
 body {
-    margin: 0;
+    max-width: 800px;
+    margin: auto;
+    padding: 0px 2em;
     font-family: $fontFamilySansSerif;
     font-Size: $fontSize;
 }
@@ -29,10 +31,4 @@ a {
 
 .text-center {
     text-align: center;
-}
-
-#speedtest {
-    max-width: 800px;
-    margin: auto;
-    padding: 0px 50px;
 }

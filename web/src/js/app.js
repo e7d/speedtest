@@ -28,6 +28,7 @@ export default class WebUI {
             updateDelay: 150,
             endless: false // false
         };
+        this.lastAsn = null;
         this.resultsString = null;
         this.queueTest = false;
         this.statusInterval = null;
@@ -60,10 +61,10 @@ export default class WebUI {
         this.$shareResultsImage = document.querySelector(
             "#share-results-image"
         );
-        this.$results = document.querySelector("#results");
+        this.$speedtest = document.querySelector("#speedtest");
         this.$ipResult = document.querySelector("#ip");
         this.$ipValue = document.querySelector("#ip span.value");
-        this.$ipDetails = document.querySelector("#ip span.details");
+        this.$asnValue = document.querySelector("#ip span.asn");
         this.$latencyResult = document.querySelector("#latency");
         this.$latencyValue = document.querySelector("#latency span.value");
         this.$jitterResult = document.querySelector("#jitter");
@@ -111,28 +112,29 @@ export default class WebUI {
         window.addEventListener("popstate", () => {
             switch (document.location.pathname) {
                 case "/result":
+                    this.showPage("speedtest");
                     this.loadResultsFromUri();
-                    this.showPage('results');
                     break;
 
                 case "/results":
+                    this.showPage("history");
                     this.loadResultsHistory();
-                    this.showPage('history');
                     break;
 
                 case "/run":
-                    this.showPage('results');
+                    this.showPage("speedtest");
                     this.startTest();
                     break;
 
                 case "/share":
+                    this.showPage("share");
                     this.loadResultsFromUri();
                     this.generateShareResultsLinks();
-                    this.showPage('share');
                     break;
 
                 default:
-                    this.showPage('results');;
+                    this.showPage("speedtest");
+                    this.stopTest(true);
                     break;
             }
         });
@@ -140,13 +142,13 @@ export default class WebUI {
     }
 
     startButtonClickHandler() {
-        this.showPage('results');;
+        this.showPage("speedtest");
         window.history.pushState({}, "Speed Test - Running...", "/run");
         this.startTest();
     }
 
     stopButtonClickHandler() {
-        this.showPage('results');;
+        this.showPage("speedtest");
         window.history.pushState({}, "Speed Test", "/");
         this.stopTest();
     }
@@ -180,7 +182,7 @@ export default class WebUI {
     /**
      * Abort a running speed test.
      */
-    stopTest() {
+    stopTest(clearResults = false) {
         if (!this.running) return;
         this.running = false;
 
@@ -191,6 +193,7 @@ export default class WebUI {
 
         this.setProgressBar(0);
         this.resetHiglightStep();
+        if (clearResults) this.clearResults();
     }
 
     /**
@@ -234,6 +237,7 @@ export default class WebUI {
 
                 this.running = false;
                 event.data.results.timestamp = new Date().getTime();
+                event.data.results.asn = this.lastAsn;
                 this.storeLatestResults(event.data.results);
 
                 this.setProgressBar(0);
@@ -275,14 +279,14 @@ export default class WebUI {
 
         if (data.step === "ip") {
             this.$ipValue.innerHTML = data.results.ip;
-            this.$ipDetails.style.display = "none";
-            this.$ipDetails.innerHTML = "";
+            this.$asnValue.style.display = "none";
+            this.$asnValue.innerHTML = "";
             this.getIpInfo(data.results.ip).then(info => {
                 if (info.bogon) return;
                 if (!info.org) return;
 
-                this.$ipDetails.style.display = "block";
-                this.$ipDetails.innerHTML = info.org;
+                this.$asnValue.style.display = "block";
+                this.$asnValue.innerHTML = this.lastAsn = info.org;
             });
 
             return;
@@ -386,7 +390,7 @@ export default class WebUI {
 
         this.$history.setAttribute("hidden", "");
         this.$share.setAttribute("hidden", "");
-        this.$results.setAttribute("hidden", "");
+        this.$speedtest.setAttribute("hidden", "");
         this[`$${page}`].removeAttribute("hidden");
     }
 
@@ -394,17 +398,17 @@ export default class WebUI {
      * Show the page to share results
      */
     generateShareResultsLinks() {
-        this.$shareResultsLink.value = `${window.location.origin}/result#${
-            this.resultsString
+        this.$shareResultsLink.value = `${window.location.origin}/result${
+            window.location.hash
         }`;
 
-        html2canvas(this.$results, {
+        html2canvas(this.$speedtest, {
             logging: false,
             scale: 1,
             onclone: doc => {
-                const $results = doc.querySelector("#results");
-                $results.removeAttribute("hidden");
-                $results.classList.add("share");
+                const $el = doc.querySelector("#speedtest");
+                $el.removeAttribute("hidden");
+                $el.classList.add("share");
             }
         }).then(canvas => {
             this.$shareResultsImage.src = canvas.toDataURL("image/png");
@@ -416,7 +420,7 @@ export default class WebUI {
      */
     shareResultsButtonClickHandler() {
         this.generateShareResultsLinks();
-        this.showPage('share');
+        this.showPage("share");
         window.history.pushState(
             {},
             "Speed Test - Share Results",
@@ -457,22 +461,19 @@ export default class WebUI {
         const resultsHistory =
             JSON.parse(localStorage.getItem("history")) || {};
         resultsHistory[results.timestamp] = {
-            latency: {
-                avg: results.latency.avg,
-                jitter: results.latency.jitter
-            },
+            latency: results.latency.avg,
+            jitter: results.latency.jitter,
             download: results.download.speed,
             upload: results.upload.speed,
-            ip: results.ip
+            ip: results.ip,
+            asn: results.asn
         };
         localStorage.setItem(
             "history",
             JSON.stringify(this.limitResultsHistory(resultsHistory))
         );
 
-        this.resultsString = `${results.latency.avg},${
-            results.latency.jitter
-        },${results.download.speed},${results.upload.speed},${results.ip}`;
+        this.resultsString = this.getResultsString(results);
         this.$shareResultsButton.removeAttribute("hidden");
         window.history.pushState(
             {},
@@ -502,16 +503,18 @@ export default class WebUI {
             jitter,
             download,
             upload,
-            ip
+            ip,
+            asn
         ] = window.location.hash.replace("#", "").split(",");
 
         this.$ipValue.innerHTML = ip;
+        this.$asnValue.innerHTML = decodeURIComponent(asn);
         this.$latencyValue.innerHTML = latency;
         this.$jitterValue.innerHTML = jitter;
         this.$downloadValue.innerHTML = (+download / (1024 * 1024)).toFixed(2);
         this.$uploadValue.innerHTML = (+upload / (1024 * 1024)).toFixed(2);
 
-        this.resultsString = `${latency},${jitter},${download},${upload},${ip}`;
+        // this.resultsString = `${latency},${jitter},${download},${upload},${ip},${asn}`;
     }
 
     /**
@@ -522,7 +525,7 @@ export default class WebUI {
         this.clearResults();
 
         this.loadResultsHistory();
-        this.showPage('history');
+        this.showPage("history");
         window.history.pushState({}, "Speed Test - Results", "/results");
     }
 
@@ -539,19 +542,31 @@ export default class WebUI {
             return;
         }
 
-        Object.entries(history)
-            .forEach(([timestamp, results]) => {
-                const date = new Date(+timestamp);
-                const $resultsRow = document.createElement("tr");
-                $resultsRow.innerHTML = `
+        Object.entries(history).forEach(([timestamp, results]) => {
+            const date = new Date(+timestamp);
+            const $resultsRow = document.createElement("tr");
+            $resultsRow.innerHTML = `
                 <td>${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}</td>
-                <td>${results.latency.avg} ms</td>
-                <td>${results.latency.jitter} ms</td>
+                <td>${results.latency} ms</td>
+                <td>${results.jitter} ms</td>
                 <td>${(results.download / 1024 ** 2).toFixed(2)} Mbps</td>
                 <td>${(results.upload / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${results.ip}</td>
+                <td>${results.ip}${
+                    results.asn ? `<br>(${results.asn})` : ""
+                }</td>
+                <td>
+                    <a class="btn btn-link" href="share#${this.getResultsString(
+                        results
+                    )}"><i class="icon icon-link"></i></a>
+                </td>
             `;
-                this.$historyResults.appendChild($resultsRow);
-            });
+            this.$historyResults.appendChild($resultsRow);
+        });
+    }
+
+    getResultsString(results) {
+        return `${results.latency},${results.jitter},${
+            results.download
+        },${results.upload},${results.ip},${results.asn || ""}`;
     }
 }
