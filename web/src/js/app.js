@@ -110,6 +110,8 @@ export default class WebUI {
         );
 
         window.addEventListener("popstate", () => {
+            this.stopTest(true);
+
             switch (document.location.pathname) {
                 case "/result":
                     this.showPage("speedtest");
@@ -134,7 +136,6 @@ export default class WebUI {
 
                 default:
                     this.showPage("speedtest");
-                    this.stopTest(true);
                     break;
             }
         });
