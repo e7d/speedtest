@@ -460,14 +460,7 @@ export default class WebUI {
     storeLatestResults(results) {
         const resultsHistory =
             JSON.parse(localStorage.getItem("history")) || {};
-        resultsHistory[results.timestamp] = {
-            latency: results.latency.avg,
-            jitter: results.latency.jitter,
-            download: results.download.speed,
-            upload: results.upload.speed,
-            ip: results.ip,
-            asn: results.asn
-        };
+        resultsHistory[results.timestamp] = results;
         localStorage.setItem(
             "history",
             JSON.stringify(this.limitResultsHistory(resultsHistory))
@@ -547,10 +540,10 @@ export default class WebUI {
             const $resultsRow = document.createElement("tr");
             $resultsRow.innerHTML = `
                 <td>${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}</td>
-                <td>${results.latency} ms</td>
-                <td>${results.jitter} ms</td>
-                <td>${(results.download / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${(results.upload / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${results.latency.avg} ms</td>
+                <td>${results.latency.jitter} ms</td>
+                <td>${(results.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${(results.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
                 <td>${results.ip}${
                     results.asn ? `<br>(${results.asn})` : ""
                 }</td>
@@ -565,8 +558,8 @@ export default class WebUI {
     }
 
     getResultsString(results) {
-        return `${results.latency},${results.jitter},${
-            results.download
-        },${results.upload},${results.ip},${results.asn || ""}`;
+        return `${results.latency.avg},${results.latency.jitter},${
+            results.download.speed
+        },${results.upload.speed},${results.ip},${results.asn || ""}`;
     }
 }
