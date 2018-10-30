@@ -64,9 +64,9 @@ export default class WebUI {
             "click",
             this.shareResultsButtonClickHandler.bind(this)
         );
-        this.ui.$showResultsHistoryButton.addEventListener(
+        this.ui.$resultsHistoryButton.addEventListener(
             "click",
-            this.showResultsHistoryButtonClickHandler.bind(this)
+            this.resultsHistoryButtonClickHandler.bind(this)
         );
         this.ui.$startButton.addEventListener(
             "click",
@@ -108,7 +108,7 @@ export default class WebUI {
     /**
      * Toggle history results
      */
-    showResultsHistoryButtonClickHandler() {
+    resultsHistoryButtonClickHandler() {
         this.speedtest.stopTest();
         this.ui.clearResults();
 
