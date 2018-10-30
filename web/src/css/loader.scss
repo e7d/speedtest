@@ -14,8 +14,14 @@
   animation-duration: 1s;
   animation-iteration-count: infinite;
 
+  @media only screen and (max-width: 640px) {
+    & {
+      background-size: 75vw;
+    }
+  }
+
   body.ready & {
-    animation: fadeOut;
+    animation-name: fadeOut;
     animation-duration: 500ms;
     animation-iteration-count: 1;
     animation-fill-mode: forwards;

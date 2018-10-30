@@ -10,15 +10,18 @@
 </head>
 
 <body>
+	<div id="loader"></div>
+
 	<header>
 		<h1>
-			<span id="icon"></span>
+			<span id="logo"></span>
 			<span id="title">Speed Test</span>
 		</h1>
 
 		<nav id="commands">
-			<button id="share-results" class="btn btn-link" hidden><i class="icon icon-link"></button>
-			<button id="show-results-history" class="btn btn-link"><i class="icon icon-history"></button>
+			<button id="share-results" class="btn btn-link" hidden><i class="icon icon-link"></i></button>
+			<button id="results-history" class="btn btn-link"><i class="icon icon-history"></i></button>
+			<button id="show-settings" class="btn btn-link"><i class="icon icon-cog"></i></button>
 			<button id="start" class="btn btn-primary">Start</button>
 			<button id="stop" class="btn btn-danger" hidden>Stop</button>
 		</nav>
@@ -28,6 +31,17 @@
 		<div id="https-alert" class="alert alert-warning alert-dismissible" hidden>
 			<span class="message"></span>
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+		</div>
+	</section>
+
+	<section id="settings" hidden>
+		<h2>Settings</h2>
+
+		<div class="form-group">
+			<label for="latency-mode">Latency mode</label>
+			<div class="input-group">
+				<input id="latency-mode" class="form-control" type="text" readonly>
+			</div>
 		</div>
 	</section>
 
@@ -124,8 +138,7 @@
 	<section id="share">
 	</section>
 	<footer id="credits" hidden>
-		made with <i class="icon icon-heart"></i>
-		by <a href="https://github.com/e7d/speedtest/" target="blank">e7d</a>
+		Get source code on <a href="https://github.com/e7d/speedtest/" target="_blank">GitHub</a>
 		<footer>
 </body>
 
