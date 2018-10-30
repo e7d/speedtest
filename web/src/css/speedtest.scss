@@ -56,12 +56,11 @@
             display: block;
             font-size: 1.5em;
             margin-bottom: 0.2em;
-            color: $black;
             transition: color 0.6s ease;
         }
 
         &.active label {
-            color: $alternativeColor;
+            color: $highlightColor;
         }
 
         .ip, .asn {
@@ -85,14 +84,12 @@
         .unit {
             font-size: 1em;
             font-weight: lighter;
-            color: $black;
             margin-left: 0.1em;
         }
 
         .asn {
             font-size: 1.2em;
             font-weight: lighter;
-            color: $black;
         }
     }
 
