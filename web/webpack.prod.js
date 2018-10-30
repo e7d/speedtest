@@ -3,6 +3,7 @@ const Merge = require("webpack-merge");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = Merge(CommonConfig, {
     mode: "production",
@@ -22,7 +23,13 @@ module.exports = Merge(CommonConfig, {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "[name].[chunkhash:8].css"
+            filename: "[name].[hash:8].css"
+        }),
+        new HtmlWebpackPlugin({
+            template: "src/index.html",
+            minify: {
+                collapseWhitespace: true
+            }
         })
     ],
     optimization: {
@@ -35,11 +42,6 @@ module.exports = Merge(CommonConfig, {
                 }
             }
         },
-        minimizer: [
-            new UglifyJsPlugin({
-                test: /\.js($|\?)/i
-            }),
-            new OptimizeCSSAssetsPlugin({})
-        ]
+        minimizer: [new UglifyJsPlugin(), new OptimizeCSSAssetsPlugin()]
     }
 });

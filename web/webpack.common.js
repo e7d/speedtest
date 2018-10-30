@@ -14,7 +14,7 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "[name].[chunkhash:8].js"
+        filename: "[name].[hash:8].js"
     },
     module: {
         rules: [
@@ -23,7 +23,7 @@ module.exports = {
                 use: {
                     loader: "worker-loader",
                     options: {
-                        name: "[name].[chunkhash:8].js"
+                        name: "[name].[hash:8].js"
                     }
                 }
             },
@@ -33,7 +33,7 @@ module.exports = {
                 use: {
                     loader: "babel-loader",
                     options: {
-                        presets: ["env"],
+                        presets: ["env"]
                     }
                 }
             },
@@ -45,7 +45,8 @@ module.exports = {
                 test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
                 loader: "url-loader",
                 options: {
-                    limit: 10000
+                    limit: 8192,
+                    name: "[name].[hash:8].[ext]"
                 }
             }
         ]
@@ -55,13 +56,7 @@ module.exports = {
             root: __dirname
         }),
         new HtmlWebpackPlugin({
-            inject: "body",
-            template: "src/index.html",
-            filename: "index.html",
-            chunks: ["vendor", "app"],
-            minify: {
-                collapseWhitespace: true
-            }
+            template: "src/index.html"
         }),
         new CopyWebpackPlugin([{ from: "src/assets/", to: "." }])
     ]
