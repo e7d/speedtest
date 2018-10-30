@@ -1,0 +1,47 @@
+html.dark {
+    background: #232325;
+    color: white;
+
+    a {
+        color: #0069d9;
+
+        &:hover {
+            color: #1988ff;
+        }
+    }
+    .btn-primary {
+        background-color: #0069d9;
+        border-color: #0062cc;
+
+        &:hover {
+            background-color: #1988ff;
+            border-color: #1988ff;
+        }
+    }
+    .btn-link {
+        color: #0069d9;
+
+        &:hover {
+            color: #1988ff;
+        }
+    }
+
+    .progress {
+        background-color: #28292c;
+    }
+    .progress-bar {
+        background-color: #0069d9;
+    }
+
+    #speedtest .result.active label {
+        color: #0069d9;
+    }
+
+    #speedtest .result .value {
+        color: #c2c6c9;
+    }
+
+    .icon-heart {
+        color: #d8636e;
+    }
+}
