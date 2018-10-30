@@ -63,7 +63,8 @@ export default class WorkerService {
     processWorkerResponse(event) {
         if (!this.workerReady) {
             if (!event.data.ready) return;
-            this.workerReady = event.data.ready;
+            this.workerReady = true;
+            this.ui.$body.classList.add("ready");
 
             if (!event.data.config.hideCredits) {
                 this.ui.$credits.removeAttribute("hidden");
@@ -153,7 +154,9 @@ export default class WorkerService {
         const uploadValue = data.results.upload
             ? +data.results.upload.speed / (1024 * 1024)
             : 0;
-        this.ui.$uploadValue.innerHTML = uploadValue ? uploadValue.toFixed(2) : "";
+        this.ui.$uploadValue.innerHTML = uploadValue
+            ? uploadValue.toFixed(2)
+            : "";
 
         if ([STEP.LATENCY, STEP.DOWNLOAD, STEP.UPLOAD].includes(data.step)) {
             this.ui.setProgressBar(data.results[data.step].progress, data.step);

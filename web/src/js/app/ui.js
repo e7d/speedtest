@@ -7,12 +7,14 @@ export default class UI {
     constructor() {
         this.page = "home";
 
+        this.$body = document.querySelector('body');
+
         // Top navigation bar
         this.$shareResultsButton = document.querySelector(
             "#commands button#share-results"
         );
-        this.$showResultsHistoryButton = document.querySelector(
-            "#commands button#show-results-history"
+        this.$resultsHistoryButton = document.querySelector(
+            "#commands button#results-history"
         );
         this.$startButton = document.querySelector("#commands button#start");
         this.$stopButton = document.querySelector("#commands button#stop");
