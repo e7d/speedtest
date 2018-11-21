@@ -1,5 +1,3 @@
-//@ts-check
-
 import UI from "./app/ui"
 import SpeedTest from "./app/speedtest";
 import Share from "./app/share";

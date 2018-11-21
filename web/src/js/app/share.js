@@ -1,5 +1,3 @@
-//@ts-check
-
 import html2canvas from "html2canvas";
 
 export default class Share {

@@ -1,6 +1,3 @@
-//@ts-check
-
-
 import STEP from "../worker/step";
 
 export default class UI {

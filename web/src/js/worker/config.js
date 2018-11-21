@@ -1,6 +1,4 @@
-//@ts-check
-
-class Config {
+export default class Config {
     static get OVERHEAD() {
         return {
             "TCP+IPv4+ETH": 1500 / (1500 - 20 - 20 - 14),
@@ -126,5 +124,3 @@ class Config {
         return extended;
     }
 }
-
-export default Config;

@@ -1,8 +1,5 @@
-//@ts-check
-
-import Results from "./results";
-
 import IpInfo from "../utils/ipInfo";
+import Results from "./results";
 import SpeedTestWorker from "../worker";
 import STATUS from "../worker/status";
 import STEP from "../worker/step";

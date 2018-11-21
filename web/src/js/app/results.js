@@ -1,5 +1,3 @@
-//@ts-check
-
 export default class Results {
     /**
      * Build a sharable results string from a results object

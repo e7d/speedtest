@@ -1,5 +1,3 @@
-//@ts-check
-
 import WorkerService from "./workerService";
 
 export default class SpeedTest {
