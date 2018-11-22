@@ -1,6 +1,8 @@
 html.dark {
-    background: #232325;
-    color: white;
+    &, body {
+        background: #232325;
+        color: white;
+    }
 
     a {
         color: #0069d9;

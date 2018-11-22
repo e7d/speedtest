@@ -4,8 +4,14 @@ $phoneColor: $primaryColor;
 $screenColor: $backgroundColor;
 
 #history {
-    table .btn-link {
-        padding: 0.375em;
+    table {
+        th, td {
+            vertical-align: middle;
+        }
+
+        .btn-link {
+            padding: 0.375em;
+        }
     }
 
     #go-landscape {

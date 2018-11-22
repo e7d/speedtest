@@ -3,6 +3,37 @@ import html2canvas from "html2canvas";
 export default class Share {
     constructor(ui) {
         this.ui = ui;
+
+        this.attachEventHandlers();
+    }
+
+    /**
+     * Attach event handlers to the UI
+     */
+    attachEventHandlers() {
+        this.ui.$shareResultsLink.addEventListener(
+            "click",
+            this.shareResultsLinkClickHandler.bind(this)
+        );
+        this.ui.$shareResultsLinkCopyButton.addEventListener(
+            "click",
+            this.shareResultsLinkCopyButtonClickHandler.bind(this)
+        );
+    }
+
+    /**
+     * Select the share result link on text input click
+     */
+    shareResultsLinkClickHandler() {
+        this.ui.$shareResultsLink.select();
+    }
+
+    /**
+     * Select and copy the share result link on "Copy" button click
+     */
+    shareResultsLinkCopyButtonClickHandler() {
+        this.ui.$shareResultsLink.select();
+        document.execCommand("copy");
     }
 
     /**

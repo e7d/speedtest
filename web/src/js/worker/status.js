@@ -1,8 +1,9 @@
 export default {
-    WAITING: 0,
-    STARTING: 1,
-    RUNNING: 2,
-    DONE: 3,
-    ABORTED: 4,
+    READY: 0,
+    WAITING: 1,
+    STARTING: 2,
+    RUNNING: 3,
+    DONE: 4,
+    ABORTED: 5,
     FAILED: -1
 };

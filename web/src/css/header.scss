@@ -13,8 +13,7 @@ header {
 
     h1 {
         grid-area: h;
-        font-size: 2rem;
-        margin: 0;
+        margin: auto 0;
 
         #logo {
             display: inline-block;
@@ -43,10 +42,13 @@ header {
             }
         }
 
+        #title {
+            font-size: 2rem;
 
-        @media only screen and (max-width: 640px) {
-            #title {
-                display: none;
+            @media only screen and (max-width: 640px) {
+                & {
+                    display: none;
+                }
             }
         }
     }

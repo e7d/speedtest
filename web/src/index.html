@@ -37,12 +37,33 @@
 	<section id="settings" hidden>
 		<h2>Settings</h2>
 
-		<div class="form-group">
-			<label for="latency-mode">Latency mode</label>
-			<div class="input-group">
-				<input id="latency-mode" class="form-control" type="text" readonly>
+		<form>
+			<fieldset class="form-group">
+				<div class="row">
+					<legend class="col-sm-2 col-form-label pt-0">Theme</legend>
+					<div class="col-sm-10">
+						<div class="form-check">
+							<input id="theme-light" class="form-check-input" type="radio" name="theme" value="light" checked>
+							<label for="theme-light" class="form-check-label">
+								Light
+							</label>
+						</div>
+						<div class="form-check">
+							<input id="theme-dark" class="form-check-input" type="radio" name="theme" value="dark">
+							<label for="theme-dark" class="form-check-label">
+								Dark
+							</label>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+
+			<div class="form-group row">
+				<div class="col-sm-10 offset-sm-2">
+					<button type="submit" class="btn btn-dark">Save</button>
+				</div>
 			</div>
-		</div>
+		</form>
 	</section>
 
 	<section id="history" hidden>

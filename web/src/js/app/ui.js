@@ -4,7 +4,8 @@ export default class UI {
     constructor() {
         this.page = "home";
 
-        this.$body = document.querySelector('body');
+        this.$html = document.querySelector("html");
+        this.$body = document.querySelector("body");
 
         // Top navigation bar
         this.$shareResultsButton = document.querySelector(
@@ -13,6 +14,9 @@ export default class UI {
         this.$resultsHistoryButton = document.querySelector(
             "#commands button#results-history"
         );
+        this.$showSettingsButton = document.querySelector(
+            "#commands button#show-settings"
+        );
         this.$startButton = document.querySelector("#commands button#start");
         this.$stopButton = document.querySelector("#commands button#stop");
 
@@ -20,8 +24,12 @@ export default class UI {
         this.$httpsAlert = document.querySelector("#https-alert");
         this.$httpsAlertMessage = document.querySelector(
             "#https-alert .message"
-        )
+        );
         this.$closeButtons = document.querySelectorAll("button.close");
+
+        // Settings page
+        this.$settings = document.querySelector("#settings");
+        this.$settingsForm = this.$settings.querySelector("form");
 
         // History page
         this.$history = document.querySelector("#history");
@@ -58,6 +66,15 @@ export default class UI {
     }
 
     /**
+     * Changes the color theme, light or dark.
+     *
+     * @param {String} theme
+     */
+    changeTheme(theme = "light") {
+        this.$html.classList[theme === "dark" ? "add" : "remove"]("dark");
+    }
+
+    /**
      * Changes the current displayed page.
      *
      * @param {String} page
@@ -65,6 +82,7 @@ export default class UI {
     showPage(page) {
         this.page = page;
 
+        this.$settings.setAttribute("hidden", "");
         this.$history.setAttribute("hidden", "");
         this.$share.setAttribute("hidden", "");
         this.$speedtest.setAttribute("hidden", "");

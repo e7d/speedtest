@@ -5,6 +5,7 @@
 }
 
 body {
+    background: transparent;
     max-width: 800px;
     margin: auto;
     padding: 0px 2em;
@@ -38,4 +39,9 @@ a {
 
 .text-center {
     text-align: center;
+}
+
+h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
 }

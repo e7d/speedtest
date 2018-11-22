@@ -18,11 +18,9 @@ export default class SpeedTestWorker {
      * @param {DedicatedWorkerGlobalScope} scope
      */
     constructor(scope = self) {
-        this.ready = false;
         this.scope = scope;
 
         this.running = false;
-        this.status = STATUS.WAITING;
         this.step = null;
         this.error = false;
         this.data = {};
@@ -40,8 +38,10 @@ export default class SpeedTestWorker {
 
         Config.loadConfig().then(config => {
             this.config = config;
-            this.ready = true;
+            this.status = STATUS.READY;
             this.postStatus();
+
+            this.status = STATUS.WAITING;
         });
 
         this.scope.addEventListener("message", this.processMessage.bind(this));
@@ -90,9 +90,8 @@ export default class SpeedTestWorker {
      */
     postStatus() {
         this.postMessage({
-            ready: this.ready,
-            config: this.config,
             status: this.status,
+            config: this.config,
             step: this.step,
             results: this.results,
             alerts: this.alerts

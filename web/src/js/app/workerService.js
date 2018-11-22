@@ -11,7 +11,8 @@ export default class WorkerService {
         this.queueTest = false;
         this.workerReady = false;
         this.statusInterval = null;
-        this.config = {
+        this.config = {};
+        this.settings = {
             updateDelay: 150,
             endless: false
         };
@@ -38,7 +39,7 @@ export default class WorkerService {
         window.clearInterval(this.statusInterval);
         this.statusInterval = window.setInterval(() => {
             this.worker.postMessage("status");
-        }, this.config.updateDelay);
+        }, this.settings.updateDelay);
     }
 
     /**
@@ -58,28 +59,26 @@ export default class WorkerService {
      * @param {MessageEvent} event
      */
     processWorkerResponse(event) {
-        if (!this.workerReady) {
-            if (!event.data.ready) return;
-            this.workerReady = true;
-            this.ui.$body.classList.add("ready");
-
-            if (!event.data.config.hideCredits) {
-                this.ui.$credits.removeAttribute("hidden");
-            }
-
-            if (event.data.alerts.https) {
-                this.ui.$httpsAlert.removeAttribute("hidden");
-                this.ui.$httpsAlertMessage.innerHTML = event.data.alerts.https;
-            }
-        }
-
-        if (this.queueTest && this.workerReady) {
-            this.queueTest = false;
-            this.start();
-            return;
-        }
-
         switch (event.data.status) {
+            case STATUS.READY:
+                this.workerReady = true;
+                this.ui.$body.classList.add("ready");
+
+                this.config = event.data.config;
+                if (!event.data.config.hideCredits) {
+                    this.ui.$credits.removeAttribute("hidden");
+                }
+
+                if (event.data.alerts.https) {
+                    this.ui.$httpsAlert.removeAttribute("hidden");
+                    this.ui.$httpsAlertMessage.innerHTML = event.data.alerts.https;
+                }
+
+                if (this.queueTest) {
+                    this.queueTest = false;
+                    this.start();
+                }
+                break;
             case STATUS.RUNNING:
                 this.processData(event.data || {});
                 break;
@@ -87,7 +86,7 @@ export default class WorkerService {
                 window.clearInterval(this.statusInterval);
 
                 this.processData(event.data || {});
-                if (this.config.endless) {
+                if (this.settings.endless) {
                     this.start();
                     return;
                 }
@@ -190,7 +189,7 @@ export default class WorkerService {
      * @returns
      * @memberof WebUI
      */
-    limitResultsHistory(resultsHistory, maxEntries = 5) {
+    limitResultsHistory(resultsHistory, maxEntries = 20) {
         const filteredResults = {};
         Object.keys(resultsHistory)
             .sort((a, b) => +b - +a)

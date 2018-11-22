@@ -1,5 +1,6 @@
 import UI from "./app/ui"
 import SpeedTest from "./app/speedtest";
+import Settings from "./app/settings";
 import Share from "./app/share";
 import History from "./app/history";
 
@@ -16,6 +17,7 @@ export default class WebUI {
         this.ui = new UI();
 
         this.speedtest = new SpeedTest(this.ui);
+        this.settings = new Settings(this.ui);
         this.share = new Share(this.ui);
         this.history = new History(this.ui);
 
@@ -38,6 +40,10 @@ export default class WebUI {
                 case "/run":
                     this.ui.showPage("speedtest");
                     this.speedtest.startTest();
+                    break;
+
+                case "/settings":
+                    this.ui.showPage("settings");
                     break;
 
                 case "/share":
@@ -66,6 +72,10 @@ export default class WebUI {
             "click",
             this.resultsHistoryButtonClickHandler.bind(this)
         );
+        this.ui.$showSettingsButton.addEventListener(
+            "click",
+            this.showSettingsButtonClickHandler.bind(this)
+        );
         this.ui.$startButton.addEventListener(
             "click",
             this.startButtonClickHandler.bind(this)
@@ -79,14 +89,6 @@ export default class WebUI {
                 "click",
                 this.alertCloseButtonClickHandler.bind(this)
             )
-        );
-        this.ui.$shareResultsLink.addEventListener(
-            "click",
-            this.shareResultsLinkClickHandler.bind(this)
-        );
-        this.ui.$shareResultsLinkCopyButton.addEventListener(
-            "click",
-            this.shareResultsLinkCopyButtonClickHandler.bind(this)
         );
     }
 
@@ -104,7 +106,7 @@ export default class WebUI {
     }
 
     /**
-     * Toggle history results
+     * Show results history
      */
     resultsHistoryButtonClickHandler() {
         this.speedtest.stopTest();
@@ -113,6 +115,17 @@ export default class WebUI {
         this.history.loadResultsHistory();
         this.ui.showPage("history");
         window.history.pushState({}, "Speed Test - Results", "/results");
+    }
+
+    /**
+     * Show settings
+     */
+    showSettingsButtonClickHandler() {
+        this.speedtest.stopTest();
+        this.ui.clearResults();
+
+        this.ui.showPage("settings");
+        window.history.pushState({}, "Speed Test - Settings", "/settings");
     }
 
     /**
@@ -140,20 +153,5 @@ export default class WebUI {
      */
     alertCloseButtonClickHandler(e) {
         e.target.parentElement.setAttribute("hidden", "");
-    }
-
-    /**
-     * Select the share result link on text input click
-     */
-    shareResultsLinkClickHandler() {
-        this.ui.$shareResultsLink.select();
-    }
-
-    /**
-     * Select and copy the share result link on "Copy" button click
-     */
-    shareResultsLinkCopyButtonClickHandler() {
-        this.ui.$shareResultsLink.select();
-        document.execCommand("copy");
     }
 }
