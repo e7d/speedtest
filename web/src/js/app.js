@@ -1,4 +1,4 @@
-import UI from "./app/ui"
+import UI from "./app/ui";
 import SpeedTest from "./app/speedtest";
 import Settings from "./app/settings";
 import Share from "./app/share";

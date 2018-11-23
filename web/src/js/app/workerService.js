@@ -71,7 +71,8 @@ export default class WorkerService {
 
                 if (event.data.alerts.https) {
                     this.ui.$httpsAlert.removeAttribute("hidden");
-                    this.ui.$httpsAlertMessage.innerHTML = event.data.alerts.https;
+                    this.ui.$httpsAlertMessage.innerHTML =
+                        event.data.alerts.https;
                 }
 
                 if (this.queueTest) {

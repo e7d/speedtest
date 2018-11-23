@@ -7,8 +7,7 @@ export default class Bandwidth {
      * @returns {Object}
      */
     static compute(size, duration, overheadCompensation) {
-        const byteBandwidth =
-            (size / duration) * overheadCompensation;
+        const byteBandwidth = (size / duration) * overheadCompensation;
         const bitBandwidth = 8 * byteBandwidth;
 
         return {

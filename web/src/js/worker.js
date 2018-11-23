@@ -537,10 +537,9 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${this
-                .config.websocket.host}/${
-                this.config.download.websocket.path
-            }`;
+            const endpoint = `${this.config.websocket.protocol}://${
+                this.config.websocket.host
+            }/${this.config.download.websocket.path}`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = this.config.download.websocket.binaryType;
             this.requests[index] = socket;
@@ -846,15 +845,14 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${this
-                .config.websocket.host}/${
-                this.config.upload.websocket.path
-            }`;
+            const endpoint = `${this.config.websocket.protocol}://${
+                this.config.websocket.host
+            }/${this.config.upload.websocket.path}`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = "arraybuffer";
 
             this.requests[index] = socket;
-            socket.addEventListener('message', () => {
+            socket.addEventListener("message", () => {
                 if (STATUS.ABORTED === this.status) {
                     socket.close();
                     return reject({ status: STATUS.ABORTED });
@@ -873,11 +871,11 @@ export default class SpeedTestWorker {
                 socket.send(this.test.upload.blob);
             });
 
-            socket.addEventListener('close', () => {
+            socket.addEventListener("close", () => {
                 Request.clearWebSocket(socket);
             });
 
-            socket.addEventListener('error', () => {
+            socket.addEventListener("error", () => {
                 if (this.config.ignoreErrors) {
                     this.testUploadSpeedWebSocket(size)
                         .then(resolve)
@@ -893,7 +891,7 @@ export default class SpeedTestWorker {
                 });
             });
 
-            socket.addEventListener('open', () => {
+            socket.addEventListener("open", () => {
                 this.scope.setTimeout(() => {
                     socket.send(this.test.upload.blob);
                 }, delay);

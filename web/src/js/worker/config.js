@@ -11,7 +11,9 @@ export default class Config {
             ignoreErrors: true,
             optimize: false,
             websocket: {
-                protocol: self.location.protocol.replace('http', 'ws').replace(":", ""),
+                protocol: self.location.protocol
+                    .replace("http", "ws")
+                    .replace(":", ""),
                 host: `${self.location.host}`
             },
             xhr: {
