@@ -42,8 +42,12 @@ export default class Settings {
      * Load and apply stored settings
      */
     loadSettings() {
-        this.settings = JSON.parse(localStorage.getItem('settings') || '{}');
-        document.querySelector(`[name=theme][value=${this.settings.theme}]`).checked = true;
+        this.settings = JSON.parse(localStorage.getItem("settings")) || {
+            theme: "light"
+        };
+        document.querySelector(
+            `[name=theme][value=${this.settings.theme}]`
+        ).checked = true;
         this.ui.changeTheme(this.settings.theme);
     }
 
@@ -51,6 +55,6 @@ export default class Settings {
      * Save settings to storage
      */
     saveSettings() {
-        localStorage.setItem('settings', JSON.stringify(this.settings));
+        localStorage.setItem("settings", JSON.stringify(this.settings));
     }
 }
