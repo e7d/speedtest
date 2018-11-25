@@ -97,7 +97,9 @@
 					<th>Download</th>
 					<th>Upload</th>
 					<th>IP (ASN)</th>
-					<th></th>
+					<th>
+						<a id="erase-history" class="btn btn-danger" title="Delete all results from history"><i class="icon icon-trash"></i></a>
+					</th>
 				</tr>
 			</thead>
 			<tbody></tbody>
@@ -125,29 +127,29 @@
 	<section id="speedtest">
 		<div id="ip" class="result">
 			<label>IP</label>
-			<span class="ip value"></span>
-			<span class="asn"></span>
+			<div class="ip value"></div>
+			<div class="asn"></div>
 		</div>
 
 		<div id="latency" class="result">
 			<label><i class="icon icon-latency"></i> Latency</label>
-			<span class="value"></span>
-			<span class="unit">ms</span>
+			<div class="value"></div>
+			<div class="unit">ms</div>
 		</div>
 		<div id="jitter" class="result">
 			<label><i class="icon icon-jitter"></i> Jitter</label>
-			<span class="value"></span>
-			<span class="unit">ms</span>
+			<div class="value"></div>
+			<div class="unit">ms</div>
 		</div>
 		<div id="download" class="result">
 			<label><i class="icon icon-download"></i> Download</label>
-			<span class="value"></span>
-			<span class="unit">Mbps</span>
+			<div class="value"></div>
+			<div class="unit">Mbps</div>
 		</div>
 		<div id="upload" class="result">
 			<label><i class="icon icon-upload"></i> Upload</label>
-			<span class="value"></span>
-			<span class="unit">Mbps</span>
+			<div class="value"></div>
+			<div class="unit">Mbps</div>
 		</div>
 
 		<div id="progress" class="progress">
@@ -155,12 +157,9 @@
 		</div>
 	</section>
 
-
-	<section id="share">
-	</section>
 	<footer id="credits" hidden>
 		Get source code on <a href="https://github.com/e7d/speedtest/" target="_blank">GitHub</a>
-		<footer>
+	<footer>
 </body>
 
 </html>

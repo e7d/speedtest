@@ -8,17 +8,18 @@ export default class UI {
         this.$body = document.querySelector("body");
 
         // Top navigation bar
-        this.$shareResultsButton = document.querySelector(
-            "#commands button#share-results"
+        this.$commands = document.querySelector("#commands");
+        this.$shareResultsButton = this.$commands.querySelector(
+            "button#share-results"
         );
-        this.$resultsHistoryButton = document.querySelector(
-            "#commands button#results-history"
+        this.$resultsHistoryButton = this.$commands.querySelector(
+            "button#results-history"
         );
-        this.$showSettingsButton = document.querySelector(
-            "#commands button#show-settings"
+        this.$showSettingsButton = this.$commands.querySelector(
+            "button#show-settings"
         );
-        this.$startButton = document.querySelector("#commands button#start");
-        this.$stopButton = document.querySelector("#commands button#stop");
+        this.$startButton = this.$commands.querySelector("button#start");
+        this.$stopButton = this.$commands.querySelector("button#stop");
 
         // Alerts
         this.$httpsAlert = document.querySelector("#https-alert");
@@ -33,7 +34,8 @@ export default class UI {
 
         // History page
         this.$history = document.querySelector("#history");
-        this.$historyResults = document.querySelector("#history table tbody");
+        this.$resultsHistory = this.$history.querySelector("table tbody");
+        this.$eraseHistoryButton = this.$history.querySelector("#erase-history");
 
         // Share page
         this.$share = document.querySelector("#share");
@@ -48,16 +50,16 @@ export default class UI {
         // SpeedTest page
         this.$speedtest = document.querySelector("#speedtest");
         this.$results = document.querySelectorAll(".result");
-        this.$ipValue = document.querySelector("#ip span.value");
-        this.$asnValue = document.querySelector("#ip span.asn");
+        this.$ipValue = document.querySelector("#ip .value");
+        this.$asnValue = document.querySelector("#ip .asn");
         this.$latencyResult = document.querySelector("#latency");
-        this.$latencyValue = this.$latencyResult.querySelector("span.value");
+        this.$latencyValue = this.$latencyResult.querySelector(".value");
         this.$jitterResult = document.querySelector("#jitter");
-        this.$jitterValue = this.$jitterResult.querySelector("span.value");
+        this.$jitterValue = this.$jitterResult.querySelector(".value");
         this.$downloadResult = document.querySelector("#download");
-        this.$downloadValue = this.$downloadResult.querySelector("span.value");
+        this.$downloadValue = this.$downloadResult.querySelector(".value");
         this.$uploadResult = document.querySelector("#upload");
-        this.$uploadValue = this.$uploadResult.querySelector("span.value");
+        this.$uploadValue = this.$uploadResult.querySelector(".value");
         this.$progress = document.querySelector("#progress");
         this.$progressBar = document.querySelector("#progress .progress-bar");
 
