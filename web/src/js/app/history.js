@@ -3,6 +3,35 @@ import Results from "./results";
 export default class History {
     constructor(ui) {
         this.ui = ui;
+        this.results = {};
+
+        this.attachEventHandlers();
+    }
+
+    /**
+     * Attach event handlers to the UI
+     */
+    attachEventHandlers() {
+        this.ui.$eraseHistoryButton.addEventListener(
+            "click",
+            this.eraseHistoryButtonClickHandler.bind(this)
+        );
+    }
+
+    /**
+     * Select the share result link on text input click
+     */
+    eraseHistoryButtonClickHandler() {
+        if (
+            Object.entries(this.results).length === 0 ||
+            !window.confirm(
+                "The results history will be permanently deleted. Are you sure you want to delete it?"
+            )
+        )
+            return;
+
+        localStorage.removeItem("history");
+        this.loadResultsHistory();
     }
 
     /**
@@ -11,30 +40,30 @@ export default class History {
      * @todo: Split data loading and HTML building
      */
     loadResultsHistory() {
-        const history = Object.assign(
+        this.results = Object.assign(
             {},
             JSON.parse(localStorage.getItem("history"))
         );
 
-        this.ui.$historyResults.innerHTML = "";
-        if (Object.entries(history).length === 0) {
+        this.ui.$resultsHistory.innerHTML = "";
+        if (Object.entries(this.results).length === 0) {
             this.printPlaceholder();
             return;
         }
 
-        this.printResults(history);
+        this.printResults();
     }
 
     printPlaceholder() {
         const $resultsRow = document.createElement("tr");
         $resultsRow.innerHTML =
-            '<td class="text-center" colspan="6">No results.<br><a href="#run">Run a speed test</a> now.</td>';
-        this.ui.$historyResults.appendChild($resultsRow);
+            '<td class="text-center" colspan="99">No results</td>';
+        this.ui.$resultsHistory.appendChild($resultsRow);
     }
 
-    printResults(history) {
+    printResults() {
         let $resultsRow;
-        Object.entries(history).forEach(([timestamp, results]) => {
+        Object.entries(this.results).forEach(([timestamp, results]) => {
             const date = new Date(+timestamp);
             $resultsRow = document.createElement("tr");
             $resultsRow.innerHTML = `
@@ -50,10 +79,9 @@ export default class History {
                     <a class="btn btn-link" href="share#${Results.toString(
                         results
                     )}"><i class="icon icon-link"></i></a>
-                    <a class="btn btn-link" href="#delete-${date.getTime()}"><i class="icon icon-trash"></i></a>
                 </td>
             `;
-            this.ui.$historyResults.appendChild($resultsRow);
+            this.ui.$resultsHistory.appendChild($resultsRow);
         });
     }
 }
