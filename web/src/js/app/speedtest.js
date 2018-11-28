@@ -10,7 +10,6 @@ export default class SpeedTest {
      * Start a speed test.
      */
     startTest() {
-        UI.$shareResultsButton.setAttribute("hidden", "");
         UI.$startButton.setAttribute("hidden", "");
         UI.$stopButton.removeAttribute("hidden");
 
@@ -34,7 +33,7 @@ export default class SpeedTest {
     /**
      * Load the results from the currect URI
      */
-    loadResultsFromUri() {
+    loadResultsFromUri(showShareButton = true) {
         const [
             latency,
             jitter,
@@ -48,9 +47,10 @@ export default class SpeedTest {
         UI.$asnValue.innerHTML = decodeURIComponent(asn);
         UI.$latencyValue.innerHTML = latency;
         UI.$jitterValue.innerHTML = jitter;
-        UI.$downloadValue.innerHTML = (+download / (1024 * 1024)).toFixed(
-            2
-        );
+        UI.$downloadValue.innerHTML = (+download / (1024 * 1024)).toFixed(2);
         UI.$uploadValue.innerHTML = (+upload / (1024 * 1024)).toFixed(2);
+
+        if (showShareButton)
+            UI.$shareResultsButton.removeAttribute("hidden", "");
     }
 }

@@ -23,6 +23,7 @@ export default class WebUI {
 
         window.addEventListener("popstate", () => {
             this.speedtest.stopTest(true);
+            UI.$shareResultsButton.setAttribute("hidden", "");
 
             switch (document.location.pathname) {
                 case "/result":
@@ -46,7 +47,7 @@ export default class WebUI {
 
                 case "/share":
                     UI.showPage("share");
-                    this.speedtest.loadResultsFromUri();
+                    this.speedtest.loadResultsFromUri(false);
                     this.share.generateShareResultsLinks();
                     break;
 
