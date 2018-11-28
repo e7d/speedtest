@@ -1,7 +1,7 @@
-export default class Settings {
-    constructor(ui) {
-        this.ui = ui;
+import { UI } from "./ui";
 
+export default class Settings {
+    constructor() {
         this.loadSettings();
         this.attachEventHandlers();
     }
@@ -10,7 +10,7 @@ export default class Settings {
      * Attach event handlers to the UI
      */
     attachEventHandlers() {
-        this.ui.$settingsForm.addEventListener(
+        UI.$settingsForm.addEventListener(
             "submit",
             this.settingsFormSubmitHandler.bind(this)
         );
@@ -35,7 +35,7 @@ export default class Settings {
     processFormData(formData) {
         this.settings.theme = formData.get("theme");
         this.saveSettings();
-        this.ui.changeTheme(this.settings.theme);
+        UI.changeTheme(this.settings.theme);
     }
 
     /**
@@ -48,7 +48,7 @@ export default class Settings {
         document.querySelector(
             `[name=theme][value=${this.settings.theme}]`
         ).checked = true;
-        this.ui.changeTheme(this.settings.theme);
+        UI.changeTheme(this.settings.theme);
     }
 
     /**

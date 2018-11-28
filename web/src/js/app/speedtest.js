@@ -1,21 +1,21 @@
+import { UI } from "./ui";
 import WorkerService from "./workerService";
 
 export default class SpeedTest {
-    constructor(ui) {
-        this.ui = ui;
-        this.workerService = new WorkerService(this.ui);
+    constructor() {
+        this.workerService = new WorkerService();
     }
 
     /**
      * Start a speed test.
      */
     startTest() {
-        this.ui.$shareResultsButton.setAttribute("hidden", "");
-        this.ui.$startButton.setAttribute("hidden", "");
-        this.ui.$stopButton.removeAttribute("hidden");
+        UI.$shareResultsButton.setAttribute("hidden", "");
+        UI.$startButton.setAttribute("hidden", "");
+        UI.$stopButton.removeAttribute("hidden");
 
-        this.ui.setProgressBar(0);
-        this.ui.clearResults();
+        UI.setProgressBar(0);
+        UI.clearResults();
 
         this.workerService.start();
     }
@@ -26,9 +26,9 @@ export default class SpeedTest {
     stopTest(clearResults = false) {
         this.workerService.abort();
 
-        this.ui.setProgressBar(0);
-        this.ui.resetHiglightStep();
-        if (clearResults) this.ui.clearResults();
+        UI.setProgressBar(0);
+        UI.resetHiglightStep();
+        if (clearResults) UI.clearResults();
     }
 
     /**
@@ -44,13 +44,13 @@ export default class SpeedTest {
             asn
         ] = window.location.hash.replace("#", "").split(",");
 
-        this.ui.$ipValue.innerHTML = ip;
-        this.ui.$asnValue.innerHTML = decodeURIComponent(asn);
-        this.ui.$latencyValue.innerHTML = latency;
-        this.ui.$jitterValue.innerHTML = jitter;
-        this.ui.$downloadValue.innerHTML = (+download / (1024 * 1024)).toFixed(
+        UI.$ipValue.innerHTML = ip;
+        UI.$asnValue.innerHTML = decodeURIComponent(asn);
+        UI.$latencyValue.innerHTML = latency;
+        UI.$jitterValue.innerHTML = jitter;
+        UI.$downloadValue.innerHTML = (+download / (1024 * 1024)).toFixed(
             2
         );
-        this.ui.$uploadValue.innerHTML = (+upload / (1024 * 1024)).toFixed(2);
+        UI.$uploadValue.innerHTML = (+upload / (1024 * 1024)).toFixed(2);
     }
 }

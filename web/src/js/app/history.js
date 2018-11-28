@@ -1,8 +1,8 @@
+import { UI } from "./ui";
 import Results from "./results";
 
 export default class History {
-    constructor(ui) {
-        this.ui = ui;
+    constructor() {
         this.results = {};
 
         this.attachEventHandlers();
@@ -12,7 +12,7 @@ export default class History {
      * Attach event handlers to the UI
      */
     attachEventHandlers() {
-        this.ui.$eraseHistoryButton.addEventListener(
+        UI.$eraseHistoryButton.addEventListener(
             "click",
             this.eraseHistoryButtonClickHandler.bind(this)
         );
@@ -45,7 +45,7 @@ export default class History {
             JSON.parse(localStorage.getItem("history"))
         );
 
-        this.ui.$resultsHistory.innerHTML = "";
+        UI.$resultsHistory.innerHTML = "";
         if (Object.entries(this.results).length === 0) {
             this.printPlaceholder();
             return;
@@ -58,7 +58,7 @@ export default class History {
         const $resultsRow = document.createElement("tr");
         $resultsRow.innerHTML =
             '<td class="text-center" colspan="99">No results</td>';
-        this.ui.$resultsHistory.appendChild($resultsRow);
+        UI.$resultsHistory.appendChild($resultsRow);
     }
 
     printResults() {
@@ -76,12 +76,30 @@ export default class History {
                 results.asn ? `<br>(${results.asn})` : ""
             }</td>
                 <td>
-                    <a class="btn btn-link" href="share#${Results.toString(
+                    <a class="go-result btn btn-link" href="share#${Results.toString(
                         results
                     )}"><i class="icon icon-link"></i></a>
                 </td>
             `;
-            this.ui.$resultsHistory.appendChild($resultsRow);
+            UI.$resultsHistory.appendChild($resultsRow);
+        });
+        this.handleShareResultLinks();
+    }
+
+    handleShareResultLinks() {
+        const $shareLinks = document.querySelectorAll(".go-result");
+
+        $shareLinks.forEach($shareLink => {
+            $shareLink.addEventListener("click", e => {
+                e.preventDefault();
+
+                window.history.pushState(
+                    {},
+                    "Speed Test - Share",
+                    `/${$shareLink.getAttribute("href")}`
+                );
+                window.dispatchEvent(new Event("popstate"));
+            });
         });
     }
 }

@@ -1,6 +1,6 @@
 import STEP from "../worker/step";
 
-export default class UI {
+class UIService {
     constructor() {
         this.page = "home";
 
@@ -35,7 +35,9 @@ export default class UI {
         // History page
         this.$history = document.querySelector("#history");
         this.$resultsHistory = this.$history.querySelector("table tbody");
-        this.$eraseHistoryButton = this.$history.querySelector("#erase-history");
+        this.$eraseHistoryButton = this.$history.querySelector(
+            "#erase-history"
+        );
 
         // Share page
         this.$share = document.querySelector("#share");
@@ -148,3 +150,5 @@ export default class UI {
         this.$progressBar.style.width = progress * 100 + "%";
     }
 }
+
+export let UI = new UIService();

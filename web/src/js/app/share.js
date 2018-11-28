@@ -1,9 +1,9 @@
+
+import { UI } from "./ui";
 import html2canvas from "html2canvas";
 
 export default class Share {
-    constructor(ui) {
-        this.ui = ui;
-
+    constructor() {
         this.attachEventHandlers();
     }
 
@@ -11,11 +11,11 @@ export default class Share {
      * Attach event handlers to the UI
      */
     attachEventHandlers() {
-        this.ui.$shareResultsLink.addEventListener(
+        UI.$shareResultsLink.addEventListener(
             "click",
             this.shareResultsLinkClickHandler.bind(this)
         );
-        this.ui.$shareResultsLinkCopyButton.addEventListener(
+        UI.$shareResultsLinkCopyButton.addEventListener(
             "click",
             this.shareResultsLinkCopyButtonClickHandler.bind(this)
         );
@@ -25,14 +25,14 @@ export default class Share {
      * Select the share result link on text input click
      */
     shareResultsLinkClickHandler() {
-        this.ui.$shareResultsLink.select();
+        UI.$shareResultsLink.select();
     }
 
     /**
      * Select and copy the share result link on "Copy" button click
      */
     shareResultsLinkCopyButtonClickHandler() {
-        this.ui.$shareResultsLink.select();
+        UI.$shareResultsLink.select();
         document.execCommand("copy");
     }
 
@@ -40,11 +40,11 @@ export default class Share {
      * Show the page to share results
      */
     generateShareResultsLinks() {
-        this.ui.$shareResultsLink.value = `${window.location.origin}/result${
+        UI.$shareResultsLink.value = `${window.location.origin}/result${
             window.location.hash
         }`;
 
-        html2canvas(this.ui.$speedtest, {
+        html2canvas(UI.$speedtest, {
             logging: false,
             scale: 1,
             onclone: doc => {
@@ -53,7 +53,7 @@ export default class Share {
                 $el.classList.add("share");
             }
         }).then(canvas => {
-            this.ui.$shareResultsImage.src = canvas.toDataURL("image/png");
+            UI.$shareResultsImage.src = canvas.toDataURL("image/png");
         });
     }
 }

@@ -1,13 +1,12 @@
 import IpInfo from "../utils/ipInfo";
+import { UI } from "./ui";
 import Results from "./results";
 import SpeedTestWorker from "../worker";
 import STATUS from "../worker/status";
 import STEP from "../worker/step";
 
 export default class WorkerService {
-    constructor(ui) {
-        this.ui = ui;
-
+    constructor() {
         this.queueTest = false;
         this.workerReady = false;
         this.statusInterval = null;
@@ -62,16 +61,16 @@ export default class WorkerService {
         switch (event.data.status) {
             case STATUS.READY:
                 this.workerReady = true;
-                this.ui.$body.classList.add("ready");
+                UI.$body.classList.add("ready");
 
                 this.config = event.data.config;
                 if (!event.data.config.hideCredits) {
-                    this.ui.$credits.removeAttribute("hidden");
+                    UI.$credits.removeAttribute("hidden");
                 }
 
                 if (event.data.alerts.https) {
-                    this.ui.$httpsAlert.removeAttribute("hidden");
-                    this.ui.$httpsAlertMessage.innerHTML =
+                    UI.$httpsAlert.removeAttribute("hidden");
+                    UI.$httpsAlertMessage.innerHTML =
                         event.data.alerts.https;
                 }
 
@@ -97,18 +96,18 @@ export default class WorkerService {
                 event.data.results.asn = this.lastAsn;
                 this.storeLatestResults(event.data.results);
 
-                this.ui.setProgressBar(0);
-                this.ui.$startButton.removeAttribute("hidden");
-                this.ui.$stopButton.setAttribute("hidden", "");
+                UI.setProgressBar(0);
+                UI.$startButton.removeAttribute("hidden");
+                UI.$stopButton.setAttribute("hidden", "");
 
                 break;
             case STATUS.ABORTED:
                 window.clearInterval(this.statusInterval);
 
                 this.processData(event.data || {});
-                this.ui.$shareResultsButton.setAttribute("hidden", "");
-                this.ui.$startButton.removeAttribute("hidden");
-                this.ui.$stopButton.setAttribute("hidden", "");
+                UI.$shareResultsButton.setAttribute("hidden", "");
+                UI.$startButton.removeAttribute("hidden");
+                UI.$stopButton.setAttribute("hidden", "");
                 break;
         }
     }
@@ -126,39 +125,39 @@ export default class WorkerService {
         if (data.step === STEP.IP) {
             if (!data.results.ip) return;
 
-            this.ui.$ipValue.innerHTML = data.results.ip;
-            this.ui.$asnValue.style.display = "none";
-            this.ui.$asnValue.innerHTML = "";
+            UI.$ipValue.innerHTML = data.results.ip;
+            UI.$asnValue.style.display = "none";
+            UI.$asnValue.innerHTML = "";
             IpInfo.get(data.results.ip).then(info => {
                 if (info.bogon) return;
                 if (!info.org) return;
 
-                this.ui.$asnValue.style.display = "block";
-                this.ui.$asnValue.innerHTML = this.lastAsn = info.org;
+                UI.$asnValue.style.display = "block";
+                UI.$asnValue.innerHTML = this.lastAsn = info.org;
             });
 
             return;
         }
 
-        this.ui.highlightStep(data.step);
+        UI.highlightStep(data.step);
 
-        this.ui.$latencyValue.innerHTML = data.results.latency.avg || "";
-        this.ui.$jitterValue.innerHTML = data.results.latency.jitter || "";
+        UI.$latencyValue.innerHTML = data.results.latency.avg || "";
+        UI.$jitterValue.innerHTML = data.results.latency.jitter || "";
         const downloadValue = data.results.download
             ? +data.results.download.speed / (1024 * 1024)
             : 0;
-        this.ui.$downloadValue.innerHTML = downloadValue
+        UI.$downloadValue.innerHTML = downloadValue
             ? downloadValue.toFixed(2)
             : "";
         const uploadValue = data.results.upload
             ? +data.results.upload.speed / (1024 * 1024)
             : 0;
-        this.ui.$uploadValue.innerHTML = uploadValue
+        UI.$uploadValue.innerHTML = uploadValue
             ? uploadValue.toFixed(2)
             : "";
 
         if ([STEP.LATENCY, STEP.DOWNLOAD, STEP.UPLOAD].includes(data.step)) {
-            this.ui.setProgressBar(data.results[data.step].progress, data.step);
+            UI.setProgressBar(data.results[data.step].progress, data.step);
         }
     }
 
@@ -176,7 +175,7 @@ export default class WorkerService {
             JSON.stringify(this.limitResultsHistory(resultsHistory))
         );
 
-        this.ui.$shareResultsButton.removeAttribute("hidden");
+        UI.$shareResultsButton.removeAttribute("hidden");
         window.history.pushState(
             {},
             "Speed Test - Results",

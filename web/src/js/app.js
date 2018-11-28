@@ -1,4 +1,4 @@
-import UI from "./app/ui";
+import { UI } from "./app/ui";
 import SpeedTest from "./app/speedtest";
 import Settings from "./app/settings";
 import Share from "./app/share";
@@ -14,12 +14,10 @@ export default class WebUI {
      * Create an instance of WebUI.
      */
     constructor() {
-        this.ui = new UI();
-
-        this.speedtest = new SpeedTest(this.ui);
-        this.settings = new Settings(this.ui);
-        this.share = new Share(this.ui);
-        this.history = new History(this.ui);
+        this.speedtest = new SpeedTest();
+        this.settings = new Settings();
+        this.share = new Share();
+        this.history = new History();
 
         this.attachEventHandlers();
 
@@ -28,32 +26,32 @@ export default class WebUI {
 
             switch (document.location.pathname) {
                 case "/result":
-                    this.ui.showPage("speedtest");
+                    UI.showPage("speedtest");
                     this.speedtest.loadResultsFromUri();
                     break;
 
                 case "/results":
-                    this.ui.showPage("history");
+                    UI.showPage("history");
                     this.history.loadResultsHistory();
                     break;
 
                 case "/run":
-                    this.ui.showPage("speedtest");
+                    UI.showPage("speedtest");
                     this.speedtest.startTest();
                     break;
 
                 case "/settings":
-                    this.ui.showPage("settings");
+                    UI.showPage("settings");
                     break;
 
                 case "/share":
-                    this.ui.showPage("share");
+                    UI.showPage("share");
                     this.speedtest.loadResultsFromUri();
                     this.share.generateShareResultsLinks();
                     break;
 
                 default:
-                    this.ui.showPage("speedtest");
+                    UI.showPage("speedtest");
                     break;
             }
         });
@@ -64,27 +62,27 @@ export default class WebUI {
      * Attach event handlers to the UI
      */
     attachEventHandlers() {
-        this.ui.$shareResultsButton.addEventListener(
+        UI.$shareResultsButton.addEventListener(
             "click",
             this.shareResultsButtonClickHandler.bind(this)
         );
-        this.ui.$resultsHistoryButton.addEventListener(
+        UI.$resultsHistoryButton.addEventListener(
             "click",
             this.resultsHistoryButtonClickHandler.bind(this)
         );
-        this.ui.$showSettingsButton.addEventListener(
+        UI.$showSettingsButton.addEventListener(
             "click",
             this.showSettingsButtonClickHandler.bind(this)
         );
-        this.ui.$startButton.addEventListener(
+        UI.$startButton.addEventListener(
             "click",
             this.startButtonClickHandler.bind(this)
         );
-        this.ui.$stopButton.addEventListener(
+        UI.$stopButton.addEventListener(
             "click",
             this.stopButtonClickHandler.bind(this)
         );
-        this.ui.$closeButtons.forEach($closeButton =>
+        UI.$closeButtons.forEach($closeButton =>
             $closeButton.addEventListener(
                 "click",
                 this.alertCloseButtonClickHandler.bind(this)
@@ -96,54 +94,44 @@ export default class WebUI {
      * Prepare the share results button with a PNG image
      */
     shareResultsButtonClickHandler() {
-        this.share.generateShareResultsLinks();
-        this.ui.showPage("share");
         window.history.pushState(
             {},
             "Speed Test - Share Results",
             `/share${window.location.hash}`
         );
+        window.dispatchEvent(new Event("popstate"));
     }
 
     /**
      * Show results history
      */
     resultsHistoryButtonClickHandler() {
-        this.speedtest.stopTest();
-        this.ui.clearResults();
-
-        this.history.loadResultsHistory();
-        this.ui.showPage("history");
         window.history.pushState({}, "Speed Test - Results", "/results");
+        window.dispatchEvent(new Event("popstate"));
     }
 
     /**
      * Show settings
      */
     showSettingsButtonClickHandler() {
-        this.speedtest.stopTest();
-        this.ui.clearResults();
-
-        this.ui.showPage("settings");
         window.history.pushState({}, "Speed Test - Settings", "/settings");
+        window.dispatchEvent(new Event("popstate"));
     }
 
     /**
      * Launch a speed test on "Start" button click
      */
     startButtonClickHandler() {
-        this.ui.showPage("speedtest");
         window.history.pushState({}, "Speed Test - Running...", "/run");
-        this.speedtest.startTest();
+        window.dispatchEvent(new Event("popstate"));
     }
 
     /**
      * Abort the running speed test on "Stop" button click
      */
     stopButtonClickHandler() {
-        this.ui.showPage("speedtest");
         window.history.pushState({}, "Speed Test", "/");
-        this.speedtest.stopTest();
+        window.dispatchEvent(new Event("popstate"));
     }
 
     /**
