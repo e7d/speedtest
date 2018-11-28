@@ -124,6 +124,8 @@ export default class WorkerService {
         }
 
         if (data.step === STEP.IP) {
+            if (!data.results.ip) return;
+
             this.ui.$ipValue.innerHTML = data.results.ip;
             this.ui.$asnValue.style.display = "none";
             this.ui.$asnValue.innerHTML = "";
