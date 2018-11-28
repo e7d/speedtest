@@ -42,10 +42,17 @@ module.exports = {
                 use: ["style-loader", "css-loader", "sass-loader"]
             },
             {
-                test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+                test: /\.(png|jpg|gif|svg)$/,
                 loader: "url-loader",
                 options: {
-                    limit: 8192,
+                    limit: 1024,
+                    name: "[name].[hash:8].[ext]"
+                }
+            },
+            {
+                test: /\.(eot|ttf|woff|woff2)$/,
+                loader: "file-loader",
+                options: {
                     name: "[name].[hash:8].[ext]"
                 }
             }

@@ -51,6 +51,9 @@ function loadFile(uri, response) {
                 case ".css":
                     contentType = "text/css";
                     break;
+                case ".eot":
+                    contentType = "font/eot";
+                    break;
                 case ".html":
                     contentType = "text/html";
                     break;
@@ -59,6 +62,15 @@ function loadFile(uri, response) {
                     break;
                 case ".svg":
                     contentType = "image/svg+xml";
+                    break;
+                case ".ttf":
+                    contentType = "font/ttf";
+                    break;
+                case ".woff":
+                    contentType = "font/woff";
+                    break;
+                case ".woff2":
+                    contentType = "font/woff2";
                     break;
             }
             response.writeHead(200, {
