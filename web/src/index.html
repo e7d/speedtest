@@ -14,16 +14,16 @@
 
 	<header>
 		<h1>
-			<span id="logo" class="logo"></span>
-			<span id="title">Speed Test</span>
+			<a href="/">
+				<span id="logo" class="logo"></span>
+				<span id="title">Speed Test</span>
+			</a>
 		</h1>
 
 		<nav id="commands">
-			<button id="share-results" class="btn btn-link" hidden><i class="icon icon-link"></i></button>
+			<button id="show-about" class="btn btn-link"><i class="icon icon-info"></i></button>
 			<button id="results-history" class="btn btn-link"><i class="icon icon-history"></i></button>
 			<button id="show-settings" class="btn btn-link"><i class="icon icon-cog"></i></button>
-			<button id="start" class="btn btn-primary">Start</button>
-			<button id="stop" class="btn btn-danger" hidden>Stop</button>
 		</nav>
 	</header>
 
@@ -32,6 +32,83 @@
 			<span class="message"></span>
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
 		</div>
+		<div id="ie-alert" class="alert alert-warning alert-dismissible" hidden>
+			<span class="message">Internet Explorer is not a <a href="/about#supported-browsers">suported browser</a>.</span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+		</div>
+	</section>
+
+	<section id="about" hidden>
+		<h2>About the Speed Test</h2>
+
+		<ul>
+			<li><a href="#what-does-it-measure">What does it measure?</a></li>
+			<li><a href="#indicators-meaning">What is the meaning of each indicator?</a></li>
+			<li><a href="#supported-browsers">What are the supported browsers?</a></li>
+		</ul>
+
+		<article id="what-does-it-measure" class="entry">
+			<h3>What does it measure?</h3>
+			<p>This speed test provides you with information on four simple indicators about your Internet connection:</p>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Indicator</th>
+						<th>What is tested?</th>
+						<th>Measurement</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>latency</td>
+						<td>delay between you and the server</td>
+						<td>reactivity</td>
+					</tr>
+					<tr>
+						<td>jitter</td>
+						<td>variation of the delay</td>
+						<td>stability</td>
+					</tr>
+					<tr>
+						<td>download</td>
+						<td>rate of data retrieval</td>
+						<td>speed</td>
+					</tr>
+					<tr>
+						<td>upload</td>
+						<td>rate of data sending</td>
+						<td>speed</td>
+					</tr>
+				</tbody>
+			</table>
+		</article>
+
+		<article id="indicators-meaning">
+			<h3>What is the meaning of each indicator?</h3>
+
+			<h4>Latency is the responsiveness of your connection</h4>
+			<p>When it is low, it indicates that the information takes little time to travel between you and the server. The
+				lower it is, the more information flows "in real time". It generally reflects the distance between you and the
+				server.</p>
+
+			<h4>Jitter is the stability of your connection</h4>
+			<p>When it is low, it indicates that latency does not vary much and that your connection is stable. On the contrary,
+				when it rises, it indicates that the reactivity of your connection can vary greatly from one data exchange to
+				another.</p>
+
+			<h4>The download and upload speed are the size of your connection</h4>
+			<p>When it is high, a lot of data can be exchanged in a short time between you and the server. This makes it
+				possible to retrieve and send large files faster.</p>
+		</article>
+
+		<article id="supported-browsers">
+			<h3>What are the supported browsers?</h3>
+			<p>This speed test should operate normally on all modern browsers, including the latest version of <a href="https://www.google.com/chrome/"
+				 target="_blank">Google Chrome</a>, <a href="https://www.mozilla.org/firefox/" target="_blank">Mozilla Firefox</a>,
+				<a href="https://www.microsoft.com/windows/microsoft-edge" target="_blank">Microsoft Edge</a>, <a href="https://www.apple.com/safari/"
+				 target="_blank">Apple Safari</a> and <a href="https://www.opera.com/" target="_blank">Opera</a>.</p>
+			<p>However, no version of Internet Explorer is officially supported.</p>
+		</article>
 	</section>
 
 	<section id="settings" hidden>
@@ -85,7 +162,7 @@
 					</div>
 				</div>
 			</div>
-			<p>Please turn your phone in lanscape orientation.</p>
+			<p>Please turn your device in lanscape orientation.</p>
 		</div>
 
 		<table class="table">
@@ -97,7 +174,7 @@
 					<th>Download</th>
 					<th>Upload</th>
 					<th>IP (ASN)</th>
-					<th>
+					<th class="text-center">
 						<a id="erase-history" class="btn btn-danger" title="Delete all results from history"><i class="icon icon-trash"></i></a>
 					</th>
 				</tr>
@@ -125,31 +202,36 @@
 	</section>
 
 	<section id="speedtest">
+		<div id="actions">
+			<button id="start" class="btn btn-lg btn-primary">Start</button>
+			<button id="stop" class="btn btn-lg btn-danger" hidden>Stop</button>
+			<button id="share-results" class="btn btn-link" hidden><i class="icon icon-link"></i> Share</button>
+		</div>
+		<div id="latency" class="result">
+			<label><i class="icon icon-latency"></i> Latency</label>
+			<span class="value"></span>
+			<span class="unit">ms</span>
+		</div>
+		<div id="jitter" class="result">
+			<label><i class="icon icon-jitter"></i> Jitter</label>
+			<span class="value"></span>
+			<span class="unit">ms</span>
+		</div>
+		<div id="download" class="result">
+			<label><i class="icon icon-download"></i> Download</label>
+			<span class="value"></span>
+			<span class="unit">Mbps</span>
+		</div>
+		<div id="upload" class="result">
+			<label><i class="icon icon-upload"></i> Upload</label>
+			<span class="value"></span>
+			<span class="unit">Mbps</span>
+		</div>
+
 		<div id="ip" class="result">
 			<label>IP</label>
 			<div class="ip value"></div>
 			<div class="asn"></div>
-		</div>
-
-		<div id="latency" class="result">
-			<label><i class="icon icon-latency"></i> Latency</label>
-			<div class="value"></div>
-			<div class="unit">ms</div>
-		</div>
-		<div id="jitter" class="result">
-			<label><i class="icon icon-jitter"></i> Jitter</label>
-			<div class="value"></div>
-			<div class="unit">ms</div>
-		</div>
-		<div id="download" class="result">
-			<label><i class="icon icon-download"></i> Download</label>
-			<div class="value"></div>
-			<div class="unit">Mbps</div>
-		</div>
-		<div id="upload" class="result">
-			<label><i class="icon icon-upload"></i> Upload</label>
-			<div class="value"></div>
-			<div class="unit">Mbps</div>
 		</div>
 
 		<div id="progress" class="progress">

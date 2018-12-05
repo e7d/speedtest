@@ -2,30 +2,18 @@
 
 #speedtest {
     display: grid;
-    grid-template-areas: "i i i i"
-                         "l j d u"
-                         "p p p p";
-    grid-template-columns: repeat(4, 25%);
+    grid-template-areas: "a a"
+                         "l j"
+                         "d u"
+                         "i i";
+    grid-template-columns: repeat(2, 50%);
+    margin: auto;
+    max-width: 640px;
     text-align: center;
 
-    @media only screen and (max-width: 800px) {
-        & {
-            grid-template-areas: "i i"
-                                 "l j"
-                                 "d u"
-                                 "p p";
-            grid-template-columns: repeat(2, 50%);
-            max-width: 480px;
-            margin: auto;
-
-            i {
-                display: block;
-            }
-        }
-    }
-
-    #ip {
-        grid-area: i;
+    #actions {
+        grid-area: a;
+        padding: 2em 0;
     }
 
     #latency {
@@ -44,19 +32,51 @@
         grid-area: u;
     }
 
+    #ip {
+        grid-area: i;
+    }
+
     #progress {
-        grid-area: p;
-        margin: 1rem 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+
+        &.progress {
+            height: 2px;
+            overflow: visible;
+
+            .progress-bar {
+                box-shadow: 0 0 5px $highlightColor;
+            }
+        }
     }
 
     .result {
-        padding: 1em 0;
+        padding: 2em 0;
+
+        @media only screen and (max-width: 640px) {
+            & {
+                padding: 1em 0;
+            }
+        }
 
         label {
             display: block;
-            font-size: 1.5em;
+            text-transform: uppercase;
+            font-size: 1.2em;
             margin-bottom: 0.2em;
             transition: color 0.6s ease;
+
+            @media only screen and (max-width: 640px) {
+                & {
+                    font-size: 1em;
+                }
+
+                i {
+                    display: block;
+                }
+            }
         }
 
         &.active label {
@@ -68,19 +88,25 @@
         }
 
         .value {
-            font-size: 2.7em;
+            font-size: 3.2em;
             font-weight: lighter;
             line-height: 1em;
             color: $primaryColor;
 
+            @media only screen and (max-width: 640px) {
+                & {
+                    font-size: 2.8em;
+                }
+            }
+
             @media only screen and (max-width: 360px) {
                 & {
-                    font-size: 1.8em;
+                    font-size: 2.5em;
                 }
             }
 
             &:empty::before {
-                content: "_.__"
+                content: "0.00"
             }
 
             &.ip:empty::before {
@@ -91,6 +117,13 @@
         .unit {
             font-size: 1em;
             font-weight: lighter;
+
+            @media only screen and (max-width: 640px) {
+                & {
+                    display: block;
+                    font-size: 0.9em;
+                }
+            }
         }
 
         .asn {

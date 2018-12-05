@@ -1,4 +1,3 @@
-
 import { UI } from "./ui";
 import html2canvas from "html2canvas";
 
@@ -51,6 +50,9 @@ export default class Share {
                 const $el = doc.querySelector("#speedtest");
                 $el.removeAttribute("hidden");
                 $el.classList.add("share");
+                $el.style.backgroundColor = window
+                    .getComputedStyle(UI.$html, null)
+                    .getPropertyValue("background-color");
             }
         }).then(canvas => {
             UI.$shareResultsImage.src = canvas.toDataURL("image/png");

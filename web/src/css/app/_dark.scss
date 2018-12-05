@@ -1,45 +1,46 @@
 html.dark {
     &, body {
-        background: #232325;
-        color: white;
+        background: #1A1A1A;
+        color: #CCCCCC;
     }
 
     a {
-        color: #0069d9;
+        color: #2979FF;
 
         &:hover {
-            color: #1988ff;
+            color: #5e9aff;
         }
     }
     .btn-primary {
-        background-color: #0069d9;
+        background-color: #2979FF;
         border-color: #0062cc;
 
         &:hover {
-            background-color: #1988ff;
-            border-color: #1988ff;
+            background-color: #5e9aff;
+            border-color: #5e9aff;
         }
     }
     .btn-link {
-        color: #0069d9;
+        color: #2979FF;
 
         &:hover {
-            color: #1988ff;
+            color: #5e9aff;
         }
     }
 
-    .progress {
-        background-color: #28292c;
-    }
     .progress-bar {
-        background-color: #0069d9;
+        background-color: #2979FF;
+    }
+
+    header h1 #title {
+        color: white;
     }
 
     #speedtest .result.active label {
-        color: #0069d9;
+        color: #2979FF;
     }
 
     #speedtest .result .value {
-        color: #c2c6c9;
+        color: #989898;
     }
 }

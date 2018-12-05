@@ -19,34 +19,50 @@ export default class WebUI {
         this.share = new Share();
         this.history = new History();
 
-        this.attachEventHandlers();
+        this.attachStateHandler();
+        this.detectIE();
+    }
 
+    /**
+     * Attac the handler observing history state
+     */
+    attachStateHandler() {
         window.addEventListener("popstate", () => {
             this.speedtest.stopTest(true);
             UI.$shareResultsButton.setAttribute("hidden", "");
 
             switch (document.location.pathname) {
+                case "/about":
+                    UI.showPage("about");
+                    document.title = "Speed Test - About";
+                    break;
+
                 case "/result":
                     UI.showPage("speedtest");
+                    document.title = "Speed Test - Result";
                     this.speedtest.loadResultsFromUri();
                     break;
 
                 case "/results":
                     UI.showPage("history");
+                    document.title = "Speed Test - Results";
                     this.history.loadResultsHistory();
                     break;
 
                 case "/run":
                     UI.showPage("speedtest");
+                    document.title = "Speed Test - Running...";
                     this.speedtest.startTest();
                     break;
 
                 case "/settings":
                     UI.showPage("settings");
+                    document.title = "Speed Test - Settings";
                     break;
 
                 case "/share":
                     UI.showPage("share");
+                    document.title = "Speed Test - Share results";
                     this.speedtest.loadResultsFromUri(false);
                     this.share.generateShareResultsLinks();
                     break;
@@ -59,88 +75,10 @@ export default class WebUI {
         window.dispatchEvent(new Event("popstate"));
     }
 
-    /**
-     * Attach event handlers to the UI
-     */
-    attachEventHandlers() {
-        UI.$shareResultsButton.addEventListener(
-            "click",
-            this.shareResultsButtonClickHandler.bind(this)
-        );
-        UI.$resultsHistoryButton.addEventListener(
-            "click",
-            this.resultsHistoryButtonClickHandler.bind(this)
-        );
-        UI.$showSettingsButton.addEventListener(
-            "click",
-            this.showSettingsButtonClickHandler.bind(this)
-        );
-        UI.$startButton.addEventListener(
-            "click",
-            this.startButtonClickHandler.bind(this)
-        );
-        UI.$stopButton.addEventListener(
-            "click",
-            this.stopButtonClickHandler.bind(this)
-        );
-        UI.$closeButtons.forEach($closeButton =>
-            $closeButton.addEventListener(
-                "click",
-                this.alertCloseButtonClickHandler.bind(this)
-            )
-        );
-    }
-
-    /**
-     * Prepare the share results button with a PNG image
-     */
-    shareResultsButtonClickHandler() {
-        window.history.pushState(
-            {},
-            "Speed Test - Share Results",
-            `/share${window.location.hash}`
-        );
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Show results history
-     */
-    resultsHistoryButtonClickHandler() {
-        window.history.pushState({}, "Speed Test - Results", "/results");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Show settings
-     */
-    showSettingsButtonClickHandler() {
-        window.history.pushState({}, "Speed Test - Settings", "/settings");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Launch a speed test on "Start" button click
-     */
-    startButtonClickHandler() {
-        window.history.pushState({}, "Speed Test - Running...", "/run");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Abort the running speed test on "Stop" button click
-     */
-    stopButtonClickHandler() {
-        window.history.pushState({}, "Speed Test", "/");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Close alert boxes on "×" button click
-     *
-     * @param {MouseEvent} e
-     */
-    alertCloseButtonClickHandler(e) {
-        e.target.parentElement.setAttribute("hidden", "");
+    detectIE() {
+        const ua = window.navigator.userAgent;
+        if (ua.indexOf("MSIE ") > 0 || ua.indexOf("Trident.") > 0) {
+            UI.$ieAlert.removeAttribute("hidden");
+        }
     }
 }

@@ -70,8 +70,7 @@ export default class WorkerService {
 
                 if (event.data.alerts.https) {
                     UI.$httpsAlert.removeAttribute("hidden");
-                    UI.$httpsAlertMessage.innerHTML =
-                        event.data.alerts.https;
+                    UI.$httpsAlertMessage.innerHTML = event.data.alerts.https;
                 }
 
                 if (this.queueTest) {
@@ -128,37 +127,37 @@ export default class WorkerService {
             UI.$ipValue.innerHTML = data.results.ip;
             UI.$asnValue.style.display = "none";
             UI.$asnValue.innerHTML = "";
-            IpInfo.get(data.results.ip).then(info => {
-                if (info.bogon) return;
-                if (!info.org) return;
+            IpInfo.get(data.results.ip)
+                .then(info => {
+                    if (info.bogon) return;
+                    if (!info.org) return;
 
-                UI.$asnValue.style.display = "block";
-                UI.$asnValue.innerHTML = this.lastAsn = info.org;
-            });
-
+                    UI.$asnValue.style.display = "block";
+                    UI.$asnValue.innerHTML = this.lastAsn = info.org;
+                })
+                .catch(e => console.error);
             return;
         }
 
         UI.highlightStep(data.step);
 
-        UI.$latencyValue.innerHTML = data.results.latency.avg || "";
-        UI.$jitterValue.innerHTML = data.results.latency.jitter || "";
-        const downloadValue = data.results.download
-            ? +data.results.download.speed / (1024 * 1024)
-            : 0;
-        UI.$downloadValue.innerHTML = downloadValue
-            ? downloadValue.toFixed(2)
-            : "";
-        const uploadValue = data.results.upload
-            ? +data.results.upload.speed / (1024 * 1024)
-            : 0;
-        UI.$uploadValue.innerHTML = uploadValue
-            ? uploadValue.toFixed(2)
-            : "";
-
-        if ([STEP.LATENCY, STEP.DOWNLOAD, STEP.UPLOAD].includes(data.step)) {
-            UI.setProgressBar(data.results[data.step].progress, data.step);
+        if (data.step === STEP.LATENCY) {
+            UI.$latencyValue.innerHTML = data.results.latency.avg || "";
+            UI.$jitterValue.innerHTML = data.results.latency.jitter || "";
         }
+
+        if (data.step === STEP.DOWNLOAD)
+            UI.$downloadValue.innerHTML = data.results.download
+                ? (+data.results.download.speed / (1024 * 1024)).toFixed(2)
+                : "";
+
+        if (data.step === STEP.DOWNLOAD)
+            UI.$uploadValue.innerHTML = data.results.upload
+                ? (+data.results.upload.speed / (1024 * 1024)).toFixed(2)
+                : "";
+
+        if ([STEP.LATENCY, STEP.DOWNLOAD, STEP.UPLOAD].includes(data.step))
+            UI.setProgressBar(data.results[data.step].progress, data.step);
     }
 
     /**
@@ -176,11 +175,12 @@ export default class WorkerService {
         );
 
         UI.$shareResultsButton.removeAttribute("hidden");
-        window.history.pushState(
+        window.history.replaceState(
             {},
             "Speed Test - Results",
             `/result#${Results.toString(results)}`
         );
+        document.title = "Speed Test";
     }
 
     /**
