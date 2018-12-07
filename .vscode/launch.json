@@ -20,7 +20,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Server",
-            "program": "${workspaceFolder}/server/nodejs/server.js",
+            "program": "${workspaceFolder}/server/server.js",
             "args": [
                 "8888",
                 "web/dist"
