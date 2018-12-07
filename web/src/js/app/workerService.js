@@ -148,12 +148,14 @@ export default class WorkerService {
 
         if (data.step === STEP.DOWNLOAD)
             UI.$downloadValue.innerHTML = data.results.download
-                ? (+data.results.download.speed / (1024 * 1024)).toFixed(2)
+                ? ((+data.results.download.speed || 0) / (1024 * 1024)).toFixed(
+                      2
+                  )
                 : "";
 
-        if (data.step === STEP.DOWNLOAD)
+        if (data.step === STEP.UPLOAD)
             UI.$uploadValue.innerHTML = data.results.upload
-                ? (+data.results.upload.speed / (1024 * 1024)).toFixed(2)
+                ? ((+data.results.upload.speed || 0) / (1024 * 1024)).toFixed(2)
                 : "";
 
         if ([STEP.LATENCY, STEP.DOWNLOAD, STEP.UPLOAD].includes(data.step))
