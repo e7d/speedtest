@@ -4,9 +4,11 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 
 ## Compatibility
 
-| Chrome | Edge | Firefox | IE | Opera | Safari | 
+| Chrome | Edge | Firefox | IE | Opera | Safari |
 |--------|------|---------|----|-------|--------|
 | 43     | *    | 48.0    | 11 | 12.10 | 6.0    |
+
+IE: Internet Explorer
 
 ## Features
 
@@ -82,6 +84,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-*[IE]: Internet Explorer
-*[over 1 Gbps]: depending the CPU used on both end of the speed test
