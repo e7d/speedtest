@@ -3,7 +3,7 @@ export default class Results {
      * Build a sharable results string from a results object
      *
      * @param {Object} results
-     * @returns {String}
+     * @returns {string}
      */
     static toString(results) {
         return `${results.latency.avg},${results.latency.jitter},${

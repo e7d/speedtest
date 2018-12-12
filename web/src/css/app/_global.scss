@@ -5,17 +5,18 @@
 }
 
 body {
-    background: transparent;
+    background: var(--backgroundColor);
     max-width: 800px;
     margin: auto;
     padding: 0px 2em;
-    font-family: $fontFamilySansSerif;
-    font-size: $fontSize;
+    font-family: var(--fontFamilySansSerif);
+    font-size: var(--fontSize);
+    color: var(--textColor);
 
     @media only screen and (max-width: 360px) {
         & {
             padding: 0px 1em;
-            font-size: $fontSize * 0.9;
+            font-size: 0.9em;;
         }
     }
 }
@@ -29,7 +30,7 @@ table {
 }
 
 a {
-    color: $highlightColor;
+    color: var(--highlightColor);
     text-decoration: none;
 
     &:focus, &:hover {

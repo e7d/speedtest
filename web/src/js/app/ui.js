@@ -5,6 +5,9 @@ class UIService {
         this.page = "home";
 
         this.$html = document.querySelector("html");
+        this.$themeColorMeta = document.querySelector(
+            'meta[name="theme-color"]'
+        );
         this.$body = document.querySelector("body");
 
         // Top navigation bar
@@ -204,16 +207,36 @@ class UIService {
     /**
      * Changes the color theme, light or dark.
      *
-     * @param {String} theme
+     * @param {string} theme
      */
     changeTheme(theme = "light") {
         this.$html.classList[theme === "dark" ? "add" : "remove"]("dark");
+
+        const [, r, g, b] = /([0-9]+), ?([0-9]+), ?([0-9]+)/.exec(
+            window
+                .getComputedStyle(this.$body)
+                .getPropertyValue("background-color")
+        );
+        this.$themeColorMeta.setAttribute("content", this.rgbToHex(+r, +g, +b));
+    }
+
+    /**
+     * Compute hexadecimal color code from RGB values
+     *
+     * @param {number} r
+     * @param {number} g
+     * @param {number} b
+     */
+    rgbToHex(r = 255, g = 255, b = 255) {
+        return (
+            "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+        );
     }
 
     /**
      * Changes the current displayed page.
      *
-     * @param {String} page
+     * @param {string} page
      */
     showPage(page) {
         this.page = page;
@@ -247,7 +270,7 @@ class UIService {
     /**
      * Highlights the current running step.
      *
-     * @param {String} step
+     * @param {string} step
      */
     highlightStep(step) {
         if (this.previousStep === step) {
@@ -275,7 +298,7 @@ class UIService {
      * Set a value on the progress bar
      *
      * @param {Number} progress
-     * @param {String} step
+     * @param {string} step
      */
     setProgressBar(progress, step = "") {
         this.$progress.style.flexDirection =

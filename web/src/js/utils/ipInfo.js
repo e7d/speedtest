@@ -2,7 +2,7 @@ export default class IpInfo {
     /**
      * Get IP information from "ipinfo.io"
      *
-     * @param {String} ip
+     * @param {string} ip
      */
     static get(ip) {
         return new Promise((resolve, reject) => {

@@ -43,12 +43,12 @@
         width: 100vw;
 
         &.progress {
-            height: 2px;
+            height: 3px;
             background: none;
             overflow: visible;
 
             .progress-bar {
-                box-shadow: 0 0 5px $highlightColor;
+                box-shadow: 0 0 5px var(--highlightColor);
             }
         }
     }
@@ -81,7 +81,7 @@
         }
 
         &.active label {
-            color: $highlightColor;
+            color: var(--highlightColor);
         }
 
         .ip, .asn {
@@ -92,7 +92,7 @@
             font-size: 3.2em;
             font-weight: lighter;
             line-height: 1em;
-            color: $primaryColor;
+            color: var(--primaryColor);
 
             @media only screen and (max-width: 640px) {
                 & {
