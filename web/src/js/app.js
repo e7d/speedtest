@@ -29,7 +29,7 @@ export default class WebUI {
     attachStateHandler() {
         window.addEventListener("popstate", () => {
             this.speedtest.stopTest(true);
-            UI.$shareResultsButton.setAttribute("hidden", "");
+            UI.$shareResultButton.setAttribute("hidden", "");
 
             switch (document.location.pathname) {
                 case "/about":
@@ -45,7 +45,7 @@ export default class WebUI {
 
                 case "/results":
                     UI.showPage("history");
-                    document.title = "Speed Test - Results";
+                    document.title = "Speed Test - Results history";
                     this.history.loadResultsHistory();
                     break;
 
@@ -62,13 +62,14 @@ export default class WebUI {
 
                 case "/share":
                     UI.showPage("share");
-                    document.title = "Speed Test - Share results";
+                    document.title = "Speed Test - Share result";
                     this.speedtest.loadResultsFromUri(false);
-                    this.share.generateShareResultsLinks();
+                    this.share.generateShareResultLinks();
                     break;
 
                 default:
                     UI.showPage("speedtest");
+                    document.title = "Speed Test";
                     break;
             }
         });

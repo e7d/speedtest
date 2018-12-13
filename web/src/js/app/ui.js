@@ -45,19 +45,19 @@ class UIService {
 
         // Share page
         this.$share = document.querySelector("#share");
-        this.$shareResultsLink = this.$share.querySelector(
+        this.$shareResultLink = this.$share.querySelector(
             "#share-results-link"
         );
-        this.$shareResultsLinkCopyButton = this.$share.querySelector(
+        this.$shareResultLinkCopyButton = this.$share.querySelector(
             "#share-results-link-copy"
         );
-        this.$shareResultsImage = this.$share.querySelector(
+        this.$shareResultImage = this.$share.querySelector(
             "#share-results-image"
         );
 
         // SpeedTest page
         this.$speedtest = document.querySelector("#speedtest");
-        this.$shareResultsButton = this.$speedtest.querySelector(
+        this.$shareResultButton = this.$speedtest.querySelector(
             "button#share-results"
         );
         this.$startButton = this.$speedtest.querySelector("button#start");
@@ -106,7 +106,7 @@ class UIService {
             "click",
             this.showAboutButtonClickHandler.bind(this)
         );
-        this.$shareResultsButton.addEventListener(
+        this.$shareResultButton.addEventListener(
             "click",
             this.shareResultsButtonClickHandler.bind(this)
         );

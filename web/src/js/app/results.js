@@ -8,6 +8,7 @@ export default class Results {
     static toString(results) {
         return `${results.latency.avg},${results.latency.jitter},${
             results.download.speed
-        },${results.upload.speed},${results.ip},${results.asn || ""}`;
+        },${results.upload.speed},${results.ipInfo.ip},${results.ipInfo.org ||
+            ""}`;
     }
 }

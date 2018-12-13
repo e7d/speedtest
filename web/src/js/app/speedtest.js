@@ -51,6 +51,6 @@ export default class SpeedTest {
         UI.$uploadValue.innerHTML = (+upload / (1024 * 1024)).toFixed(2);
 
         if (showShareButton)
-            UI.$shareResultsButton.removeAttribute("hidden", "");
+            UI.$shareResultButton.removeAttribute("hidden", "");
     }
 }

@@ -91,7 +91,6 @@ export default class WorkerService {
 
                 this.running = false;
                 event.data.results.timestamp = new Date().getTime();
-                event.data.results.asn = this.lastAsn;
                 this.storeLatestResults(event.data.results);
 
                 UI.setProgressBar(0);
@@ -103,7 +102,7 @@ export default class WorkerService {
                 window.clearInterval(this.statusInterval);
 
                 this.processData(event.data || {});
-                UI.$shareResultsButton.setAttribute("hidden", "");
+                UI.$shareResultButton.setAttribute("hidden", "");
                 UI.$startButton.removeAttribute("hidden");
                 UI.$stopButton.setAttribute("hidden", "");
                 break;
@@ -130,7 +129,7 @@ export default class WorkerService {
             if (data.results.ipInfo.bogon || !data.results.ipInfo.org) return;
 
             UI.$asnValue.style.display = "block";
-            UI.$asnValue.innerHTML = this.lastAsn = data.results.ipInfo.org;
+            UI.$asnValue.innerHTML = data.results.ipInfo.org;
         }
 
         UI.highlightStep(data.step);
@@ -170,7 +169,7 @@ export default class WorkerService {
             JSON.stringify(this.limitResultsHistory(resultsHistory))
         );
 
-        UI.$shareResultsButton.removeAttribute("hidden");
+        UI.$shareResultButton.removeAttribute("hidden");
         window.history.replaceState(
             {},
             "Speed Test - Results",

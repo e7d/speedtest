@@ -10,36 +10,36 @@ export default class Share {
      * Attach event handlers to the UI
      */
     attachEventHandlers() {
-        UI.$shareResultsLink.addEventListener(
+        UI.$shareResultLink.addEventListener(
             "click",
-            this.shareResultsLinkClickHandler.bind(this)
+            this.shareResultLinkClickHandler.bind(this)
         );
-        UI.$shareResultsLinkCopyButton.addEventListener(
+        UI.$shareResultLinkCopyButton.addEventListener(
             "click",
-            this.shareResultsLinkCopyButtonClickHandler.bind(this)
+            this.shareResultLinkCopyButtonClickHandler.bind(this)
         );
     }
 
     /**
      * Select the share result link on text input click
      */
-    shareResultsLinkClickHandler() {
-        UI.$shareResultsLink.select();
+    shareResultLinkClickHandler() {
+        UI.$shareResultLink.select();
     }
 
     /**
      * Select and copy the share result link on "Copy" button click
      */
-    shareResultsLinkCopyButtonClickHandler() {
-        UI.$shareResultsLink.select();
+    shareResultLinkCopyButtonClickHandler() {
+        UI.$shareResultLink.select();
         document.execCommand("copy");
     }
 
     /**
      * Show the page to share results
      */
-    generateShareResultsLinks() {
-        UI.$shareResultsLink.value = `${window.location.origin}/result${
+    generateShareResultLinks() {
+        UI.$shareResultLink.value = `${window.location.origin}/result${
             window.location.hash
         }`;
 
@@ -50,12 +50,15 @@ export default class Share {
                 const $el = doc.querySelector("#speedtest");
                 $el.removeAttribute("hidden");
                 $el.classList.add("share");
-                $el.style.backgroundColor = window
-                    .getComputedStyle(UI.$html, null)
-                    .getPropertyValue("background-color");
+                $el.setAttribute(
+                    "style",
+                    `background: ${window
+                        .getComputedStyle(UI.$body)
+                        .getPropertyValue("background-color")};`
+                );
             }
         }).then(canvas => {
-            UI.$shareResultsImage.src = canvas.toDataURL("image/png");
+            UI.$shareResultImage.src = canvas.toDataURL("image/png");
         });
     }
 }

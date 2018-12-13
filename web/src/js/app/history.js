@@ -72,8 +72,8 @@ export default class History {
                 <td>${results.latency.jitter} ms</td>
                 <td>${(results.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
                 <td>${(results.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${results.ip}${
-                    results.asn ? `<br>(${results.asn})` : ""
+                <td>${results.ipInfo.ip}${
+                    results.ipInfo.org ? `<br>(${results.ipInfo.org})` : ""
                 }</td>
                 <td class="text-center">
                     <a class="go-result btn btn-link" href="share#${Results.toString(

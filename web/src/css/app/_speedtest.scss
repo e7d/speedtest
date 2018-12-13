@@ -140,6 +140,10 @@
                              "i i";
         grid-template-columns: repeat(2, 50%);
 
+        #actions {
+            display: none;
+        }
+
         .result {
             padding: 0.6em 0;
 
