@@ -1,4 +1,3 @@
-import IpInfo from "../utils/ipInfo";
 import { UI } from "./ui";
 import Results from "./results";
 import SpeedTestWorker from "../worker";
@@ -122,21 +121,16 @@ export default class WorkerService {
         }
 
         if (data.step === STEP.IP) {
-            if (!data.results.ip) return;
+            if (!data.results.ipInfo) return;
 
-            UI.$ipValue.innerHTML = data.results.ip;
+            UI.$ipValue.innerHTML = data.results.ipInfo.ip;
             UI.$asnValue.style.display = "none";
             UI.$asnValue.innerHTML = "";
-            IpInfo.get(data.results.ip)
-                .then(info => {
-                    if (info.bogon) return;
-                    if (!info.org) return;
 
-                    UI.$asnValue.style.display = "block";
-                    UI.$asnValue.innerHTML = this.lastAsn = info.org;
-                })
-                .catch(e => console.error);
-            return;
+            if (data.results.ipInfo.bogon || !data.results.ipInfo.org) return;
+
+            UI.$asnValue.style.display = "block";
+            UI.$asnValue.innerHTML = this.lastAsn = data.results.ipInfo.org;
         }
 
         UI.highlightStep(data.step);

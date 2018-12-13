@@ -113,7 +113,7 @@ export default class SpeedTestWorker {
 
                 xhr.open("GET", endpoint, true);
                 xhr.addEventListener("load", () => {
-                    this.results.ip = xhr.response;
+                    this.results.ipInfo = JSON.parse(xhr.response);
                     Request.clearXMLHttpRequest(xhr);
 
                     resolve();

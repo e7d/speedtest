@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const http = require("http");
+const ipInfo = require("ipinfo");
 const path = require("path");
 const requestIp = require("request-ip");
 const url = require("url");
@@ -23,62 +24,69 @@ function* getData(query) {
 
 function getIP(request) {
     const ipRegex = /\:\:ffff\:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
-    return ipRegex.test(requestIp.getClientIp(request))
+    const ip = ipRegex.test(requestIp.getClientIp(request))
         ? request.connection.remoteAddress.replace("::ffff:", "")
         : request.connection.remoteAddress;
+
+    return new Promise(resolve => {
+        ipInfo(ip, null, (err, ipInfo) => {
+            if (err) {
+                return resolve({ ip });
+            }
+
+            resolve(ipInfo);
+        });
+    });
 }
 
-function loadFile(uri, response) {
+function loadFile(uri) {
     let filename = path.join(process.cwd(), basePath, uri);
 
-    fs.exists(filename, exists => {
-        if (!exists || uri === "/" ) {
-            filename = path.join(process.cwd(), basePath, "index.html");
-        }
+    return new Promise((resolve, reject) => {
+        fs.exists(filename, exists => {
+            if (!exists || uri === "/") {
+                filename = path.join(process.cwd(), basePath, "index.html");
+            }
 
-        fs.readFile(filename, "binary", (err, data) => {
-            if (err) {
-                response.writeHead(500, {
-                    "Content-Type": "text/plain"
+            fs.readFile(filename, "binary", (err, data) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                let contentType = "text/plain";
+                switch (path.extname(filename)) {
+                    case ".css":
+                        contentType = "text/css";
+                        break;
+                    case ".eot":
+                        contentType = "font/eot";
+                        break;
+                    case ".html":
+                        contentType = "text/html";
+                        break;
+                    case ".js":
+                        contentType = "application/javascript";
+                        break;
+                    case ".svg":
+                        contentType = "image/svg+xml";
+                        break;
+                    case ".ttf":
+                        contentType = "font/ttf";
+                        break;
+                    case ".woff":
+                        contentType = "font/woff";
+                        break;
+                    case ".woff2":
+                        contentType = "font/woff2";
+                        break;
+                }
+
+                resolve({
+                    contentType,
+                    data
                 });
-                response.write(err.message);
-                response.end();
-                return;
-            }
-
-            let contentType = "text/plain";
-            switch (path.extname(filename)) {
-                case ".css":
-                    contentType = "text/css";
-                    break;
-                case ".eot":
-                    contentType = "font/eot";
-                    break;
-                case ".html":
-                    contentType = "text/html";
-                    break;
-                case ".js":
-                    contentType = "application/javascript";
-                    break;
-                case ".svg":
-                    contentType = "image/svg+xml";
-                    break;
-                case ".ttf":
-                    contentType = "font/ttf";
-                    break;
-                case ".woff":
-                    contentType = "font/woff";
-                    break;
-                case ".woff2":
-                    contentType = "font/woff2";
-                    break;
-            }
-            response.writeHead(200, {
-                "Content-Type": contentType,
-                "Content-Length": data.length
             });
-            response.write(data, "binary");
-            response.end();
         });
     });
 }
@@ -90,9 +98,15 @@ const httpServer = http
         try {
             switch (uri) {
                 case "/ip":
-                    response.writeHead(200);
-                    response.write(getIP(request));
-                    response.end();
+                    getIP(request).then(ipInfo => {
+                        ipInfo = JSON.stringify(ipInfo);
+                        response.writeHead(200, {
+                            "Content-Type": "application/json",
+                            "Content-Length": ipInfo.length
+                        });
+                        response.write(ipInfo);
+                        response.end();
+                    });
                     break;
                 case "/ping":
                 case "/upload":
@@ -100,21 +114,37 @@ const httpServer = http
                     response.end();
                     break;
                 case "/download":
-                    response.writeHead(200, {
-                        "Content-Type": "application/octet-stream"
-                        // "Content-Length": data.byteLength
-                    });
-                    for (let chunk of getData({
+                    const params = {
                         size: 8 * 1024 * 1024,
                         chunkSize: 64 * 1024,
                         ...query
-                    })) {
+                    };
+                    response.writeHead(200, {
+                        "Content-Type": "application/octet-stream",
+                        "Content-Length": params.size
+                    });
+                    for (let chunk of getData(params)) {
                         response.write(chunk, "binary");
                     }
                     response.end();
                     break;
                 default:
-                    loadFile(uri, response);
+                    loadFile(uri)
+                        .then(file => {
+                            response.writeHead(200, {
+                                "Content-Type": file.contentType,
+                                "Content-Length": file.data.length
+                            });
+                            response.write(file.data, "binary");
+                            response.end();
+                        })
+                        .catch(reason => {
+                            response.writeHead(500, {
+                                "Content-Type": "text/plain"
+                            });
+                            response.write(reason.name);
+                            response.end();
+                        });
                     break;
             }
         } catch (err) {
