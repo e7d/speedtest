@@ -70,17 +70,22 @@ export default class Share {
             scale: 1,
             onclone: doc => {
                 const $el = doc.querySelector("#speedtest");
+                $el.removeAttribute("hidden");
+                $el.classList.add("share");
+
                 const $timestamp = $el.querySelector("#timestamp");
                 $timestamp.innerHTML = DateFormat.toISO(
                     new Date(+$timestamp.getAttribute("timestamp"))
-                );
-                $el.removeAttribute("hidden");
-                $el.classList.add("share");
-                $el.setAttribute(
+                ).replace(" ", "<br>");
+
+                const $resultItems = $el.querySelectorAll(".result");
+                $resultItems.forEach($resultItem =>
+                    $resultItem.setAttribute(
                     "style",
                     `background: ${window
                         .getComputedStyle(UI.$body)
                         .getPropertyValue("background-color")};`
+                    )
                 );
             }
         }).then(canvas => {

@@ -17,6 +17,11 @@
         padding: 2em 0;
     }
 
+    #share-logo {
+        grid-area: h;
+        display: none;
+    }
+
     #timestamp {
         grid-area: t;
     }
@@ -135,43 +140,6 @@
         .org {
             font-size: 1.2em;
             font-weight: lighter;
-        }
-    }
-
-    &.share {
-        width: 320px;
-        grid-template-areas: "t t"
-                             "l j"
-                             "d u"
-                             "i i";
-        grid-template-columns: repeat(2, 50%);
-
-        #actions {
-            display: none;
-        }
-
-        .result {
-            padding: 0.6em 0;
-
-            label {
-                font-size: 1.2em;
-            }
-
-            .value {
-                font-size: 1.8em;
-            }
-
-            .unit{
-                font-size: 1em;
-            }
-
-            .details {
-                font-size: 0.8em;
-            }
-        }
-
-        .progress {
-            display: none
         }
     }
 }
