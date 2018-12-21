@@ -58,54 +58,67 @@ export default class WorkerService {
     processWorkerResponse(event) {
         switch (event.data.status) {
             case STATUS.READY:
-                this.workerReady = true;
-                UI.$body.classList.add("ready");
-
-                this.config = event.data.config;
-                if (!event.data.config.hideCredits) {
-                    UI.$credits.removeAttribute("hidden");
-                }
-
-                if (event.data.alerts.https) {
-                    UI.$httpsAlert.removeAttribute("hidden");
-                    UI.$httpsAlertMessage.innerHTML = event.data.alerts.https;
-                }
-
-                if (this.queueTest) {
-                    this.queueTest = false;
-                    this.start();
-                }
+                this.processReadyStatus(event.data);
                 break;
             case STATUS.RUNNING:
-                this.processData(event.data || {});
+                this.processData(event.data);
                 break;
             case STATUS.DONE:
-                window.clearInterval(this.statusInterval);
-
-                this.processData(event.data || {});
                 if (this.settings.endless) {
                     this.start();
                     return;
                 }
 
-                this.running = false;
-                event.data.result.timestamp = new Date().getTime();
-                this.storeLatestResult(event.data.result);
-
-                UI.setProgressBar(0);
-                UI.$startButton.removeAttribute("hidden");
-                UI.$stopButton.setAttribute("hidden", "");
-
+                this.processDoneStatus(event.data);
                 break;
             case STATUS.ABORTED:
-                window.clearInterval(this.statusInterval);
-
-                this.processData(event.data || {});
-                UI.$shareResultButton.setAttribute("hidden", "");
-                UI.$startButton.removeAttribute("hidden");
-                UI.$stopButton.setAttribute("hidden", "");
+                this.processAbortedStatus(event.data);
                 break;
         }
+    }
+
+    processReadyStatus(data) {
+        this.workerReady = true;
+        UI.$body.classList.add("ready");
+
+        this.config = data.config;
+        if (!data.config.hideCredits) {
+            UI.$credits.removeAttribute("hidden");
+        }
+
+        if (data.alerts.https) {
+            UI.$httpsAlert.removeAttribute("hidden");
+            UI.$httpsAlertMessage.innerHTML = data.alerts.https;
+        }
+
+        if (this.queueTest) {
+            this.queueTest = false;
+            this.start();
+        }
+    }
+
+    processDoneStatus(data) {
+        this.running = false;
+        window.clearInterval(this.statusInterval);
+
+        data.result.timestamp = new Date().getTime();
+        this.processData(event.data);
+        this.storeLatestResult(data.result);
+
+        UI.setProgressBar(0);
+        UI.$startButton.removeAttribute("hidden");
+        UI.$stopButton.setAttribute("hidden", "");
+    }
+
+    processAbortedStatus(data) {
+        this.running = false;
+        window.clearInterval(this.statusInterval);
+
+        this.processData(data);
+
+        UI.$shareResultButton.setAttribute("hidden", "");
+        UI.$startButton.removeAttribute("hidden");
+        UI.$stopButton.setAttribute("hidden", "");
     }
 
     /**
@@ -113,45 +126,20 @@ export default class WorkerService {
      *
      * @param {Object} data
      */
-    processData(data) {
+    processData(data = {}) {
         if (!this.running) {
             return;
         }
 
-        if (data.step === STEP.IP) {
-            if (!data.result.ipInfo) return;
-
-            UI.$ipValue.innerHTML = data.result.ipInfo.ip;
-            UI.$orgValue.style.display = "none";
-            UI.$orgValue.innerHTML = "";
-
-            if (data.result.ipInfo.bogon || !data.result.ipInfo.org) return;
-
-            UI.$orgValue.style.display = "block";
-            UI.$orgValue.innerHTML = data.result.ipInfo.org;
-        }
-
         UI.highlightStep(data.step);
 
-        if (data.step === STEP.LATENCY) {
-            UI.$latencyValue.innerHTML = data.result.latency.avg || "";
-            UI.$jitterValue.innerHTML = data.result.latency.jitter || "";
-        }
-
+        if (data.step === STEP.IP) this.processIpData(data.result.ipInfo);
+        if (data.step === STEP.LATENCY)
+            this.processLatencyData(data.result.latency);
         if (data.step === STEP.DOWNLOAD)
-            UI.$downloadValue.innerHTML = data.result.download
-                ? ((+data.result.download.speed || 0) / (1024 * 1024)).toFixed(
-                      2
-                  )
-                : "";
-
+            this.processDownloadData(data.result.download);
         if (data.step === STEP.UPLOAD)
-            UI.$uploadValue.innerHTML = data.result.upload
-                ? ((+data.result.upload.speed || 0) / (1024 * 1024)).toFixed(2)
-                : "";
-
-        if ([STEP.LATENCY, STEP.DOWNLOAD, STEP.UPLOAD].includes(data.step))
-            UI.setProgressBar(data.result[data.step].progress, data.step);
+            this.processUploadData(data.result.upload);
 
         if (data.status === STATUS.DONE) {
             UI.$timestamp.setAttribute("timestamp", data.result.timestamp);
@@ -159,6 +147,59 @@ export default class WorkerService {
                 data.result.id
             }">${new Date(data.result.timestamp).toLocaleString()}</a>`;
         }
+    }
+
+    /**
+     * Process IP related information.
+     *
+     * @param {Object} ipInfo
+     */
+    processIpData(ipInfo) {
+        if (!ipInfo) return;
+
+        UI.$ipValue.innerHTML = ipInfo.ip;
+        UI.$orgValue.style.display = "none";
+        UI.$orgValue.innerHTML = "";
+
+        if (ipInfo.bogon || !ipInfo.org) return;
+
+        UI.$orgValue.style.display = "block";
+        UI.$orgValue.innerHTML = ipInfo.org;
+    }
+
+    /**
+     * Process latency related information
+     *
+     * @param {Object} latency
+     */
+    processLatencyData(latency) {
+        UI.setProgressBar(latency.progress, STEP.LATENCY);
+        UI.$latencyValue.innerHTML = latency.avg || "";
+        UI.$jitterValue.innerHTML = latency.jitter || "";
+    }
+
+    /**
+     * Process download related information
+     *
+     * @param {Object} download
+     */
+    processDownloadData(download) {
+        UI.setProgressBar(download.progress, STEP.DOWNLOAD);
+        UI.$downloadValue.innerHTML = download
+            ? ((+download.speed || 0) / (1024 * 1024)).toFixed(2)
+            : "";
+    }
+
+    /**
+     * Process upload related information
+     *
+     * @param {Object} upload
+     */
+    processUploadData(upload) {
+        UI.setProgressBar(upload.progress, STEP.UPLOAD);
+        UI.$uploadValue.innerHTML = upload
+            ? ((+upload.speed || 0) / (1024 * 1024)).toFixed(2)
+            : "";
     }
 
     /**
