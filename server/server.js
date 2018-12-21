@@ -6,6 +6,7 @@ const ipInfo = require("ipinfo");
 const path = require("path");
 const requestIp = require("request-ip");
 const url = require("url");
+const uuid = require("uuid");
 const WebSocketServer = require("websocket").server;
 
 const port = process.argv[2] || 80;
@@ -36,6 +37,20 @@ function getIP(request) {
 
             resolve(ipInfo);
         });
+    });
+}
+
+function storeResult(results) {
+    return new Promise((resolve, reject) => {
+        results.id = uuid.v4();
+        fs.writeFile(
+            path.join(process.cwd(), basePath, results.id),
+            JSON.stringify(results),
+            err => {
+                if (err) reject(err);
+                resolve(results.id);
+            }
+        );
     });
 }
 
@@ -127,6 +142,55 @@ const httpServer = http
                         response.write(chunk, "binary");
                     }
                     response.end();
+                    break;
+                case "/save":
+                    if (request.method !== 'POST') {
+                        response.writeHead(204);
+                        response.write('');
+                        response.end();
+                        return;
+                    }
+                    let data = [];
+                    request.on("data", chunk => data.push(chunk));
+                    request.on("end", () => {
+                        storeResult(JSON.parse(Buffer.concat(data).toString()))
+                            .then(id => {
+                                response.writeHead(200, {
+                                    "Content-Type": "text/plain",
+                                    "Content-Length": id.length
+                                });
+                                response.write(id);
+                                response.end();
+                            })
+                            .catch(reason => {
+                                response.writeHead(500, {
+                                    "Content-Type": "text/plain"
+                                });
+                                response.write(reason.name);
+                                response.end();
+                            });
+                    });
+                    break;
+                case "/load":
+                    const file = path.join(process.cwd(), basePath, query.id);
+
+                    fs.readFile(
+                        file,
+                        (err, data) => {
+                            if (err) {
+                                response.writeHead(404);
+                                response.write('');
+                                response.end();
+                                return;
+                            }
+                            response.writeHead(200, {
+                                "Content-Type": "application/json",
+                                "Content-Length": data.byteLength
+                            });
+                            response.write(data.toString());
+                            response.end();
+                        }
+                    );
                     break;
                 default:
                     loadFile(uri)

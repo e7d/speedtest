@@ -27,6 +27,7 @@ class UIService {
         this.$httpsAlert = document.querySelector("#https-alert");
         this.$httpsAlertMessage = this.$httpsAlert.querySelector(".message");
         this.$ieAlert = document.querySelector("#ie-alert");
+        this.$unknownResultsAlert = document.querySelector("#unknown-results-alert");
         this.$closeButtons = document.querySelectorAll("button.close");
 
         // About page
@@ -46,25 +47,26 @@ class UIService {
         // Share page
         this.$share = document.querySelector("#share");
         this.$shareResultLink = this.$share.querySelector(
-            "#share-results-link"
+            "#share-result-link"
         );
         this.$shareResultLinkCopyButton = this.$share.querySelector(
-            "#share-results-link-copy"
+            "#share-result-link-copy"
         );
         this.$shareResultImage = this.$share.querySelector(
-            "#share-results-image"
+            "#share-result-image"
         );
 
         // SpeedTest page
         this.$speedtest = document.querySelector("#speedtest");
         this.$shareResultButton = this.$speedtest.querySelector(
-            "button#share-results"
+            "button#share-result"
         );
         this.$startButton = this.$speedtest.querySelector("button#start");
         this.$stopButton = this.$speedtest.querySelector("button#stop");
-        this.$results = this.$speedtest.querySelectorAll(".result");
+        this.$resultEntries = this.$speedtest.querySelectorAll(".result");
+        this.$timestamp = this.$speedtest.querySelector("#timestamp");
         this.$ipValue = this.$speedtest.querySelector("#ip .value");
-        this.$asnValue = this.$speedtest.querySelector("#ip .asn");
+        this.$orgValue = this.$speedtest.querySelector("#ip .org");
         this.$latencyResult = this.$speedtest.querySelector("#latency");
         this.$latencyValue = this.$latencyResult.querySelector(".value");
         this.$jitterResult = this.$speedtest.querySelector("#jitter");
@@ -253,6 +255,7 @@ class UIService {
      * Reset the current results.
      */
     clearResults() {
+        this.$timestamp.innerHTML = "";
         this.$ipValue.innerHTML = "";
         this.$latencyValue.innerHTML = "";
         this.$jitterValue.innerHTML = "";
@@ -264,7 +267,7 @@ class UIService {
      * Resets the highlighted step.
      */
     resetHiglightStep() {
-        this.$results.forEach(elem => elem.classList.remove("active"));
+        this.$resultEntries.forEach(elem => elem.classList.remove("active"));
     }
 
     /**

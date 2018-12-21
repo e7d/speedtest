@@ -3,6 +3,7 @@
 #speedtest {
     display: grid;
     grid-template-areas: "a a"
+                         "t t"
                          "l j"
                          "d u"
                          "i i";
@@ -14,6 +15,10 @@
     #actions {
         grid-area: a;
         padding: 2em 0;
+    }
+
+    #timestamp {
+        grid-area: t;
     }
 
     #latency {
@@ -84,7 +89,7 @@
             color: var(--highlightColor);
         }
 
-        .ip, .asn {
+        .ip, .org {
             display: block;
         }
 
@@ -127,7 +132,7 @@
             }
         }
 
-        .asn {
+        .org {
             font-size: 1.2em;
             font-weight: lighter;
         }
@@ -135,7 +140,8 @@
 
     &.share {
         width: 320px;
-        grid-template-areas: "l j"
+        grid-template-areas: "t t"
+                             "l j"
                              "d u"
                              "i i";
         grid-template-columns: repeat(2, 50%);

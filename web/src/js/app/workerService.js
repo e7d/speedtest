@@ -1,5 +1,4 @@
 import { UI } from "./ui";
-import Results from "./results";
 import SpeedTestWorker from "../worker";
 import STATUS from "../worker/status";
 import STEP from "../worker/step";
@@ -90,8 +89,8 @@ export default class WorkerService {
                 }
 
                 this.running = false;
-                event.data.results.timestamp = new Date().getTime();
-                this.storeLatestResults(event.data.results);
+                event.data.result.timestamp = new Date().getTime();
+                this.storeLatestResult(event.data.result);
 
                 UI.setProgressBar(0);
                 UI.$startButton.removeAttribute("hidden");
@@ -120,50 +119,57 @@ export default class WorkerService {
         }
 
         if (data.step === STEP.IP) {
-            if (!data.results.ipInfo) return;
+            if (!data.result.ipInfo) return;
 
-            UI.$ipValue.innerHTML = data.results.ipInfo.ip;
-            UI.$asnValue.style.display = "none";
-            UI.$asnValue.innerHTML = "";
+            UI.$ipValue.innerHTML = data.result.ipInfo.ip;
+            UI.$orgValue.style.display = "none";
+            UI.$orgValue.innerHTML = "";
 
-            if (data.results.ipInfo.bogon || !data.results.ipInfo.org) return;
+            if (data.result.ipInfo.bogon || !data.result.ipInfo.org) return;
 
-            UI.$asnValue.style.display = "block";
-            UI.$asnValue.innerHTML = data.results.ipInfo.org;
+            UI.$orgValue.style.display = "block";
+            UI.$orgValue.innerHTML = data.result.ipInfo.org;
         }
 
         UI.highlightStep(data.step);
 
         if (data.step === STEP.LATENCY) {
-            UI.$latencyValue.innerHTML = data.results.latency.avg || "";
-            UI.$jitterValue.innerHTML = data.results.latency.jitter || "";
+            UI.$latencyValue.innerHTML = data.result.latency.avg || "";
+            UI.$jitterValue.innerHTML = data.result.latency.jitter || "";
         }
 
         if (data.step === STEP.DOWNLOAD)
-            UI.$downloadValue.innerHTML = data.results.download
-                ? ((+data.results.download.speed || 0) / (1024 * 1024)).toFixed(
+            UI.$downloadValue.innerHTML = data.result.download
+                ? ((+data.result.download.speed || 0) / (1024 * 1024)).toFixed(
                       2
                   )
                 : "";
 
         if (data.step === STEP.UPLOAD)
-            UI.$uploadValue.innerHTML = data.results.upload
-                ? ((+data.results.upload.speed || 0) / (1024 * 1024)).toFixed(2)
+            UI.$uploadValue.innerHTML = data.result.upload
+                ? ((+data.result.upload.speed || 0) / (1024 * 1024)).toFixed(2)
                 : "";
 
         if ([STEP.LATENCY, STEP.DOWNLOAD, STEP.UPLOAD].includes(data.step))
-            UI.setProgressBar(data.results[data.step].progress, data.step);
+            UI.setProgressBar(data.result[data.step].progress, data.step);
+
+        if (data.status === STATUS.DONE) {
+            UI.$timestamp.setAttribute("timestamp", data.result.timestamp);
+            UI.$timestamp.innerHTML = `<a href="/result#${
+                data.result.id
+            }">${new Date(data.result.timestamp).toLocaleString()}</a>`;
+        }
     }
 
     /**
      * Store a speed test run results to the local storage.
      *
-     * @param {Object} results
+     * @param {Object} result
      */
-    storeLatestResults(results) {
+    storeLatestResult(result) {
         const resultsHistory =
             JSON.parse(localStorage.getItem("history")) || {};
-        resultsHistory[results.timestamp] = results;
+        resultsHistory[result.timestamp] = result;
         localStorage.setItem(
             "history",
             JSON.stringify(this.limitResultsHistory(resultsHistory))
@@ -173,7 +179,7 @@ export default class WorkerService {
         window.history.replaceState(
             {},
             "Speed Test - Results",
-            `/result#${Results.toString(results)}`
+            `/result#${result.id}`
         );
         document.title = "Speed Test";
     }

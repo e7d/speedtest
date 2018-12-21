@@ -72,6 +72,11 @@ export default class Config {
                 delay: 2,
                 duration: 10,
                 gracetime: 2
+            },
+            result: {
+                xhr: {
+                    path: "save"
+                }
             }
         };
     }

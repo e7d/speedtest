@@ -1,5 +1,4 @@
 import { UI } from "./ui";
-import Results from "./results";
 
 export default class History {
     constructor() {
@@ -63,22 +62,20 @@ export default class History {
 
     printResults() {
         let $resultsRow;
-        Object.entries(this.results).forEach(([timestamp, results]) => {
+        Object.entries(this.results).forEach(([timestamp, result]) => {
             const date = new Date(+timestamp);
             $resultsRow = document.createElement("tr");
             $resultsRow.innerHTML = `
                 <td>${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}</td>
-                <td>${results.latency.avg} ms</td>
-                <td>${results.latency.jitter} ms</td>
-                <td>${(results.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${(results.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${results.ipInfo.ip}${
-                    results.ipInfo.org ? `<br>(${results.ipInfo.org})` : ""
+                <td>${result.latency.avg} ms</td>
+                <td>${result.latency.jitter} ms</td>
+                <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+                <td>${result.ipInfo.ip}${
+                    result.ipInfo.org ? `<br>(${result.ipInfo.org})` : ""
                 }</td>
                 <td class="text-center">
-                    <a class="go-result btn btn-link" href="share#${Results.toString(
-                        results
-                    )}"><i class="icon icon-link"></i></a>
+                    <a class="go-result btn btn-link" href="share#${result.id}"><i class="icon icon-link"></i></a>
                 </td>
                 `;
             UI.$resultsHistory.appendChild($resultsRow);

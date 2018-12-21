@@ -1,4 +1,5 @@
 import { UI } from "./ui";
+import Results from "./results";
 import WorkerService from "./workerService";
 
 export default class SpeedTest {
@@ -31,26 +32,11 @@ export default class SpeedTest {
     }
 
     /**
-     * Load the results from the currect URI
+     * Load results from the URI id
      */
-    loadResultsFromUri(showShareButton = true) {
-        const [
-            latency,
-            jitter,
-            download,
-            upload,
-            ip,
-            asn
-        ] = window.location.hash.replace("#", "").split(",");
-
-        UI.$ipValue.innerHTML = ip;
-        UI.$asnValue.innerHTML = decodeURIComponent(asn);
-        UI.$latencyValue.innerHTML = latency;
-        UI.$jitterValue.innerHTML = jitter;
-        UI.$downloadValue.innerHTML = (+download / (1024 * 1024)).toFixed(2);
-        UI.$uploadValue.innerHTML = (+upload / (1024 * 1024)).toFixed(2);
-
-        if (showShareButton)
-            UI.$shareResultButton.removeAttribute("hidden", "");
+    loadResults() {
+        Results.loadFromUri().catch(() => {
+            UI.$unknownResultsAlert.removeAttribute("hidden");
+        });
     }
 }

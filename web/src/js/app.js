@@ -24,7 +24,7 @@ export default class WebUI {
     }
 
     /**
-     * Attac the handler observing history state
+     * Attach the handler observing history state
      */
     attachStateHandler() {
         window.addEventListener("popstate", () => {
@@ -40,7 +40,7 @@ export default class WebUI {
                 case "/result":
                     UI.showPage("speedtest");
                     document.title = "Speed Test - Result";
-                    this.speedtest.loadResultsFromUri();
+                    this.speedtest.loadResults();
                     break;
 
                 case "/results":
@@ -63,8 +63,7 @@ export default class WebUI {
                 case "/share":
                     UI.showPage("share");
                     document.title = "Speed Test - Share result";
-                    this.speedtest.loadResultsFromUri(false);
-                    this.share.generateShareResultLinks();
+                    this.share.generateShareResults();
                     break;
 
                 default:
@@ -76,6 +75,9 @@ export default class WebUI {
         window.dispatchEvent(new Event("popstate"));
     }
 
+    /**
+     * Detects if the current browser is Internet Explorer, based on user-agent
+     */
     detectIE() {
         const ua = window.navigator.userAgent;
         if (ua.indexOf("MSIE ") > 0 || ua.indexOf("Trident.") > 0) {

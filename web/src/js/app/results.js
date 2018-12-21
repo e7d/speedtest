@@ -1,14 +1,48 @@
+import { UI } from "./ui";
+
 export default class Results {
     /**
-     * Build a sharable results string from a results object
+     * Load the results from the currect URI
      *
-     * @param {Object} results
-     * @returns {string}
+     * @returns {Promise}
      */
-    static toString(results) {
-        return `${results.latency.avg},${results.latency.jitter},${
-            results.download.speed
-        },${results.upload.speed},${results.ipInfo.ip},${results.ipInfo.org ||
-            ""}`;
+    static loadFromUri(showShareButton = true) {
+        const id = window.location.hash.replace("#", "");
+
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `/load?id=${id}`, true);
+            xhr.addEventListener("load", () => {
+                if (xhr.status !== 200) {
+                    UI.$unknownResultsAlert.removeAttribute("hidden");
+                    reject();
+                    return;
+                }
+
+                const result = JSON.parse(xhr.response);
+                UI.$timestamp.setAttribute("timestamp", result.timestamp);
+                UI.$timestamp.innerHTML = `<a href="/result#${
+                    result.id
+                }">${new Date(result.timestamp).toLocaleString()}</a>`;
+                UI.$ipValue.innerHTML = result.ipInfo.ip;
+                UI.$orgValue.innerHTML = result.ipInfo.org || "";
+                UI.$latencyValue.innerHTML = result.latency.avg;
+                UI.$jitterValue.innerHTML = result.latency.jitter;
+                UI.$downloadValue.innerHTML = (
+                    +result.download.speed /
+                    (1024 * 1024)
+                ).toFixed(2);
+                UI.$uploadValue.innerHTML = (
+                    +result.upload.speed /
+                    (1024 * 1024)
+                ).toFixed(2);
+
+                if (showShareButton)
+                    UI.$shareResultButton.removeAttribute("hidden", "");
+
+                resolve();
+            });
+            xhr.send();
+        });
     }
 }

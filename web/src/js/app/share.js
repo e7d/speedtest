@@ -1,4 +1,6 @@
+import DateFormat from "../utils/dateFormat";
 import { UI } from "./ui";
+import Results from "./results";
 import html2canvas from "html2canvas";
 
 export default class Share {
@@ -36,18 +38,42 @@ export default class Share {
     }
 
     /**
-     * Show the page to share results
+     * Generate share results link and image from the URL id
      */
-    generateShareResultLinks() {
-        UI.$shareResultLink.value = `${window.location.origin}/result${
+    generateShareResults() {
+        Results.loadFromUri(false)
+            .then(() => {
+                this.generateShareResultLink();
+                this.generateShareResultImage();
+            })
+            .catch(() => {
+                UI.$unknownResultsAlert.removeAttribute("hidden");
+            });
+    }
+
+    /**
+     * Generate the link to share the result
+     */
+    generateShareResultLink() {
+        const link = `${window.location.origin}/result${
             window.location.hash
         }`;
+        UI.$shareResultLink.value = link
+    }
 
+    /**
+     * Generate the image to share the result
+     */
+    generateShareResultImage() {
         html2canvas(UI.$speedtest, {
             logging: false,
             scale: 1,
             onclone: doc => {
                 const $el = doc.querySelector("#speedtest");
+                const $timestamp = $el.querySelector("#timestamp");
+                $timestamp.innerHTML = DateFormat.toISO(
+                    new Date(+$timestamp.getAttribute("timestamp"))
+                );
                 $el.removeAttribute("hidden");
                 $el.classList.add("share");
                 $el.setAttribute(
