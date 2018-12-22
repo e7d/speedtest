@@ -52,6 +52,18 @@ class UIService {
         this.$shareResultLinkCopyButton = this.$share.querySelector(
             "#share-result-link-copy"
         );
+        this.$shareResultEmbed = this.$share.querySelector(
+            "#share-result-embed"
+        );
+        this.$shareResultEmbedCopyButton = this.$share.querySelector(
+            "#share-result-embed-copy"
+        );
+        this.$shareResultForum = this.$share.querySelector(
+            "#share-result-forum"
+        );
+        this.$shareResultForumCopyButton = this.$share.querySelector(
+            "#share-result-forum-copy"
+        );
         this.$shareResultImage = this.$share.querySelector(
             "#share-result-image"
         );
@@ -282,7 +294,6 @@ class UIService {
         this.previousStep = step;
 
         this.resetHiglightStep();
-
         switch (step) {
             case STEP.LATENCY:
                 this.$latencyResult.classList.add("active");

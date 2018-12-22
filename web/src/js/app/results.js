@@ -11,7 +11,7 @@ export default class Results {
 
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open("GET", `/load?id=${id}`, true);
+            xhr.open("GET", `/results/${id}.json`, true);
             xhr.addEventListener("load", () => {
                 if (xhr.status !== 200) {
                     UI.$unknownResultsAlert.removeAttribute("hidden");

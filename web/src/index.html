@@ -190,7 +190,25 @@
 
 	<section id="share" hidden>
 		<div class="form-group">
-			<label for="share-results-link">Web</label>
+			<label for="share-result-link">Web</label>
+			<div class="input-group">
+				<input id="share-result-link" class="form-control" type="text" readonly>
+				<div class="input-group-append">
+					<button id="share-result-link-copy" class="btn btn-outline-secondary" type="button">Copy</button>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="share-result-embed">Embed</label>
+			<div class="input-group">
+				<input id="share-result-embed" class="form-control" type="text" readonly>
+				<div class="input-group-append">
+					<button id="share-result-embed-copy" class="btn btn-outline-secondary" type="button">Copy</button>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="share-result-forum">Forum</label>
 			<div class="input-group">
 				<input id="share-result-forum" class="form-control" type="text" readonly>
 				<div class="input-group-append">
@@ -253,7 +271,7 @@
 
 	<footer id="credits" hidden>
 		Get source code on <a href="https://github.com/e7d/speedtest/" target="_blank">GitHub</a>
-	<footer>
+		<footer>
 </body>
 
 </html>

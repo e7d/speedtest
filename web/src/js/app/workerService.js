@@ -70,9 +70,10 @@ export default class WorkerService {
                 }
 
                 this.processDoneStatus(event.data);
+                this.processFinishedStatus(event.data);
                 break;
             case STATUS.ABORTED:
-                this.processAbortedStatus(event.data);
+                this.processFinishedStatus(event.data);
                 break;
         }
     }
@@ -98,27 +99,19 @@ export default class WorkerService {
     }
 
     processDoneStatus(data) {
-        this.running = false;
-        window.clearInterval(this.statusInterval);
-
         data.result.timestamp = new Date().getTime();
-        this.processData(event.data);
         this.storeLatestResult(data.result);
+    }
+
+    processFinishedStatus(data) {
+        this.processData(data);
 
         UI.setProgressBar(0);
         UI.$startButton.removeAttribute("hidden");
         UI.$stopButton.setAttribute("hidden", "");
-    }
 
-    processAbortedStatus(data) {
         this.running = false;
         window.clearInterval(this.statusInterval);
-
-        this.processData(data);
-
-        UI.$shareResultButton.setAttribute("hidden", "");
-        UI.$startButton.removeAttribute("hidden");
-        UI.$stopButton.setAttribute("hidden", "");
     }
 
     /**
