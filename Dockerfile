@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:10
 
 LABEL maintainer='Michaël "e7d" Ferrand <michael@e7d.io>'
 
