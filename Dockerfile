@@ -12,11 +12,11 @@ RUN apk add --no-cache \
  && apk add --no-cache --virtual .build-deps \
         fontconfig \
  && fc-cache -f -v \
- && mkdir -p /opt/speedtest/results \
  && ( cd /opt/speedtest/server && npm run prod ) \
  && mv /opt/speedtest/server/* /app/ \
  && ( cd /opt/speedtest/web && npm run prod ) \
- && mv /opt/speedtest/web/dist/* /app/web \
+ && mv /opt/speedtest/web/dist/* /app/web/ \
+ && mkdir -p /app/results \
  && npm cache clean --force \
  && rm -rf /opt/speedtest \
  && rm -rf /root/.npm/node-sass \
