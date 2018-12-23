@@ -1,5 +1,5 @@
-const { convert } = require("convert-svg-to-png");
 const fs = require("fs");
+const gm = require("gm").subClass({ imageMagick: true });
 const http = require("http");
 const ipInfo = require("ipinfo");
 const path = require("path");
@@ -92,29 +92,27 @@ function storeResult(result) {
                                 1024 /
                                 1024
                             ).toFixed(2),
-                            "{{org}}": result.ipInfo.org
+                            "{{org}}": result.ipInfo.org || result.ipInfo.ip
                         }).forEach(([placeholder, value]) => {
-                            svgString = svgString.replace(placeholder, value);
+                            svgString = svgString.replace(
+                                placeholder,
+                                value || ""
+                            );
                         });
                         fs.writeFileSync(
                             path.join(__dirname, "results", `${result.id}.svg`),
                             svgString
                         );
 
-                        convert(svgString).then(pngBuffer => {
-                            fs.writeFile(
-                                path.join(
-                                    __dirname,
-                                    "results",
-                                    `${result.id}.png`
-                                ),
-                                pngBuffer,
-                                err => {
-                                    if (err) reject(err);
-                                    resolve(result.id);
-                                }
-                            );
-                        });
+                        gm(
+                            path.join(__dirname, "results", `${result.id}.svg`)
+                        ).write(
+                            path.join(__dirname, "results", `${result.id}.png`),
+                            err => {
+                                if (err) reject(err.message);
+                                resolve(result.id);
+                            }
+                        );
                     }
                 );
             }
