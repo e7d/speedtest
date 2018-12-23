@@ -11,6 +11,10 @@ const WebSocketServer = require("websocket").server;
 const port = process.argv[2] || 80;
 const basePath = process.argv[3] || "web";
 
+if (!fs.existsSync(path.join(__dirname, "results"))) {
+    fs.mkdirSync(path.join(__dirname, "results"));
+}
+
 process.on("SIGINT", function() {
     process.exit();
 });
