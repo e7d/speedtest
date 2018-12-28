@@ -64,7 +64,7 @@ export default class WebUI {
                 case "/share":
                     UI.showPage("share");
                     document.title = "Speed Test - Share result";
-                    this.share.generateShareResults();
+                    this.share.generateShareResult();
                     break;
 
                 default:

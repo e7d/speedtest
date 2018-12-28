@@ -48,9 +48,7 @@ class UIService {
 
         // Share page
         this.$share = document.querySelector("#share");
-        this.$shareResultLink = this.$share.querySelector(
-            "#share-result-link"
-        );
+        this.$shareResultLink = this.$share.querySelector("#share-result-link");
         this.$shareResultLinkCopyButton = this.$share.querySelector(
             "#share-result-link-copy"
         );

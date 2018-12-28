@@ -83,9 +83,21 @@ export default class Share {
     }
 
     /**
+     * Reset the share results field
+     */
+    clearShareResult() {
+        UI.$shareResultLink.value = '';
+        UI.$shareResultEmbed.value = '';
+        UI.$shareResultForum.value = '';
+        UI.$shareResultImage.src = '';
+    }
+
+    /**
      * Generate share results link and image from the URL id
      */
-    generateShareResults() {
+    generateShareResult() {
+        this.clearShareResult();
+
         Results.loadFromUri(false)
             .then(() => {
                 const link = `${window.location.origin}/result${window.location.hash}`;
