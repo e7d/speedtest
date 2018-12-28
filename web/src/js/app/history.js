@@ -1,3 +1,4 @@
+import DateFormat from "../utils/dateFormat";
 import { UI } from "./ui";
 
 export default class History {
@@ -66,7 +67,7 @@ export default class History {
             const date = new Date(+timestamp);
             $resultsRow = document.createElement("tr");
             $resultsRow.innerHTML = `
-                <td>${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}</td>
+                <td>${DateFormat.toISO(date).replace(' ', '<br>')}</td>
                 <td>${result.latency.avg} ms</td>
                 <td>${result.latency.jitter} ms</td>
                 <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>

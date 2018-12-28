@@ -1,3 +1,4 @@
+import DateFormat from "../utils/dateFormat";
 import { UI } from "./ui";
 
 export default class Results {
@@ -23,7 +24,7 @@ export default class Results {
                 UI.$timestamp.setAttribute("timestamp", result.timestamp);
                 UI.$timestamp.innerHTML = `<a href="/result#${
                     result.id
-                }">${new Date(result.timestamp).toLocaleString()}</a>`;
+                }">${DateFormat.toISO(new Date(result.timestamp))}</a>`;
                 UI.$ipValue.innerHTML = result.ipInfo.ip;
                 UI.$orgValue.innerHTML = result.ipInfo.org || "";
                 UI.$latencyValue.innerHTML = result.latency.avg;

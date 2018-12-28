@@ -1,3 +1,4 @@
+import DateFormat from "../utils/dateFormat";
 import { UI } from "./ui";
 import SpeedTestWorker from "../worker";
 import STATUS from "../worker/status";
@@ -138,7 +139,7 @@ export default class WorkerService {
             UI.$timestamp.setAttribute("timestamp", data.result.timestamp);
             UI.$timestamp.innerHTML = `<a href="/result#${
                 data.result.id
-            }">${new Date(data.result.timestamp).toLocaleString()}</a>`;
+            }">${DateFormat.toISO(new Date(data.result.timestamp))}</a>`;
         }
     }
 

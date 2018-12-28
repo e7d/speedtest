@@ -1,4 +1,3 @@
-import DateFormat from "../utils/dateFormat";
 import { UI } from "./ui";
 import Results from "./results";
 
