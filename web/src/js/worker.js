@@ -36,18 +36,18 @@ export default class SpeedTestWorker {
                     this.config.endpoint.xhr.protocol === "https" ||
                     this.config.endpoint.websocket.protocol === "wss"
                 ) {
-            this.alerts = {
-                https:
+                    this.alerts = {
+                        https:
                             "Speed test endpoint is accessed through a secured connection, results may be impacted."
-            };
-            console.warn(this.alerts.https);
-        }
-            this.status = STATUS.READY;
-            this.postStatus();
+                    };
+                    console.warn(this.alerts.https);
+                }
+                this.status = STATUS.READY;
+                this.postStatus();
             })
             .then(() => {
-            this.status = STATUS.WAITING;
-        });
+                this.status = STATUS.WAITING;
+            });
 
         this.scope.addEventListener("message", this.processMessage.bind(this));
 
@@ -123,12 +123,13 @@ export default class SpeedTestWorker {
 
                     resolve();
                 });
-                xhr.addEventListener("error", () => {
+                xhr.addEventListener("error", e => {
                     Request.clearXMLHttpRequest(xhr);
 
                     reject({
                         status: STATUS.FAILED,
-                        error: "test failed"
+                        error: e.error,
+                        message: e.message,
                     });
                 });
                 xhr.send();
@@ -274,7 +275,7 @@ export default class SpeedTestWorker {
                 Request.clearWebSocket(socket);
             });
 
-            socket.addEventListener("error", () => {
+            socket.addEventListener("error", e => {
                 if (this.config.ignoreErrors) {
                     this.testLatencyWebSocket()
                         .then(resolve)
@@ -286,7 +287,8 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: STATUS.FAILED,
-                    error: "test failed"
+                    error: e.error,
+                    message: e.message
                 });
             });
 
@@ -376,7 +378,7 @@ export default class SpeedTestWorker {
                     .then(resolve)
                     .catch(reject);
             });
-            xhr.addEventListener("error", () => {
+            xhr.addEventListener("error", e => {
                 if (this.config.ignoreErrors) {
                     this.testLatencyXHR()
                         .then(resolve)
@@ -386,7 +388,8 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: STATUS.FAILED,
-                    error: "test failed"
+                    error: e.error,
+                    message: e.message
                 });
             });
 
@@ -571,7 +574,7 @@ export default class SpeedTestWorker {
                 Request.clearWebSocket(socket);
             });
 
-            socket.addEventListener("error", () => {
+            socket.addEventListener("error", e => {
                 if (this.config.ignoreErrors) {
                     this.testDownloadSpeedWebSocket(size)
                         .then(resolve)
@@ -583,7 +586,8 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: STATUS.FAILED,
-                    error: "test failed"
+                    error: e.error,
+                    message: e.message
                 });
             });
 
@@ -667,7 +671,7 @@ export default class SpeedTestWorker {
                     .then(resolve)
                     .catch(reject);
             });
-            xhr.addEventListener("error", () => {
+            xhr.addEventListener("error", e => {
                 Request.clearXMLHttpRequest(xhr);
 
                 if (this.config.ignoreErrors) {
@@ -679,7 +683,8 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: STATUS.FAILED,
-                    error: "test failed"
+                    error: e.error,
+                    message: e.message
                 });
             });
 
@@ -874,7 +879,7 @@ export default class SpeedTestWorker {
                 Request.clearWebSocket(socket);
             });
 
-            socket.addEventListener("error", () => {
+            socket.addEventListener("error", e => {
                 if (this.config.ignoreErrors) {
                     this.testUploadSpeedWebSocket(size)
                         .then(resolve)
@@ -886,7 +891,8 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: STATUS.FAILED,
-                    error: "test failed"
+                    error: e.error,
+                    message: e.message
                 });
             });
 
@@ -958,7 +964,7 @@ export default class SpeedTestWorker {
                     .catch(reject);
             });
 
-            xhr.upload.addEventListener("error", () => {
+            xhr.upload.addEventListener("error", e => {
                 Request.clearXMLHttpRequest(xhr);
 
                 if (this.config.ignoreErrors) {
@@ -970,7 +976,8 @@ export default class SpeedTestWorker {
 
                 reject({
                     status: STATUS.FAILED,
-                    error: "test failed"
+                    error: e.error,
+                    message: e.message
                 });
             });
 
@@ -1028,10 +1035,11 @@ export default class SpeedTestWorker {
                 this.result.id = xhr.response;
                 resolve();
             });
-            xhr.addEventListener("error", () => {
+            xhr.addEventListener("error", e => {
                 reject({
                     status: STATUS.FAILED,
-                    error: "test failed"
+                    error: e.error,
+                    message: e.message
                 });
             });
             xhr.send(
