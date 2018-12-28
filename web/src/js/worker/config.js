@@ -10,15 +10,17 @@ export default class Config {
         return {
             ignoreErrors: true,
             optimize: false,
-            websocket: {
-                protocol: self.location.protocol
-                    .replace("http", "ws")
-                    .replace(":", ""),
-                host: `${self.location.host}`
-            },
-            xhr: {
-                protocol: self.location.protocol.replace(":", ""),
-                host: `${self.location.host}`
+            endpoint: {
+                websocket: {
+                    protocol: self.location.protocol
+                        .replace("http", "ws")
+                        .replace(":", ""),
+                    host: `${self.location.host}`
+                },
+                xhr: {
+                    protocol: self.location.protocol.replace(":", ""),
+                    host: `${self.location.host}`
+                },
             },
             overheadCompensation: Config.OVERHEAD["TCP+IPv4+ETH"],
             ip: {
@@ -91,8 +93,11 @@ export default class Config {
                     this.defaultConfig,
                     JSON.parse(xhr.response)
                 );
-                config.xhr.endpoint = `${config.xhr.protocol}://${
-                    config.xhr.host
+                config.endpoint.xhr.uri = `${config.endpoint.xhr.protocol}://${
+                    config.endpoint.xhr.host
+                }`;
+                config.endpoint.websocket.uri = `${config.endpoint.websocket.protocol}://${
+                    config.endpoint.websocket.host
                 }`;
                 resolve(config);
             };

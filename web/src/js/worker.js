@@ -28,19 +28,24 @@ export default class SpeedTestWorker {
         this.test = {};
         this.result = {};
         this.alerts = {};
-        if (this.scope.location.protocol === "https:") {
+
+        Config.loadConfig()
+            .then(config => {
+                this.config = config;
+                if (
+                    this.config.endpoint.xhr.protocol === "https" ||
+                    this.config.endpoint.websocket.protocol === "wss"
+                ) {
             this.alerts = {
                 https:
-                    "Speed test is loaded through HTTPS propocol, results may be impacted."
+                            "Speed test endpoint is accessed through a secured connection, results may be impacted."
             };
             console.warn(this.alerts.https);
         }
-
-        Config.loadConfig().then(config => {
-            this.config = config;
             this.status = STATUS.READY;
             this.postStatus();
-
+            })
+            .then(() => {
             this.status = STATUS.WAITING;
         });
 
@@ -106,7 +111,7 @@ export default class SpeedTestWorker {
     async testIP() {
         const run = () => {
             return new Promise((resolve, reject) => {
-                const endpoint = `${this.config.xhr.endpoint}/${
+                const endpoint = `${this.config.endpoint.xhr.uri}/${
                     this.config.ip.path
                 }?${Uuid.v4()}`;
                 const xhr = new XMLHttpRequest();
@@ -229,9 +234,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${
-                this.config.websocket.host
-            }/${this.config.latency.websocket.path}`;
+            const endpoint = `${this.config.endpoint.websocket.uri}/${this.config.latency.websocket.path}`;
             const socket = new WebSocket(endpoint);
             this.requests[index] = socket;
 
@@ -323,7 +326,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.xhr.endpoint}/${
+            const endpoint = `${this.config.endpoint.xhr.uri}/${
                 this.config.latency.xhr.path
             }?${Uuid.v4()}`;
             const xhr = new XMLHttpRequest();
@@ -537,9 +540,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${
-                this.config.websocket.host
-            }/${this.config.download.websocket.path}`;
+            const endpoint = `${this.config.endpoint.websocket.uri}/${this.config.download.websocket.path}`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = this.config.download.websocket.binaryType;
             this.requests[index] = socket;
@@ -627,7 +628,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.xhr.endpoint}/${
+            const endpoint = `${this.config.endpoint.xhr.uri}/${
                 this.config.download.xhr.path
             }?${Uuid.v4()}&size=${size}`;
 
@@ -845,9 +846,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.websocket.protocol}://${
-                this.config.websocket.host
-            }/${this.config.upload.websocket.path}`;
+            const endpoint = `${this.config.endpoint.websocket.uri}/${this.config.upload.websocket.path}`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = "arraybuffer";
 
@@ -920,7 +919,7 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.xhr.endpoint}/${
+            const endpoint = `${this.config.endpoint.xhr.uri}/${
                 this.config.upload.xhr.path
             }?${Uuid.v4()}`;
 
@@ -1020,7 +1019,7 @@ export default class SpeedTestWorker {
 
     storeResult() {
         return new Promise((resolve, reject) => {
-            const endpoint = `${this.config.xhr.endpoint}/${
+            const endpoint = `${this.config.endpoint.xhr.uri}/${
                 this.config.result.xhr.path
             }`;
             const xhr = new XMLHttpRequest();
