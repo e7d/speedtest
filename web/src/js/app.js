@@ -30,6 +30,7 @@ export default class WebUI {
         window.addEventListener("popstate", () => {
             this.speedtest.stopTest(true);
             UI.$shareResultButton.setAttribute("hidden", "");
+            UI.dismissUnknownResultsAlert();
 
             switch (document.location.pathname) {
                 case "/about":

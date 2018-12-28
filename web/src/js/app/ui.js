@@ -27,7 +27,9 @@ class UIService {
         this.$httpsAlert = document.querySelector("#https-alert");
         this.$httpsAlertMessage = this.$httpsAlert.querySelector(".message");
         this.$ieAlert = document.querySelector("#ie-alert");
-        this.$unknownResultsAlert = document.querySelector("#unknown-results-alert");
+        this.$unknownResultsAlert = document.querySelector(
+            "#unknown-results-alert"
+        );
         this.$closeButtons = document.querySelectorAll("button.close");
 
         // About page
@@ -216,6 +218,14 @@ class UIService {
      */
     alertCloseButtonClickHandler(e) {
         e.target.parentElement.setAttribute("hidden", "");
+    }
+
+
+    /**
+     * Hide the alert box warning about a not found result
+     */
+    dismissUnknownResultsAlert() {
+        this.$unknownResultsAlert.setAttribute("hidden", "");
     }
 
     /**
