@@ -4,7 +4,16 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Server",
+            "label": "Server: run",
+            "type": "npm",
+            "script": "run",
+            "path": "server/",
+            "problemMatcher": [
+                "$eslint-stylish"
+            ]
+        },
+        {
+            "label": "Server: watch",
             "type": "npm",
             "script": "watch",
             "path": "server/",

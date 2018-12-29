@@ -11,8 +11,8 @@
   },
   "scripts": {
     "prod": "npm install --production && npm ci",
-    "start": "node server.js",
-    "watch": "nodemon ./server.js 8888 ../web/dist"
+    "run": "node server.js 8888 ../web/dist",
+    "watch": "nodemon server.js 8888 ../web/dist"
   },
   "dependencies": {
     "gm": "^1.23.1",

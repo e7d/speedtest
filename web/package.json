@@ -8,10 +8,10 @@
         "url": "https://github.com/e7d/speedtest.git"
     },
     "scripts": {
-        "build": "npm install && webpack --env=dev --progress --profile --colors",
+        "build": "webpack --env=dev --progress --profile --colors",
         "prod": "npm install && npm ci && webpack --env=prod --progress --profile --colors",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "watch": "npm install && webpack --env=dev --progress --profile --colors --watch"
+        "watch": "webpack --env=dev --progress --profile --colors --watch"
     },
     "author": "e7d",
     "license": "MIT",
