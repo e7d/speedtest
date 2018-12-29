@@ -3,7 +3,14 @@
 #history {
     table {
         th, td {
+            line-height: 1.2em;
             vertical-align: middle;
+        }
+
+        td:nth-child(7) {
+            &, & a {
+                padding: 0;
+            }
         }
 
         .btn-link {

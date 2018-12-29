@@ -67,18 +67,25 @@ export default class History {
             const date = new Date(+timestamp);
             $resultsRow = document.createElement("tr");
             $resultsRow.innerHTML = `
-                <td>${DateFormat.toISO(date).replace(' ', '<br>')}</td>
+                <td>${DateFormat.toISO(date)}</td>
                 <td>${result.latency.avg} ms</td>
                 <td>${result.latency.jitter} ms</td>
                 <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
                 <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
                 <td>${result.ipInfo.ip}${
-                    result.ipInfo.org ? `<br>(${result.ipInfo.org})` : ""
-                }</td>
+                result.ipInfo.org ? `<br>(${result.ipInfo.org})` : ""
+            }</td>
                 <td class="text-center">
-                    <a class="go-result btn btn-link" href="share#${result.id}"><i class="icon icon-link"></i></a>
+                    <a class="go-result btn btn-link" href="result#${
+                        result.id
+                    }">
+                        <i class="icon icon-link2"></i>
+                    </a>
+                    <a class="go-result btn btn-link" href="share#${result.id}">
+                        <i class="icon icon-link"></i>
+                    </a>
                 </td>
-                `;
+            `;
             UI.$resultsHistory.appendChild($resultsRow);
         });
         this.handleShareResultLinks();
