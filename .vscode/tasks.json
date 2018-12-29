@@ -5,11 +5,12 @@
     "tasks": [
         {
             "label": "Server",
-            "type": "shell",
-            "command": [
-                "npx nodemon server/server.js 8888 web/dist"
-            ],
-            "problemMatcher": []
+            "type": "npm",
+            "script": "watch",
+            "path": "server/",
+            "problemMatcher": [
+                "$eslint-stylish"
+            ]
         },
         {
             "label": "Web: watch",
