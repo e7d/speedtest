@@ -283,6 +283,7 @@ class UIService {
     clearResults() {
         this.$timestamp.innerHTML = "";
         this.$ipValue.innerHTML = "";
+        this.$orgValue.innerHTML = "";
         this.$latencyValue.innerHTML = "";
         this.$jitterValue.innerHTML = "";
         this.$downloadValue.innerHTML = "";

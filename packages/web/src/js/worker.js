@@ -1047,8 +1047,8 @@ export default class SpeedTestWorker {
                     timestamp: new Date().getTime(),
                     latency: {
                         avg: this.result.latency.avg,
-                        jitter: this.result.jitter
                     },
+                    jitter: this.result.jitter,
                     download: {
                         speed: this.result.download.speed
                     },
