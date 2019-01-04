@@ -1,6 +1,6 @@
 {
   "name": "speedtest-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A JavaScript network speedtest based on Web Worker.",
   "author": "Michaël Ferrand <michael@e7d.io>",
   "homepage": "https://github.com/e7d/speedtest#readme",
