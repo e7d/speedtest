@@ -432,26 +432,26 @@ export default class SpeedTestWorker {
             max: +Math.max.apply(null, latencies).toFixed(2),
             avg: +(
                 latencies.reduce((a, b) => a + b, 0) / latencies.length
-            ).toFixed(2),
-            jitter: 0
+            ).toFixed(2)
         });
+        this.result.jitter = 0;
 
         if (latencies.length < 2) {
             return;
         }
 
-        latencies.forEach((value, index) => {
+        latencies.forEach((latency, index) => {
             if (0 === index) {
                 return;
             }
 
             // RFC 1889 (https://www.ietf.org/rfc/rfc1889.txt):
             // J=J+(|D(i-1,i)|-J)/16
-            const deltaPing = Math.abs(latencies[index - 1] - latencies[index]);
-            this.result.latency.jitter +=
-                (deltaPing - this.result.latency.jitter) / 16.0;
+            const deltaPing = Math.abs(latencies[index - 1] - latency);
+            this.result.jitter +=
+                (deltaPing - this.result.jitter) / 16.0;
         }, this);
-        this.result.latency.jitter = +this.result.latency.jitter.toFixed(2);
+        this.result.jitter = +this.result.jitter.toFixed(2);
     }
 
     /**
@@ -1047,7 +1047,7 @@ export default class SpeedTestWorker {
                     timestamp: new Date().getTime(),
                     latency: {
                         avg: this.result.latency.avg,
-                        jitter: this.result.latency.jitter
+                        jitter: this.result.jitter
                     },
                     download: {
                         speed: this.result.download.speed

@@ -28,7 +28,7 @@ export default class Results {
                 UI.$ipValue.innerHTML = result.ipInfo.ip;
                 UI.$orgValue.innerHTML = result.ipInfo.org || "";
                 UI.$latencyValue.innerHTML = result.latency.avg;
-                UI.$jitterValue.innerHTML = result.latency.jitter;
+                UI.$jitterValue.innerHTML = result.jitter;
                 UI.$downloadValue.innerHTML = (
                     +result.download.speed /
                     (1024 * 1024)

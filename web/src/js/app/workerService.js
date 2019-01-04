@@ -129,7 +129,7 @@ export default class WorkerService {
 
         if (data.step === STEP.IP) this.processIpData(data.result.ipInfo);
         if (data.step === STEP.LATENCY)
-            this.processLatencyData(data.result.latency);
+            this.processLatencyData(data.result.latency, data.result.jitter);
         if (data.step === STEP.DOWNLOAD)
             this.processDownloadData(data.result.download);
         if (data.step === STEP.UPLOAD)
@@ -166,10 +166,10 @@ export default class WorkerService {
      *
      * @param {Object} latency
      */
-    processLatencyData(latency) {
+    processLatencyData(latency, jitter) {
         UI.setProgressBar(latency.progress, STEP.LATENCY);
         UI.$latencyValue.innerHTML = latency.avg || "";
-        UI.$jitterValue.innerHTML = latency.jitter || "";
+        UI.$jitterValue.innerHTML = jitter || "";
     }
 
     /**

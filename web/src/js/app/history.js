@@ -70,9 +70,7 @@ export default class History {
                 $resultsRow.innerHTML = `
                     <td>${DateFormat.toISO(date)}</td>
                     <td>${result.latency.avg} ms</td>
-                    <td>${result.latency.jitter} ms</td>
-                    <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                    <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+                    <td>${result.jitter} ms</td>
                     <td>${result.ipInfo.ip}${
                         result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""
                     }</td>
