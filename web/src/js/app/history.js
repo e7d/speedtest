@@ -1,4 +1,5 @@
 import DateFormat from "../utils/dateFormat";
+import SemVer from "../utils/semver";
 import { UI } from "./ui";
 
 export default class History {
@@ -63,14 +64,25 @@ export default class History {
 
     printResults() {
         let $resultsRow;
-        Object.entries(this.results).forEach(([timestamp, result]) => {
-            try {
-                const date = new Date(+timestamp);
-                $resultsRow = document.createElement("tr");
-                $resultsRow.innerHTML = `
+        Object.entries(this.results)
+            .filter(
+                ([_, result]) =>
+                    SemVer.toInt(result.version) >= SemVer.toInt(VERSION)
+            )
+            .forEach(([timestamp, result]) => {
+                try {
+                    const date = new Date(+timestamp);
+                    $resultsRow = document.createElement("tr");
+                    $resultsRow.innerHTML = `
                     <td>${DateFormat.toISO(date)}</td>
                     <td>${result.latency.avg} ms</td>
                     <td>${result.jitter} ms</td>
+                    <td>${(result.download.speed / 1024 ** 2).toFixed(
+                        2
+                    )} Mbps</td>
+                    <td>${(result.upload.speed / 1024 ** 2).toFixed(
+                        2
+                    )} Mbps</td>
                     <td>${result.ipInfo.ip}${
                         result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""
                     }</td>
@@ -80,16 +92,18 @@ export default class History {
                         }">
                             <i class="icon icon-link2"></i>
                         </a>
-                        <a class="go-result btn btn-link" href="share#${result.id}">
+                        <a class="go-result btn btn-link" href="share#${
+                            result.id
+                        }">
                             <i class="icon icon-link"></i>
                         </a>
                     </td>
                 `;
-                UI.$resultsHistory.appendChild($resultsRow);
-            } finally {
-                // probably an entry build from an old version
-            }
-        });
+                    UI.$resultsHistory.appendChild($resultsRow);
+                } finally {
+                    // probably an entry build from an old version
+                }
+            });
         this.handleShareResultLinks();
     }
 
