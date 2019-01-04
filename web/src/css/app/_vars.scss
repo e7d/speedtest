@@ -16,6 +16,11 @@
     --fontSize: 1em;
 }
 
+::selection {
+    background: #007bff;
+    color: white;
+}
+
 html.dark {
     --backgroundColor: #1a1a1a;
     --textColor: white;

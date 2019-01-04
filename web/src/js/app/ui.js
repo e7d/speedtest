@@ -48,9 +48,18 @@ class UIService {
 
         // Share page
         this.$share = document.querySelector("#share");
+        this.$shareResultImagePreview = this.$share.querySelector(
+            "#share-result-image-preview"
+        );
         this.$shareResultLink = this.$share.querySelector("#share-result-link");
         this.$shareResultLinkCopyButton = this.$share.querySelector(
             "#share-result-link-copy"
+        );
+        this.$shareResultImage = this.$share.querySelector(
+            "#share-result-image"
+        );
+        this.$shareResultImageCopyButton = this.$share.querySelector(
+            "#share-result-image-copy"
         );
         this.$shareResultEmbed = this.$share.querySelector(
             "#share-result-embed"
@@ -63,9 +72,6 @@ class UIService {
         );
         this.$shareResultForumCopyButton = this.$share.querySelector(
             "#share-result-forum-copy"
-        );
-        this.$shareResultImage = this.$share.querySelector(
-            "#share-result-image"
         );
 
         // SpeedTest page

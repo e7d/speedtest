@@ -18,6 +18,14 @@ export default class Share {
             "click",
             this.shareResultLinkCopyButtonClickHandler.bind(this)
         );
+        UI.$shareResultImage.addEventListener(
+            "click",
+            this.shareResultImageClickHandler.bind(this)
+        );
+        UI.$shareResultImageCopyButton.addEventListener(
+            "click",
+            this.shareResultImageCopyButtonClickHandler.bind(this)
+        );
         UI.$shareResultEmbed.addEventListener(
             "click",
             this.shareResultEmbedClickHandler.bind(this)
@@ -48,6 +56,21 @@ export default class Share {
      */
     shareResultLinkCopyButtonClickHandler() {
         UI.$shareResultLink.select();
+        document.execCommand("copy");
+    }
+
+    /**
+     * Select the share result image link on text input click
+     */
+    shareResultImageClickHandler() {
+        UI.$shareResultImage.select();
+    }
+
+    /**
+     * Select and copy the share result image link on "Copy" button click
+     */
+    shareResultImageCopyButtonClickHandler() {
+        UI.$shareResultImage.select();
         document.execCommand("copy");
     }
 
@@ -85,10 +108,11 @@ export default class Share {
      * Reset the share results field
      */
     clearShareResult() {
+        UI.$shareResultImagePreview.src = '';
         UI.$shareResultLink.value = '';
+        UI.$shareResultImage.value = '';
         UI.$shareResultEmbed.value = '';
         UI.$shareResultForum.value = '';
-        UI.$shareResultImage.src = '';
     }
 
     /**
@@ -103,10 +127,11 @@ export default class Share {
                 const image = `${
                     window.location.origin
                 }/results/${window.location.hash.replace("#", "")}.png`;
+                UI.$shareResultImagePreview.src = image;
                 UI.$shareResultLink.value = link;
+                UI.$shareResultImage.value = image;
                 UI.$shareResultEmbed.value = `<a href="${link}"><img src="${image}"></a>`;
                 UI.$shareResultForum.value = `[URL=${link}][IMG]${image}[/IMG][/URL]`;
-                UI.$shareResultImage.src = image;
             })
             .catch(() => {
                 UI.$unknownResultsAlert.removeAttribute("hidden");
