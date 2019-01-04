@@ -37,13 +37,10 @@ export default class History {
 
     /**
      * Load the results history from local storage
-     *
-     * @todo: Split data loading and HTML building
      */
     loadResultsHistory() {
-        this.results = Object.assign(
-            {},
-            JSON.parse(localStorage.getItem("history"))
+        this.results = this.filterResults(
+            JSON.parse(localStorage.getItem("history")) || {}
         );
 
         UI.$resultsHistory.innerHTML = "";
@@ -55,6 +52,25 @@ export default class History {
         this.printResults();
     }
 
+    /**
+     * Filter out the results belonging previous versions
+     *
+     * @param {*} results
+     */
+
+    filterResults(results) {
+        const filteredResults = {};
+        Object.entries(results)
+            .filter(([_, result]) => SemVer.isCurrentOrNewer(result.version, "0.1.1", "minor"))
+            .forEach(
+                ([timestamp, result]) => (filteredResults[timestamp] = result)
+            );
+        return filteredResults;
+    }
+
+    /**
+     * Print the placeholder stating that no result is available
+     */
     printPlaceholder() {
         const $resultsRow = document.createElement("tr");
         $resultsRow.innerHTML =
@@ -62,18 +78,16 @@ export default class History {
         UI.$resultsHistory.appendChild($resultsRow);
     }
 
+    /**
+     * Print the results history to the page
+     */
     printResults() {
         let $resultsRow;
-        Object.entries(this.results)
-            .filter(
-                ([_, result]) =>
-                    SemVer.toInt(result.version) >= SemVer.toInt(VERSION)
-            )
-            .forEach(([timestamp, result]) => {
-                try {
-                    const date = new Date(+timestamp);
-                    $resultsRow = document.createElement("tr");
-                    $resultsRow.innerHTML = `
+        Object.entries(this.results).forEach(([timestamp, result]) => {
+            try {
+                const date = new Date(+timestamp);
+                $resultsRow = document.createElement("tr");
+                $resultsRow.innerHTML = `
                     <td>${DateFormat.toISO(date)}</td>
                     <td>${result.latency.avg} ms</td>
                     <td>${result.jitter} ms</td>
@@ -84,8 +98,8 @@ export default class History {
                         2
                     )} Mbps</td>
                     <td>${result.ipInfo.ip}${
-                        result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""
-                    }</td>
+                    result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""
+                }</td>
                     <td class="text-center">
                         <a class="go-result btn btn-link" href="result#${
                             result.id
@@ -99,14 +113,16 @@ export default class History {
                         </a>
                     </td>
                 `;
-                    UI.$resultsHistory.appendChild($resultsRow);
-                } finally {
-                    // probably an entry build from an old version
-                }
-            });
+                UI.$resultsHistory.appendChild($resultsRow);
+            } finally {
+            }
+        });
         this.handleShareResultLinks();
     }
 
+    /**
+     * Add a click handler for each result
+     */
     handleShareResultLinks() {
         const $shareLinks = document.querySelectorAll(".go-result");
 
