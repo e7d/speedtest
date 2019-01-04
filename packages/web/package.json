@@ -17,7 +17,7 @@
         "watch": "webpack --env=dev --progress --profile --colors --watch"
     },
     "bugs": {
-      "url": "https://github.com/e7d/speedtest/issues"
+        "url": "https://github.com/e7d/speedtest/issues"
     },
     "dependencies": {
         "bootstrap": "^4.1.3"
