@@ -1,3 +1,4 @@
+import DateFormat from "../utils/dateFormat";
 import STEP from "../worker/step";
 
 class UIService {
@@ -99,9 +100,21 @@ class UIService {
         );
 
         // Footer
-        this.$credits = document.querySelector("#credits");
+        this.$version = document.querySelector("#version");
 
+        this.printVersion();
         this.attachEventHandlers();
+    }
+
+    printVersion() {
+        this.$version.innerHTML = this.$version.innerHTML.replace(
+            "{{VERSION}}",
+            VERSION
+        );
+        this.$version.setAttribute(
+            "title",
+            `Built on ${DateFormat.toISO(new Date(BUILD_DATE))}`
+        );
     }
 
     /**
@@ -223,7 +236,6 @@ class UIService {
     alertCloseButtonClickHandler(e) {
         e.target.parentElement.setAttribute("hidden", "");
     }
-
 
     /**
      * Hide the alert box warning about a not found result

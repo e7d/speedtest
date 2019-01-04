@@ -84,8 +84,8 @@ export default class WorkerService {
         UI.$body.classList.add("ready");
 
         this.config = data.config;
-        if (!data.config.hideCredits) {
-            UI.$credits.removeAttribute("hidden");
+        if (!data.config.hideVersion) {
+            UI.$version.removeAttribute("hidden");
         }
 
         if (data.alerts.https) {
