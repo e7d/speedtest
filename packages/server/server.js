@@ -85,7 +85,7 @@ function storeResult(result) {
                                 new Date(result.timestamp)
                             ),
                             "{{latency}}": result.latency.avg,
-                            "{{jitter}}": result.latency.jitter,
+                            "{{jitter}}": result.jitter,
                             "{{download}}": (
                                 result.download.speed /
                                 1024 /

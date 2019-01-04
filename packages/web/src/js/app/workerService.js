@@ -204,7 +204,22 @@ export default class WorkerService {
     storeLatestResult(result) {
         const resultsHistory =
             JSON.parse(localStorage.getItem("history")) || {};
-        resultsHistory[result.timestamp] = result;
+        resultsHistory[result.timestamp] = {
+            version: VERSION,
+            timestamp: result.timestamp,
+            id: result.id,
+            ipInfo: result.ipInfo,
+            latency: {
+                avg: result.latency.avg
+            },
+            jitter: result.jitter,
+            download: {
+                speed: result.download.speed
+            },
+            upload: {
+                speed: result.download.speed
+            }
+        };
         localStorage.setItem(
             "history",
             JSON.stringify(this.limitResultsHistory(resultsHistory))
