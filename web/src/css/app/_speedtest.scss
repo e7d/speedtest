@@ -1,49 +1,22 @@
 @import "./vars";
 
 #speedtest {
-    display: grid;
-    grid-template-areas: "a a"
-                         "t t"
-                         "l j"
-                         "d u"
-                         "i i";
-    grid-template-columns: repeat(2, 50%);
+    display: flex;
+    flex-flow: row wrap;
     margin: auto;
     max-width: 640px;
     text-align: center;
 
+    #actions, #timestamp, #ip {
+        width: 100%;
+    }
+
+    #latency, #jitter, #download, #upload {
+        width: 50%
+    }
+
     #actions {
-        grid-area: a;
         padding: 2em 0;
-    }
-
-    #share-logo {
-        grid-area: h;
-        display: none;
-    }
-
-    #timestamp {
-        grid-area: t;
-    }
-
-    #latency {
-        grid-area: l;
-    }
-
-    #jitter {
-        grid-area: j;
-    }
-
-    #download {
-        grid-area: d;
-    }
-
-    #upload {
-        grid-area: u;
-    }
-
-    #ip {
-        grid-area: i;
     }
 
     #progress {
