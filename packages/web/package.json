@@ -2,6 +2,9 @@
     "name": "speedtest-web",
     "version": "0.1.1",
     "description": "A JavaScript network speedtest based on Web Worker.",
+    "author": "Michaël Ferrand <michael@e7d.io>",
+    "homepage": "https://github.com/e7d/speedtest#readme",
+    "license": "MIT",
     "main": "public/index.html",
     "repository": {
         "type": "git",
@@ -13,8 +16,9 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "watch": "webpack --env=dev --progress --profile --colors --watch"
     },
-    "author": "e7d",
-    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/e7d/speedtest/issues"
+    },
     "dependencies": {
         "bootstrap": "^4.1.3"
     },

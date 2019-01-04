@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Launch Chrome",
             "url": "http://localhost:8888",
-            "webRoot": "${workspaceFolder}/web/dist",
+            "webRoot": "${workspaceFolder}/packages/web/dist",
             "sourceMaps": true,
             // "sourceMapPathOverrides": {
             //     "top/webpack:///./src/*": "${workspaceFolder}/web/src/*",
@@ -20,10 +20,10 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Server",
-            "program": "${workspaceFolder}/server/server.js",
+            "program": "${workspaceFolder}/packages/server/server.js",
             "args": [
                 "8888",
-                "web/dist"
+                "packages/web/dist"
             ]
         }
     ]

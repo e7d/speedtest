@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "description": "A JavaScript network speedtest based on Web Worker.",
   "author": "Michaël Ferrand <michael@e7d.io>",
+  "homepage": "https://github.com/e7d/speedtest#readme",
   "license": "MIT",
   "main": "server.js",
   "repository": {
@@ -13,6 +14,9 @@
     "prod": "npm install --production && npm ci",
     "run": "node server.js 8888 ../web/dist",
     "watch": "nodemon server.js 8888 ../web/dist"
+  },
+  "bugs": {
+    "url": "https://github.com/e7d/speedtest/issues"
   },
   "dependencies": {
     "gm": "^1.23.1",

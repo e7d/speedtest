@@ -7,7 +7,7 @@
             "label": "Server: run",
             "type": "npm",
             "script": "run",
-            "path": "server/",
+            "path": "packages/server/",
             "problemMatcher": [
                 "$eslint-stylish"
             ]
@@ -16,7 +16,7 @@
             "label": "Server: watch",
             "type": "npm",
             "script": "watch",
-            "path": "server/",
+            "path": "packages/server/",
             "problemMatcher": [
                 "$eslint-stylish"
             ]
@@ -25,7 +25,7 @@
             "label": "Web: watch",
             "type": "npm",
             "script": "watch",
-            "path": "web/",
+            "path": "packages/web/",
             "problemMatcher": [
                 "$eslint-stylish"
             ],
@@ -38,7 +38,7 @@
             "label": "Web: build",
             "type": "npm",
             "script": "build",
-            "path": "web/",
+            "path": "packages/web/",
             "problemMatcher": [
                 "$eslint-stylish"
             ],
@@ -51,7 +51,7 @@
             "label": "Web: dist",
             "type": "npm",
             "script": "dist",
-            "path": "web/",
+            "path": "packages/web/",
             "problemMatcher": [
                 "$eslint-stylish"
             ],
