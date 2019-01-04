@@ -64,29 +64,33 @@ export default class History {
     printResults() {
         let $resultsRow;
         Object.entries(this.results).forEach(([timestamp, result]) => {
-            const date = new Date(+timestamp);
-            $resultsRow = document.createElement("tr");
-            $resultsRow.innerHTML = `
-                <td>${DateFormat.toISO(date)}</td>
-                <td>${result.latency.avg} ms</td>
-                <td>${result.latency.jitter} ms</td>
-                <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                <td>${result.ipInfo.ip}${
-                result.ipInfo.org ? `<br>(${result.ipInfo.org})` : ""
-            }</td>
-                <td class="text-center">
-                    <a class="go-result btn btn-link" href="result#${
-                        result.id
-                    }">
-                        <i class="icon icon-link2"></i>
-                    </a>
-                    <a class="go-result btn btn-link" href="share#${result.id}">
-                        <i class="icon icon-link"></i>
-                    </a>
-                </td>
-            `;
-            UI.$resultsHistory.appendChild($resultsRow);
+            try {
+                const date = new Date(+timestamp);
+                $resultsRow = document.createElement("tr");
+                $resultsRow.innerHTML = `
+                    <td>${DateFormat.toISO(date)}</td>
+                    <td>${result.latency.avg} ms</td>
+                    <td>${result.latency.jitter} ms</td>
+                    <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+                    <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+                    <td>${result.ipInfo.ip}${
+                        result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""
+                    }</td>
+                    <td class="text-center">
+                        <a class="go-result btn btn-link" href="result#${
+                            result.id
+                        }">
+                            <i class="icon icon-link2"></i>
+                        </a>
+                        <a class="go-result btn btn-link" href="share#${result.id}">
+                            <i class="icon icon-link"></i>
+                        </a>
+                    </td>
+                `;
+                UI.$resultsHistory.appendChild($resultsRow);
+            } finally {
+                // probably an entry build from an old version
+            }
         });
         this.handleShareResultLinks();
     }
