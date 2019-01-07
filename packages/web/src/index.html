@@ -28,7 +28,7 @@
 		</nav>
 	</header>
 
-	<section id="alerts">
+	<section id="alerts" hidden>
 		<div id="https-alert" class="alert alert-warning alert-dismissible" hidden>
 			<span class="message"></span>
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
@@ -236,14 +236,17 @@
 		</div>
 	</section>
 
-	<section id="speedtest">
+	<section id="speedtest" class="ready">
+		<div id="progress" class="progress">
+			<div class="progress-bar" role="progressbar"></div>
+		</div>
+
 		<div id="actions">
 			<button id="start" class="btn btn-lg btn-primary">Start</button>
 			<button id="stop" class="btn btn-lg btn-danger" hidden>Stop</button>
 			<button id="share-result" class="btn btn-link" hidden><i class="icon icon-link"></i> Share</button>
+			<div id="timestamp"></div>
 		</div>
-
-		<div id="timestamp"></div>
 
 		<div id="latency" class="result">
 			<label><i class="icon icon-latency"></i> Latency</label>
@@ -266,14 +269,17 @@
 			<span class="unit">Mbps</span>
 		</div>
 
+		<div id="gauge" class="gauge-container">
+			<div class="result">
+				<div class="value">...</div>
+				<div class="unit">Mbps</div>
+			</div>
+		</div>
+
 		<div id="ip" class="result">
 			<label>IP</label>
 			<div class="ip value"></div>
 			<div class="org"></div>
-		</div>
-
-		<div id="progress" class="progress">
-			<div class="progress-bar" role="progressbar"></div>
 		</div>
 	</section>
 

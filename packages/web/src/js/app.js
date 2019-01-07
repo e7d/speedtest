@@ -69,6 +69,7 @@ export default class WebUI {
 
                 default:
                     UI.showPage("speedtest");
+                    UI.$speedtest.className = "ready";
                     document.title = "Speed Test";
                     break;
             }

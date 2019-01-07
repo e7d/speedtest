@@ -19,22 +19,6 @@ header {
             background-position: center;
             background-repeat: no-repeat;
             background-size: 48px;
-
-            @media only screen and (max-width: 640px) {
-                & {
-                    width: 96px;
-                    height: 96px;
-                    background-size: 96px;
-                }
-            }
-
-            @media only screen and (max-width: 360px) {
-                & {
-                    width: 64px;
-                    height: 64px;
-                    background-size: 64px;
-                }
-            }
         }
 
         #title {
@@ -42,7 +26,7 @@ header {
 
             @media only screen and (max-width: 640px) {
                 & {
-                    display: none;
+                    font-size: 1.4rem;
                 }
             }
         }

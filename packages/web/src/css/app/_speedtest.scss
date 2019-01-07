@@ -3,7 +3,7 @@
 #speedtest {
     display: flex;
     flex-flow: row wrap;
-    margin: auto;
+    margin: 0 auto;
     max-width: 640px;
     text-align: center;
 
@@ -12,11 +12,48 @@
     }
 
     #latency, #jitter, #download, #upload {
-        width: 50%
+        width: 25%;
+
+        @media only screen and (max-width: 640px) {
+            & {
+                width: 50%;
+            }
+        }
     }
 
     #actions {
-        padding: 2em 0;
+        padding: 1em 0;
+
+        #timestamp {
+            display: none;
+            padding-top: 1em;
+        }
+    }
+
+    #gauge {
+        width: 80%;
+        margin: 0 auto -10%;
+
+        .gauge {
+            max-height: 400px;
+
+            @media only screen and (max-width: 640px) {
+                & {
+                    max-height: 260px;
+                }
+            }
+        }
+
+        .result {
+            padding: 0;
+            font-size: 2em;
+
+            @media only screen and (max-width: 640px) {
+                & {
+                    font-size: 1.2em;
+                }
+            }
+        }
     }
 
     #progress {
@@ -37,11 +74,11 @@
     }
 
     .result {
-        padding: 2em 0;
+        padding: 1em 0;
 
         @media only screen and (max-width: 640px) {
             & {
-                padding: 1em 0;
+                padding: 0.5em 0;
             }
         }
 
@@ -56,10 +93,6 @@
                 & {
                     font-size: 1em;
                 }
-
-                i {
-                    display: block;
-                }
             }
         }
 
@@ -72,20 +105,14 @@
         }
 
         .value {
-            font-size: 3.2em;
+            font-size: 2em;
             font-weight: lighter;
             line-height: 1em;
             color: var(--primaryColor);
 
             @media only screen and (max-width: 640px) {
                 & {
-                    font-size: 2.8em;
-                }
-            }
-
-            @media only screen and (max-width: 360px) {
-                & {
-                    font-size: 2.5em;
+                    font-size: 2.4em;
                 }
             }
 
@@ -99,7 +126,7 @@
         }
 
         .unit {
-            font-size: 1em;
+            font-size: 0.8em;
             font-weight: lighter;
 
             @media only screen and (max-width: 640px) {
@@ -113,6 +140,56 @@
         .org {
             font-size: 1.2em;
             font-weight: lighter;
+        }
+    }
+
+
+
+    &.ready {
+        align-items: center;
+        margin: auto;
+
+        #timestamp, #gauge, #latency, #jitter, #download, #upload, #ip {
+            display: none;
+        }
+
+        #actions {
+            padding: 8em 0;
+
+            button#start {
+                width: 160px;
+                height: 160px;
+                border-radius: 80px;
+                font-size: 2em;
+                font-weight: lighter;
+                text-transform: uppercase;
+            }
+        }
+    }
+
+    &.done {
+        #actions #timestamp {
+            display: block;
+        }
+
+        #gauge {
+            display: none;
+        }
+
+        #latency, #jitter, #download, #upload {
+            width: 50%;
+        }
+
+        .result {
+            @media only screen and (min-width: 640px) {
+                .value {
+                    font-size: 3.2em;
+                }
+
+                .unit {
+                    font-size: 1em;
+                }
+            }
         }
     }
 }

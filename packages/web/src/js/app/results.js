@@ -21,6 +21,7 @@ export default class Results {
                 }
 
                 const result = JSON.parse(xhr.response);
+                UI.$speedtest.className = "done";
                 UI.$timestamp.setAttribute("timestamp", result.timestamp);
                 UI.$timestamp.innerHTML = `<a href="/result#${
                     result.id

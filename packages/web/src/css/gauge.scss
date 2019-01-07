@@ -1,0 +1,20 @@
+.gauge-container {
+    position: relative;
+
+    & > .gauge {
+        & > .dial {
+            stroke-width: 1;
+        }
+        & > .value {
+            stroke: #007bff;
+            stroke-width: 5;
+            fill: rgba(0,0,0,0);
+        }
+    }
+
+    & > .result {
+        position: absolute;
+        bottom: 35%;
+        width: 100%;
+    }
+}

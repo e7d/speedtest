@@ -1,3 +1,4 @@
+import Gauge from "svg-gauge";
 import DateFormat from "../utils/dateFormat";
 import STEP from "../worker/step";
 
@@ -94,6 +95,13 @@ class UIService {
         this.$downloadValue = this.$downloadResult.querySelector(".value");
         this.$uploadResult = this.$speedtest.querySelector("#upload");
         this.$uploadValue = this.$uploadResult.querySelector(".value");
+        this.$gauge = this.$speedtest.querySelector("#gauge");
+        this.gauge = Gauge(this.$gauge, {
+            max: Math.log(10 * 1024 + 1),
+            value: 0,
+            showValue: false
+        });
+        this.$gaugeValue = this.$gauge.querySelector(".value");
         this.$progress = this.$speedtest.querySelector("#progress");
         this.$progressBar = this.$speedtest.querySelector(
             "#progress .progress-bar"

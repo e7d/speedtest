@@ -61,7 +61,7 @@ export default class History {
     filterResults(results) {
         const filteredResults = {};
         Object.entries(results)
-            .filter(([_, result]) => SemVer.isCurrentOrNewer(result.version, "0.1.1", "minor"))
+            .filter(([_, result]) => SemVer.isCurrentOrNewer(result.version, VERSION, "minor"))
             .forEach(
                 ([timestamp, result]) => (filteredResults[timestamp] = result)
             );

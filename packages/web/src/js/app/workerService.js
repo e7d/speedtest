@@ -11,7 +11,7 @@ export default class WorkerService {
         this.statusInterval = null;
         this.config = {};
         this.settings = {
-            updateDelay: 150,
+            updateDelay: 100,
             endless: false
         };
 
@@ -22,7 +22,7 @@ export default class WorkerService {
     }
 
     /**
-     * Start the worker job.
+     * Start the worker job
      */
     start() {
         if (this.running) return;
@@ -32,6 +32,8 @@ export default class WorkerService {
         }
 
         this.running = true;
+        UI.$speedtest.className = "";
+        UI.$gaugeValue.innerHTML = "...";
 
         this.worker.postMessage("start");
         window.clearInterval(this.statusInterval);
@@ -41,11 +43,12 @@ export default class WorkerService {
     }
 
     /**
-     * Abort the worker job.
+     * Abort the worker job
      */
     abort() {
         if (!this.running) return;
         this.running = false;
+        UI.$speedtest.className = "ready";
 
         this.worker.postMessage("abort");
         window.clearInterval(this.statusInterval);
@@ -79,6 +82,11 @@ export default class WorkerService {
         }
     }
 
+    /**
+     * Update UI as speed test is ready
+     *
+     * @param {Object} data
+     */
     processReadyStatus(data) {
         this.workerReady = true;
         UI.$body.classList.add("ready");
@@ -99,24 +107,37 @@ export default class WorkerService {
         }
     }
 
+    /**
+     * Update UI as speed test is successful
+     *
+     * @param {Object} data
+     */
     processDoneStatus(data) {
         data.result.timestamp = new Date().getTime();
         this.storeLatestResult(data.result);
     }
 
+    /**
+     * Update UI as speed test is finished
+     *
+     * @param {Object} data
+     */
     processFinishedStatus(data) {
         this.processData(data);
 
+        UI.$gaugeValue.innerHTML = "";
+        UI.gauge.setValue(0);
         UI.setProgressBar(0);
         UI.$startButton.removeAttribute("hidden");
         UI.$stopButton.setAttribute("hidden", "");
 
         this.running = false;
+        UI.$speedtest.className = "done";
         window.clearInterval(this.statusInterval);
     }
 
     /**
-     * Process a set of data.
+     * Process a set of data
      *
      * @param {Object} data
      */
@@ -144,7 +165,7 @@ export default class WorkerService {
     }
 
     /**
-     * Process IP related information.
+     * Process IP related information
      *
      * @param {Object} ipInfo
      */
@@ -168,6 +189,8 @@ export default class WorkerService {
      */
     processLatencyData(latency, jitter) {
         UI.setProgressBar(latency.progress, STEP.LATENCY);
+        if (!latency || !jitter) return;
+
         UI.$latencyValue.innerHTML = latency.avg || "";
         UI.$jitterValue.innerHTML = jitter || "";
     }
@@ -179,8 +202,16 @@ export default class WorkerService {
      */
     processDownloadData(download) {
         UI.setProgressBar(download.progress, STEP.DOWNLOAD);
-        UI.$downloadValue.innerHTML = download
-            ? ((+download.speed || 0) / (1024 * 1024)).toFixed(2)
+        if (!download.speed) {
+            UI.gauge.setValue(0);
+            UI.$gaugeValue.innerHTML = "...";
+            return;
+        }
+
+        const downloadSpeed = (+download.speed || 0) / (1024 * 1024);
+        UI.gauge.setValue(Math.log(10 * downloadSpeed + 1));
+        UI.$gaugeValue.innerHTML = UI.$downloadValue.innerHTML = download
+            ? downloadSpeed.toFixed(2)
             : "";
     }
 
@@ -191,8 +222,16 @@ export default class WorkerService {
      */
     processUploadData(upload) {
         UI.setProgressBar(upload.progress, STEP.UPLOAD);
-        UI.$uploadValue.innerHTML = upload
-            ? ((+upload.speed || 0) / (1024 * 1024)).toFixed(2)
+        if (!upload.speed) {
+            UI.gauge.setValue(0);
+            UI.$gaugeValue.innerHTML = "...";
+            return;
+        }
+
+        const uploadSpeed = (+upload.speed || 0) / (1024 * 1024);
+        UI.gauge.setValue(Math.log(10 * uploadSpeed + 1));
+        UI.$gaugeValue.innerHTML = UI.$uploadValue.innerHTML = upload
+            ? uploadSpeed.toFixed(2)
             : "";
     }
 
@@ -217,7 +256,7 @@ export default class WorkerService {
                 speed: result.download.speed
             },
             upload: {
-                speed: result.download.speed
+                speed: result.upload.speed
             }
         };
         localStorage.setItem(
@@ -237,10 +276,10 @@ export default class WorkerService {
     /**
      * Filter out the oldest results history entries.
      *
-     * @param {*} resultsHistory
-     * @param {number} [maxEntries=5]
-     * @returns
-     * @memberof WebUI
+     * @param {Object} resultsHistory
+     * @param {number} [maxEntries=20]
+     *
+     * @returns {Object}
      */
     limitResultsHistory(resultsHistory, maxEntries = 20) {
         const filteredResults = {};
