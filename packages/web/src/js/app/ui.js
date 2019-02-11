@@ -4,15 +4,27 @@ import STEP from "../worker/step";
 
 class UIService {
     constructor() {
-        this.page = "home";
+        this.storeGlobalSelectors();
+        this.storeNavigationSelectors();
+        this.storeAlertSelectors();
+        this.storeAboutSelectors();
+        this.storeSettingsSelectors();
+        this.storeHistorySelectors();
+        this.storeShareSelectors();
+        this.storeSpeedtestSelectors();
 
+        this.printVersion();
+    }
+
+    storeGlobalSelectors() {
         this.$html = document.querySelector("html");
         this.$themeColorMeta = document.querySelector(
             'meta[name="theme-color"]'
         );
         this.$body = document.querySelector("body");
+    }
 
-        // Top navigation bar
+    storeNavigationSelectors() {
         this.$titleLink = document.querySelector("h1 a");
         this.$commands = document.querySelector("#commands");
         this.$showAboutButton = this.$commands.querySelector(
@@ -24,8 +36,9 @@ class UIService {
         this.$showSettingsButton = this.$commands.querySelector(
             "button#show-settings"
         );
+    }
 
-        // Alerts
+    storeAlertSelectors() {
         this.$httpsAlert = document.querySelector("#https-alert");
         this.$httpsAlertMessage = this.$httpsAlert.querySelector(".message");
         this.$ieAlert = document.querySelector("#ie-alert");
@@ -33,22 +46,27 @@ class UIService {
             "#unknown-results-alert"
         );
         this.$closeButtons = document.querySelectorAll("button.close");
+    }
 
-        // About page
+    storeAboutSelectors() {
         this.$about = document.querySelector("#about");
+        this.$version = document.querySelector("#version");
+    }
 
-        // Settings page
+    storeSettingsSelectors() {
         this.$settings = document.querySelector("#settings");
         this.$settingsForm = this.$settings.querySelector("form");
+    }
 
-        // History page
+    storeHistorySelectors() {
         this.$history = document.querySelector("#history");
         this.$resultsHistory = this.$history.querySelector("table tbody");
         this.$eraseHistoryButton = this.$history.querySelector(
             "#erase-history"
         );
+    }
 
-        // Share page
+    storeShareSelectors() {
         this.$share = document.querySelector("#share");
         this.$shareResultImagePreview = this.$share.querySelector(
             "#share-result-image-preview"
@@ -75,8 +93,9 @@ class UIService {
         this.$shareResultForumCopyButton = this.$share.querySelector(
             "#share-result-forum-copy"
         );
+    }
 
-        // SpeedTest page
+    storeSpeedtestSelectors() {
         this.$speedtest = document.querySelector("#speedtest");
         this.$shareResultButton = this.$speedtest.querySelector(
             "button#share-result"
@@ -106,14 +125,11 @@ class UIService {
         this.$progressBar = this.$speedtest.querySelector(
             "#progress .progress-bar"
         );
-
-        // Footer
-        this.$version = document.querySelector("#version");
-
-        this.printVersion();
-        this.attachEventHandlers();
     }
 
+    /**
+     * Print the current version information in the "About" section
+     */
     printVersion() {
         this.$version.innerHTML = this.$version.innerHTML.replace(
             "{{VERSION}}",
@@ -123,126 +139,6 @@ class UIService {
             "{{BUILD_DATE}}",
             DateFormat.toISO(new Date(BUILD_DATE))
         );
-    }
-
-    /**
-     * Attach event handlers to the UI
-     */
-    attachEventHandlers() {
-        this.$eraseHistoryButton.addEventListener(
-            "click",
-            this.eraseHistoryButtonClickHandler.bind(this)
-        );
-    }
-
-    /**
-     * Attach event handlers to the UI
-     */
-    attachEventHandlers() {
-        this.$titleLink.addEventListener(
-            "click",
-            this.titleLinkClickHandler.bind(this)
-        );
-        this.$showAboutButton.addEventListener(
-            "click",
-            this.showAboutButtonClickHandler.bind(this)
-        );
-        this.$shareResultButton.addEventListener(
-            "click",
-            this.shareResultsButtonClickHandler.bind(this)
-        );
-        this.$resultsHistoryButton.addEventListener(
-            "click",
-            this.resultsHistoryButtonClickHandler.bind(this)
-        );
-        this.$showSettingsButton.addEventListener(
-            "click",
-            this.showSettingsButtonClickHandler.bind(this)
-        );
-        this.$startButton.addEventListener(
-            "click",
-            this.startButtonClickHandler.bind(this)
-        );
-        this.$stopButton.addEventListener(
-            "click",
-            this.stopButtonClickHandler.bind(this)
-        );
-        this.$closeButtons.forEach($closeButton =>
-            $closeButton.addEventListener(
-                "click",
-                this.alertCloseButtonClickHandler.bind(this)
-            )
-        );
-    }
-
-    /**
-     * Navigate back to home on title click
-     */
-    titleLinkClickHandler(e) {
-        e.preventDefault();
-        window.history.pushState({}, "Speed Test", `/`);
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Shows the information page
-     */
-    showAboutButtonClickHandler() {
-        window.history.pushState({}, "Speed Test - About", `/about`);
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Prepare the share results button with a PNG image
-     */
-    shareResultsButtonClickHandler() {
-        window.history.pushState(
-            {},
-            "Speed Test - Share Results",
-            `/share${window.location.hash}`
-        );
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Show results history
-     */
-    resultsHistoryButtonClickHandler() {
-        window.history.pushState({}, "Speed Test - Results", "/results");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Show settings
-     */
-    showSettingsButtonClickHandler() {
-        window.history.pushState({}, "Speed Test - Settings", "/settings");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Launch a speed test on "Start" button click
-     */
-    startButtonClickHandler() {
-        window.history.pushState({}, "Speed Test - Running...", "/run");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Abort the running speed test on "Stop" button click
-     */
-    stopButtonClickHandler() {
-        window.history.pushState({}, "Speed Test", "/");
-        window.dispatchEvent(new Event("popstate"));
-    }
-
-    /**
-     * Close alert boxes on "×" button click
-     *
-     * @param {MouseEvent} e
-     */
-    alertCloseButtonClickHandler(e) {
-        e.target.parentElement.setAttribute("hidden", "");
     }
 
     /**

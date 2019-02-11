@@ -1,4 +1,5 @@
 import { UI } from "./app/ui";
+import Navigation from "./app/navigation";
 import SpeedTest from "./app/speedtest";
 import Settings from "./app/settings";
 import Share from "./app/share";
@@ -14,6 +15,8 @@ export default class WebUI {
      * Create an instance of WebUI.
      */
     constructor() {
+        this.navigation = new Navigation();
+
         this.speedtest = new SpeedTest();
         this.settings = new Settings();
         this.share = new Share();

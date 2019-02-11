@@ -142,35 +142,33 @@ export default class WorkerService {
      * @param {Object} data
      */
     processData(data = {}) {
-        if (!this.running) {
-            return;
-        }
+        if (!this.running) return;
 
         UI.highlightStep(data.step);
 
-        if (data.step === STEP.IP) this.processIpData(data.result.ipInfo);
-        if (data.step === STEP.LATENCY)
-            this.processLatencyData(data.result.latency, data.result.jitter);
-        if (data.step === STEP.DOWNLOAD)
-            this.processDownloadData(data.result.download);
-        if (data.step === STEP.UPLOAD)
-            this.processUploadData(data.result.upload);
+        this.processIpData(data.step, data.result.ipInfo);
+        this.processLatencyData(
+            data.step,
+            data.result.latency,
+            data.result.jitter
+        );
+        this.processBandwidthData(data.step, data.result);
 
-        if (data.status === STATUS.DONE) {
-            UI.$timestamp.setAttribute("timestamp", data.result.timestamp);
-            UI.$timestamp.innerHTML = `<a href="/result#${
-                data.result.id
-            }">${DateFormat.toISO(new Date(data.result.timestamp))}</a>`;
-        }
+        this.processDoneStep(
+            data.status,
+            data.result.timestamp,
+            data.result.id
+        );
     }
 
     /**
      * Process IP related information
      *
+     * @param {*} step
      * @param {Object} ipInfo
      */
-    processIpData(ipInfo) {
-        if (!ipInfo) return;
+    processIpData(step, ipInfo) {
+        if (step !== STEP.IP || !ipInfo) return;
 
         UI.$ipValue.innerHTML = ipInfo.ip;
         UI.$orgValue.style.display = "none";
@@ -185,9 +183,12 @@ export default class WorkerService {
     /**
      * Process latency related information
      *
+     * @param {*} step
      * @param {Object} latency
      */
-    processLatencyData(latency, jitter) {
+    processLatencyData(step, latency, jitter) {
+        if (step !== STEP.LATENCY) return;
+
         UI.setProgressBar(latency.progress, STEP.LATENCY);
         if (!latency || !jitter) return;
 
@@ -196,54 +197,50 @@ export default class WorkerService {
     }
 
     /**
-     * Process download related information
+     * Process bandwidth related information
      *
-     * @param {Object} download
+     * @param {*} step
+     * @param {Object} data
      */
-    processDownloadData(download) {
-        UI.setProgressBar(download.progress, STEP.DOWNLOAD);
-        if (!download.speed) {
+    processBandwidthData(step, result) {
+        if (![STEP.DOWNLOAD, STEP.UPLOAD].includes(step)) return;
+        const [data, $element] =
+            step === STEP.DOWNLOAD
+                ? [result.download, UI.$downloadValue]
+                : [result.upload, UI.$uploadValue];
+
+        UI.setProgressBar(data.progress, step);
+        if (!data.speed) {
             UI.gauge.setValue(0);
             UI.$gaugeValue.innerHTML = "...";
             return;
         }
 
-        const downloadSpeed = (+download.speed || 0) / (1024 * 1024);
-        UI.gauge.setValue(Math.log(10 * downloadSpeed + 1));
-        UI.$gaugeValue.innerHTML = UI.$downloadValue.innerHTML = download
-            ? downloadSpeed.toFixed(2)
+        const dataSpeed = (+data.speed || 0) / (1024 * 1024);
+        UI.gauge.setValue(Math.log(10 * dataSpeed + 1));
+        UI.$gaugeValue.innerHTML = $element.innerHTML = dataSpeed
+            ? dataSpeed.toFixed(2)
             : "";
     }
 
     /**
-     * Process upload related information
+     * Process a done test
      *
-     * @param {Object} upload
+     * @param {*} status
+     * @param {String} timestamp
+     * @param {String} id
      */
-    processUploadData(upload) {
-        UI.setProgressBar(upload.progress, STEP.UPLOAD);
-        if (!upload.speed) {
-            UI.gauge.setValue(0);
-            UI.$gaugeValue.innerHTML = "...";
-            return;
-        }
+    processDoneStep(status, timestamp, id) {
+        if (status !== STATUS.DONE) return;
 
-        const uploadSpeed = (+upload.speed || 0) / (1024 * 1024);
-        UI.gauge.setValue(Math.log(10 * uploadSpeed + 1));
-        UI.$gaugeValue.innerHTML = UI.$uploadValue.innerHTML = upload
-            ? uploadSpeed.toFixed(2)
-            : "";
+        UI.$timestamp.setAttribute("timestamp", timestamp);
+        UI.$timestamp.innerHTML = `<a href="/result#${id}">${DateFormat.toISO(
+            new Date(timestamp)
+        )}</a>`;
     }
 
-    /**
-     * Store a speed test run results to the local storage.
-     *
-     * @param {Object} result
-     */
-    storeLatestResult(result) {
-        const resultsHistory =
-            JSON.parse(localStorage.getItem("history")) || {};
-        resultsHistory[result.timestamp] = {
+    buildHistoryResult(result) {
+        return {
             version: VERSION,
             timestamp: result.timestamp,
             id: result.id,
@@ -259,6 +256,17 @@ export default class WorkerService {
                 speed: result.upload.speed
             }
         };
+    }
+
+    /**
+     * Store a speed test run results to the local storage.
+     *
+     * @param {Object} result
+     */
+    storeLatestResult(result) {
+        const resultsHistory =
+            JSON.parse(localStorage.getItem("history")) || {};
+        resultsHistory[result.timestamp] = this.buildHistoryResult(result);
         localStorage.setItem(
             "history",
             JSON.stringify(this.limitResultsHistory(resultsHistory))
