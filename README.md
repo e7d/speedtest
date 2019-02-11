@@ -38,7 +38,7 @@ First, you will want to compile the web UI using [NodeJS](https://nodejs.org/) a
 
 ```sh
 cd web
-npm run prod
+npm run dist
 ```
 
 Then, prepare dependencies and run the server.
