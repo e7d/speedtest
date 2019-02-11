@@ -62,7 +62,7 @@
         left: 0;
         width: 100vw;
 
-        .progress {
+        &.progress {
             display: flex;
             height: 3px;
             overflow: hidden;
