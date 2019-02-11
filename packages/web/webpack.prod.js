@@ -33,15 +33,6 @@ module.exports = Merge(CommonConfig, {
         })
     ],
     optimization: {
-        splitChunks: {
-            cacheGroups: {
-                vendor: {
-                    test: /node_modules/,
-                    name: "vendor",
-                    chunks: "all"
-                }
-            }
-        },
         minimizer: [new UglifyJsPlugin(), new OptimizeCSSAssetsPlugin()]
     }
 });
