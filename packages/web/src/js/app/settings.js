@@ -43,7 +43,7 @@ export default class Settings {
      */
     loadSettings() {
         this.settings = JSON.parse(localStorage.getItem("settings")) || {
-            theme: "light"
+            theme: "dark"
         };
         document.querySelector(
             `[name=theme][value=${this.settings.theme}]`
