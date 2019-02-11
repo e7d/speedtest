@@ -22,9 +22,9 @@
 		</h1>
 
 		<nav id="commands">
-			<button id="show-about" class="btn btn-link"><i class="icon icon-info"></i></button>
-			<button id="results-history" class="btn btn-link"><i class="icon icon-history"></i></button>
-			<button id="show-settings" class="btn btn-link"><i class="icon icon-cog"></i></button>
+			<button id="show-about" class="btn-link"><i class="icon icon-info"></i></button>
+			<button id="results-history" class="btn-link"><i class="icon icon-history"></i></button>
+			<button id="show-settings" class="btn-link"><i class="icon icon-cog"></i></button>
 		</nav>
 	</header>
 
@@ -34,7 +34,8 @@
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
 		</div>
 		<div id="ie-alert" class="alert alert-warning alert-dismissible" hidden>
-			<span class="message">Internet Explorer is not a <a href="/about#supported-browsers">suported browser</a>.</span>
+			<span class="message">Internet Explorer is not a <a href="/about#supported-browsers">suported
+					browser</a>.</span>
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
 		</div>
 		<div id="unknown-results-alert" class="alert alert-error alert-dismissible" hidden>
@@ -46,6 +47,8 @@
 	<section id="about" hidden>
 		<h2>About the Speed Test</h2>
 
+		<p id="version"><strong>Version:</strong> {{VERSION}} built on {{BUILD_DATE}}</p>
+
 		<ul>
 			<li><a href="#what-does-it-measure">What does it measure?</a></li>
 			<li><a href="#indicators-meaning">What is the meaning of each indicator?</a></li>
@@ -55,7 +58,8 @@
 
 		<article id="what-does-it-measure" class="entry">
 			<h3>What does it measure?</h3>
-			<p>This speed test provides you with information on four simple indicators about your Internet connection:</p>
+			<p>This speed test provides you with information on four simple indicators about your Internet connection:
+			</p>
 			<table class="table">
 				<thead>
 					<tr>
@@ -93,13 +97,17 @@
 			<h3>What is the meaning of each indicator?</h3>
 
 			<h4>Latency is the responsiveness of your connection</h4>
-			<p>When it is low, it indicates that the information takes little time to travel between you and the server. The
-				lower it is, the more information flows "in real time". It generally reflects the distance between you and the
+			<p>When it is low, it indicates that the information takes little time to travel between you and the server.
+				The
+				lower it is, the more information flows "in real time". It generally reflects the distance between you
+				and the
 				server.</p>
 
 			<h4>Jitter is the stability of your connection</h4>
-			<p>When it is low, it indicates that latency does not vary much and that your connection is stable. On the contrary,
-				when it rises, it indicates that the reactivity of your connection can vary greatly from one data exchange to
+			<p>When it is low, it indicates that latency does not vary much and that your connection is stable. On the
+				contrary,
+				when it rises, it indicates that the reactivity of your connection can vary greatly from one data
+				exchange to
 				another.</p>
 
 			<h4>The download and upload speed are the size of your connection</h4>
@@ -109,16 +117,20 @@
 
 		<article id="supported-browsers">
 			<h3>What are the supported browsers?</h3>
-			<p>This speed test should operate normally on all modern browsers, including the latest version of <a href="https://www.google.com/chrome/"
-				 target="_blank">Google Chrome</a>, <a href="https://www.mozilla.org/firefox/" target="_blank">Mozilla Firefox</a>,
-				<a href="https://www.microsoft.com/windows/microsoft-edge" target="_blank">Microsoft Edge</a>, <a href="https://www.apple.com/safari/"
-				 target="_blank">Apple Safari</a> and <a href="https://www.opera.com/" target="_blank">Opera</a>.</p>
+			<p>This speed test should operate normally on all modern browsers, including the latest version of <a
+					href="https://www.google.com/chrome/" target="_blank">Google Chrome</a>, <a
+					href="https://www.mozilla.org/firefox/" target="_blank">Mozilla Firefox</a>,
+				<a href="https://www.microsoft.com/windows/microsoft-edge" target="_blank">Microsoft Edge</a>, <a
+					href="https://www.apple.com/safari/" target="_blank">Apple Safari</a> and <a
+					href="https://www.opera.com/" target="_blank">Opera</a>.</p>
 			<p>However, no version of Internet Explorer is officially supported.</p>
 		</article>
 
 		<article id="source-code">
 			<h3>Where can I review the source code?</h3>
-			<p>This speed test is completely open source. Its source code can be reviewed online, on its GitHub repository: <a href="https://github.com/e7d/speedtest" target="_blank">https://github.com/e7d/speedtest</a></p>
+			<p>This speed test is completely open source. Its source code can be reviewed online, on its GitHub
+				repository: <a href="https://github.com/e7d/speedtest"
+					target="_blank">https://github.com/e7d/speedtest</a></p>
 		</article>
 	</section>
 
@@ -126,31 +138,23 @@
 		<h2>Settings</h2>
 
 		<form>
-			<fieldset class="form-group">
-				<div class="row">
-					<legend class="col-sm-2 col-form-label pt-0">Theme</legend>
-					<div class="col-sm-10">
-						<div class="form-check">
-							<input id="theme-light" class="form-check-input" type="radio" name="theme" value="light" checked>
-							<label for="theme-light" class="form-check-label">
-								Light
-							</label>
-						</div>
-						<div class="form-check">
-							<input id="theme-dark" class="form-check-input" type="radio" name="theme" value="dark">
-							<label for="theme-dark" class="form-check-label">
-								Dark
-							</label>
-						</div>
-					</div>
+			<fieldset>
+				<legend>Theme</legend>
+				<div>
+					<input id="theme-light" type="radio" name="theme" value="light" checked>
+					<label for="theme-light">
+						Light
+					</label>
+				</div>
+				<div>
+					<input id="theme-dark" type="radio" name="theme" value="dark">
+					<label for="theme-dark">
+						Dark
+					</label>
 				</div>
 			</fieldset>
 
-			<div class="form-group row">
-				<div class="col-sm-10 offset-sm-2">
-					<button type="submit" class="btn btn-dark">Save</button>
-				</div>
-			</div>
+			<button type="submit" class="btn-dark">Save</button>
 		</form>
 	</section>
 
@@ -176,7 +180,7 @@
 			<p>Please turn your device in lanscape orientation.</p>
 		</div>
 
-		<table class="table">
+		<table>
 			<thead>
 				<tr>
 					<th>Date</th>
@@ -186,7 +190,8 @@
 					<th>Upload</th>
 					<th>IP / Org</th>
 					<th class="text-center">
-						<a id="erase-history" class="btn btn-danger" title="Delete all results from history"><i class="icon icon-trash"></i></a>
+						<button id="erase-history" class="btn-danger" title="Delete all results from history"><i
+								class="icon icon-trash"></i></button>
 					</th>
 				</tr>
 			</thead>
@@ -198,42 +203,42 @@
 		<div class="text-center">
 			<img id="share-result-image-preview" class="img-thumbnail" alt="Speed Test results">
 		</div>
-		<div class="form-group">
+		<fieldset>
 			<label for="share-result-link">Web</label>
 			<div class="input-group">
-				<input id="share-result-link" class="form-control" type="text" readonly>
+				<input id="share-result-link" type="text" readonly>
 				<div class="input-group-append">
-					<button id="share-result-link-copy" class="btn btn-outline-secondary" type="button">Copy</button>
+					<button id="share-result-link-copy" class="btn-outline-secondary" type="button">Copy</button>
 				</div>
 			</div>
-		</div>
-		<div class="form-group">
+		</fieldset>
+		<fieldset>
 			<label for="share-result-image">Image</label>
 			<div class="input-group">
-				<input id="share-result-image" class="form-control" type="text" readonly>
+				<input id="share-result-image" type="text" readonly>
 				<div class="input-group-append">
-					<button id="share-result-image-copy" class="btn btn-outline-secondary" type="button">Copy</button>
+					<button id="share-result-image-copy" class="btn-outline-secondary" type="button">Copy</button>
 				</div>
 			</div>
-		</div>
-		<div class="form-group">
+		</fieldset>
+		<fieldset>
 			<label for="share-result-embed">Embed</label>
 			<div class="input-group">
-				<input id="share-result-embed" class="form-control" type="text" readonly>
+				<input id="share-result-embed" type="text" readonly>
 				<div class="input-group-append">
-					<button id="share-result-embed-copy" class="btn btn-outline-secondary" type="button">Copy</button>
+					<button id="share-result-embed-copy" class="btn-outline-secondary" type="button">Copy</button>
 				</div>
 			</div>
-		</div>
-		<div class="form-group">
+		</fieldset>
+		<fieldset>
 			<label for="share-result-forum">Forum</label>
 			<div class="input-group">
-				<input id="share-result-forum" class="form-control" type="text" readonly>
+				<input id="share-result-forum" type="text" readonly>
 				<div class="input-group-append">
-					<button id="share-result-forum-copy" class="btn btn-outline-secondary" type="button">Copy</button>
+					<button id="share-result-forum-copy" class="btn-outline-secondary" type="button">Copy</button>
 				</div>
 			</div>
-		</div>
+		</fieldset>
 	</section>
 
 	<section id="speedtest" class="ready">
@@ -242,9 +247,9 @@
 		</div>
 
 		<div id="actions">
-			<button id="start" class="btn btn-lg btn-primary">Start</button>
-			<button id="stop" class="btn btn-lg btn-danger" hidden>Stop</button>
-			<button id="share-result" class="btn btn-link" hidden><i class="icon icon-link"></i> Share</button>
+			<button id="start" class="btn-lg btn-primary">Start</button>
+			<button id="stop" class="btn-lg btn-danger" hidden>Stop</button>
+			<button id="share-result" class="btn-link" hidden><i class="icon icon-link"></i> Share</button>
 			<div id="timestamp"></div>
 		</div>
 
@@ -282,10 +287,6 @@
 			<div class="org"></div>
 		</div>
 	</section>
-
-	<footer>
-		<span id="version">SpeedTest v{{VERSION}}</span>
-	</footer>
 </body>
 
 </html>

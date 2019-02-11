@@ -119,9 +119,9 @@ class UIService {
             "{{VERSION}}",
             VERSION
         );
-        this.$version.setAttribute(
-            "title",
-            `Built on ${DateFormat.toISO(new Date(BUILD_DATE))}`
+        this.$version.innerHTML = this.$version.innerHTML.replace(
+            "{{BUILD_DATE}}",
+            DateFormat.toISO(new Date(BUILD_DATE))
         );
     }
 

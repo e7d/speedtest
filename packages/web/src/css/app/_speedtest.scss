@@ -62,13 +62,26 @@
         left: 0;
         width: 100vw;
 
-        &.progress {
+        .progress {
+            display: flex;
             height: 3px;
+            overflow: hidden;
+            font-size: 0.75rem;
             background: none;
+            border-radius: 0.25rem;
             overflow: visible;
 
             .progress-bar {
-                box-shadow: 0 0 5px var(--highlightColor);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                color: #fff;
+                text-align: center;
+                white-space: nowrap;
+                background-color: #007bff;
+                transition: width 0.6s ease;
+                background: var(--blue);
+                box-shadow: 0 0 5px var(--blue);
             }
         }
     }
@@ -97,7 +110,7 @@
         }
 
         &.active label {
-            color: var(--highlightColor);
+            color: var(--blue);
         }
 
         .ip, .org {
@@ -154,15 +167,12 @@
         }
 
         #actions {
-            padding: 8em 0;
+            padding: 4em 0;
 
             button#start {
                 width: 160px;
-                height: 160px;
-                border-radius: 80px;
-                font-size: 2em;
+                font-size: 1.6em;
                 font-weight: lighter;
-                text-transform: uppercase;
             }
         }
     }

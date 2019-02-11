@@ -1,4 +1,3 @@
-import "../src/css/bootstrap.scss";
 import "../src/css/gauge.scss";
 import "../src/css/app.scss";
 

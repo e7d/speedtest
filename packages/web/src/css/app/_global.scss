@@ -1,9 +1,5 @@
 @import "./vars";
 
-* {
-    box-sizing: border-box;
-}
-
 body {
     background: var(--backgroundColor);
     max-width: 1000px;
@@ -23,30 +19,4 @@ body {
 
 section {
     flex: 1;
-}
-
-table {
-    border-collapse: collapse;
-}
-
-[hidden] {
-    display: none !important;
-}
-
-a {
-    color: var(--highlightColor);
-    text-decoration: none;
-
-    &:focus, &:hover {
-        text-decoration: underline;
-    }
-}
-
-.text-center {
-    text-align: center;
-}
-
-h2 {
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
 }

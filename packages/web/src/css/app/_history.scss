@@ -5,22 +5,11 @@
         th, td {
             line-height: 1.4em;
             vertical-align: middle;
-        }
 
-        td:nth-child(7) {
-            &, & a {
+            a {
                 padding: 0;
             }
         }
-
-        .btn-link {
-            padding: 0.375em;
-        }
-    }
-
-    #erase-history {
-        float: right;
-        color: var(--white);
     }
 
     #go-landscape {
