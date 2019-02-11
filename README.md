@@ -4,11 +4,9 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 
 ## Compatibility
 
-| Chrome | Edge | Firefox | IE | Opera | Safari |
-|--------|------|---------|----|-------|--------|
-| 43     | *    | 48.0    | 11 | 12.10 | 6.0    |
-
-IE: Internet Explorer
+| Chrome | Edge | Firefox | Opera | Safari |
+|--------|------|---------|-------|--------|
+| 43     | *    | 48.0    | 12.10 | 6.0    |
 
 ## Features
 
@@ -29,6 +27,13 @@ IE: Internet Explorer
 ```sh
 docker run --name speedtest -d -p 80:80 e7db/speedtest
 ```
+
+To store results permanently, you need a volume:
+```sh
+docker volume create speedtest_results
+docker run --name speedtest -d -p 80:80 -v speedtest_results:/app/results e7db/speedtest
+```
+Note: Results are never cleaned automatically.
 
 ### Self-hosted server
 
