@@ -129,7 +129,7 @@ export default class SpeedTestWorker {
                     reject({
                         status: STATUS.FAILED,
                         error: e.error,
-                        message: e.message,
+                        message: e.message
                     });
                 });
                 xhr.send();
@@ -235,7 +235,9 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.endpoint.websocket.uri}/${this.config.latency.websocket.path}`;
+            const endpoint = `${this.config.endpoint.websocket.uri}/${
+                this.config.latency.websocket.path
+            }`;
             const socket = new WebSocket(endpoint);
             this.requests[index] = socket;
 
@@ -427,31 +429,40 @@ export default class SpeedTestWorker {
         }
 
         const latencies = this.test.latency.data;
-        Object.assign(this.result.latency, {
-            min: +Math.min.apply(null, latencies).toFixed(2),
-            max: +Math.max.apply(null, latencies).toFixed(2),
-            avg: +(
-                latencies.reduce((a, b) => a + b, 0) / latencies.length
-            ).toFixed(2)
+        Object.assign(this.result, {
+            latency: {
+                min: +Math.min.apply(null, latencies).toFixed(2),
+                max: +Math.max.apply(null, latencies).toFixed(2),
+                avg: +(
+                    latencies.reduce((total, latency) => total + latency, 0) /
+                    latencies.length
+                ).toFixed(2)
+            },
+            jitter: this.computeJitter(latencies).toFixed(2)
         });
-        this.result.jitter = 0;
+        console.log(this.result.jitter);
+    }
 
-        if (latencies.length < 2) {
-            return;
-        }
-
-        latencies.forEach((latency, index) => {
-            if (0 === index) {
-                return;
-            }
-
-            // RFC 1889 (https://www.ietf.org/rfc/rfc1889.txt):
-            // J=J+(|D(i-1,i)|-J)/16
-            const deltaPing = Math.abs(latencies[index - 1] - latency);
-            this.result.jitter +=
-                (deltaPing - this.result.jitter) / 16.0;
-        }, this);
-        this.result.jitter = +this.result.jitter.toFixed(2);
+    /**
+     * Compute the jitter from a collection of latencies
+     * RFC 1889 (https://www.ietf.org/rfc/rfc1889.txt):
+     * J=J+(|D(i-1,i)|-J)/16
+     *
+     * @param {Array} latencies
+     * @returns {number}
+     */
+    computeJitter(latencies) {
+        //
+        return +latencies.reduce(
+            (jitter, latency, index, latencies) =>
+                index === 0
+                    ? 0
+                    : (jitter +
+                          Math.abs(latencies[index - 1] - latency) -
+                          jitter) /
+                      16,
+            0
+        );
     }
 
     /**
@@ -543,7 +554,9 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.endpoint.websocket.uri}/${this.config.download.websocket.path}`;
+            const endpoint = `${this.config.endpoint.websocket.uri}/${
+                this.config.download.websocket.path
+            }`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = this.config.download.websocket.binaryType;
             this.requests[index] = socket;
@@ -851,7 +864,9 @@ export default class SpeedTestWorker {
                 return resolve();
             }
 
-            const endpoint = `${this.config.endpoint.websocket.uri}/${this.config.upload.websocket.path}`;
+            const endpoint = `${this.config.endpoint.websocket.uri}/${
+                this.config.upload.websocket.path
+            }`;
             const socket = new WebSocket(endpoint);
             socket.binaryType = "arraybuffer";
 
@@ -1046,7 +1061,7 @@ export default class SpeedTestWorker {
                 JSON.stringify({
                     timestamp: new Date().getTime(),
                     latency: {
-                        avg: this.result.latency.avg,
+                        avg: this.result.latency.avg
                     },
                     jitter: this.result.jitter,
                     download: {
