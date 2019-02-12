@@ -1,12 +1,20 @@
 export default class Config {
-    static get OVERHEAD() {
+    constructor() {
+        if (!Config.instance) {
+            Config.instance = this;
+        }
+
+        return Config.instance;
+    }
+
+    get OVERHEAD() {
         return {
             "TCP+IPv4+ETH": 1500 / (1500 - 20 - 20 - 14),
             "TCP+IPv6+ETH": 1500 / (1500 - 40 - 20 - 14)
         };
     }
 
-    static get defaultConfig() {
+    get defaultConfig() {
         return {
             ignoreErrors: true,
             optimize: false,
@@ -22,7 +30,7 @@ export default class Config {
                     host: `${self.location.host}`
                 },
             },
-            overheadCompensation: Config.OVERHEAD["TCP+IPv4+ETH"],
+            overheadCompensation: this.OVERHEAD["TCP+IPv4+ETH"],
             ip: {
                 path: "ip"
             },
@@ -83,7 +91,7 @@ export default class Config {
         };
     }
 
-    static loadConfig() {
+    load() {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
 
@@ -107,7 +115,7 @@ export default class Config {
         });
     }
 
-    static extend(...objects) {
+    extend(...objects) {
         const extended = {};
         let i = 0;
 
