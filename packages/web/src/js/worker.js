@@ -4,6 +4,7 @@ import Request from "./utils/request";
 import Uuid from "./utils/uuid";
 
 import Config from "./worker/config";
+import Jitter from "./worker/jitter";
 import STATUS from "./worker/status";
 import STEP from "./worker/step";
 
@@ -438,31 +439,9 @@ export default class SpeedTestWorker {
                     latencies.length
                 ).toFixed(2)
             },
-            jitter: this.computeJitter(latencies).toFixed(2)
+            jitter: Jitter.compute(latencies).toFixed(2)
         });
-        console.log(this.result.jitter);
-    }
-
-    /**
-     * Compute the jitter from a collection of latencies
-     * RFC 1889 (https://www.ietf.org/rfc/rfc1889.txt):
-     * J=J+(|D(i-1,i)|-J)/16
-     *
-     * @param {Array} latencies
-     * @returns {number}
-     */
-    computeJitter(latencies) {
-        //
-        return +latencies.reduce(
-            (jitter, latency, index, latencies) =>
-                index === 0
-                    ? 0
-                    : (jitter +
-                          Math.abs(latencies[index - 1] - latency) -
-                          jitter) /
-                      16,
-            0
-        );
+        console.log(latencies.length, this.result.jitter);
     }
 
     /**
