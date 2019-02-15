@@ -22,6 +22,8 @@ class UIService {
             'meta[name="theme-color"]'
         );
         this.$body = document.querySelector("body");
+        this.$loader = document.querySelector("#loader");
+        this.$main = document.querySelector("#main");
     }
 
     storeNavigationSelectors() {
@@ -60,7 +62,12 @@ class UIService {
 
     storeHistorySelectors() {
         this.$history = document.querySelector("#history");
-        this.$resultsHistory = this.$history.querySelector("table tbody");
+        this.$resultsHistoryChart = this.$history.querySelector("svg");
+        this.$resultsHistoryDownloadLine = this.$resultsHistoryChart.querySelector("g#downloadChart polyline");
+        this.$resultsHistoryDownloadPoints = this.$resultsHistoryChart.querySelector("g#downloadChart g.points");
+        this.$resultsHistoryUploadLine = this.$resultsHistoryChart.querySelector("g#uploadChart polyline");
+        this.$resultsHistoryUploadPoints = this.$resultsHistoryChart.querySelector("g#uploadChart g.points");
+        this.$resultsHistoryTable = this.$history.querySelector("table tbody");
         this.$eraseHistoryButton = this.$history.querySelector(
             "#erase-history"
         );

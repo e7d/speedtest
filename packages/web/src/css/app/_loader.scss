@@ -19,7 +19,7 @@
         }
     }
 
-    body.ready & {
+    &.fadeOut {
         animation-name: fadeOut;
         animation-duration: 500ms;
         animation-iteration-count: 1;

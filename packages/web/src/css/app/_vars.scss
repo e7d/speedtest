@@ -9,6 +9,7 @@
     --screenColorDark: #e8e8e8;
 
     --backgroundColor: white;
+    --backgroundAltColor: whitesmoke;
     --textColor: black;
     --primaryColor: #333333;
     --borderColor: #dee2e6;
@@ -25,6 +26,7 @@
 
 html.dark {
     --backgroundColor: #1a1a1a;
+    --backgroundAltColor: #303030;
     --textColor: white;
     --primaryColor: #cccccc;
 }

@@ -1,7 +1,47 @@
 @import "./vars";
 
 #history {
+    svg {
+        polyline {
+            fill: none;
+            stroke-width: 2px;
+        }
+        circle {
+            r: 3px;
+            transition: r 300ms;
+
+            &.focus {
+                r: 5px;
+            }
+        }
+        text {
+            font-size: 10px;
+        }
+
+        #downloadChart {
+            polyline {
+                stroke: #005BC0;
+            }
+            circle, text {
+                fill: #005BC0;
+            }
+        }
+
+        #uploadChart {
+            polyline {
+                stroke: #1A8EF3;
+            }
+            circle, text {
+                fill: #1A8EF3;
+            }
+        }
+    }
+
     table {
+        tr:hover td {
+            background-color: var(--backgroundAltColor);
+        }
+
         th, td {
             line-height: 1.4em;
             vertical-align: middle;
