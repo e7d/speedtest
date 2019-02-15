@@ -1,22 +1,22 @@
 @import "./vars";
 
 body {
-    background: var(--backgroundColor);
-    max-width: 1000px;
-    margin: auto;
-    padding: 0px 2em;
-    font-family: var(--fontFamilySansSerif);
-    font-size: var(--fontSize);
-    color: var(--textColor);
+  background: var(--backgroundColor);
+  max-width: 1000px;
+  margin: auto;
+  padding: 0px 2em;
+  font-family: var(--fontFamilySansSerif);
+  font-size: var(--fontSize);
+  color: var(--textColor);
 
-    @media only screen and (max-width: 360px) {
-        & {
-            padding: 0px 1em;
-            font-size: 0.9em;;
-        }
+  @media only screen and (max-width: 360px) {
+    & {
+      padding: 0px 1em;
+      font-size: 0.9em;;
     }
+  }
 }
 
 section {
-    flex: 1;
+  flex: 1;
 }

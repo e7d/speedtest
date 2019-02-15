@@ -1,53 +1,53 @@
 header {
-    display: flex;
-    line-height: 6rem;
+  display: flex;
+  line-height: 6rem;
 
-    h1 {
-        flex: 1;
-        margin: auto 0;
+  h1 {
+    flex: 1;
+    margin: auto 0;
 
-        a, a:hover, a:focus {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        #logo {
-            display: inline-block;
-            vertical-align: middle;
-            width: 48px;
-            height: 48px;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 48px;
-        }
-
-        #title {
-            font-size: 2rem;
-
-            @media only screen and (max-width: 640px) {
-                & {
-                    font-size: 1.4rem;
-                }
-            }
-        }
+    a, a:hover, a:focus {
+      text-decoration: none;
+      color: inherit;
     }
 
-    #commands {
-        text-align: right;
-
-        i.icon {
-            font-size: 1.2em;
-        }
-
-        .btn-link {
-            padding: 0.375rem;
-
-            @media only screen and (max-width:480px) {
-                & {
-                    padding: 0.375rem 0;
-                }
-            }
-        }
-
+    #logo {
+      display: inline-block;
+      vertical-align: middle;
+      width: 48px;
+      height: 48px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 48px;
     }
+
+    #title {
+      font-size: 2rem;
+
+      @media only screen and (max-width: 640px) {
+        & {
+          font-size: 1.4rem;
+        }
+      }
+    }
+  }
+
+  #commands {
+    text-align: right;
+
+    i.icon {
+      font-size: 1.2em;
+    }
+
+    .btn-link {
+      padding: 0.375rem;
+
+      @media only screen and (max-width:480px) {
+        & {
+          padding: 0.375rem 0;
+        }
+      }
+    }
+
+  }
 }

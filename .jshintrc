@@ -1,8 +1,0 @@
-// See doc at: https://github.com/jshint/jshint/blob/master/examples/.jshintrc
-{
-    // Relaxing
-    "esversion": 6,
-
-    // Environment
-    "jquery": true
-}

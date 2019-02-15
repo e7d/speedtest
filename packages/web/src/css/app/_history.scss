@@ -1,176 +1,176 @@
 @import "./vars";
 
 #history {
-    svg {
-        polyline {
-            fill: none;
-            stroke-width: 2px;
-        }
-        circle {
-            r: 3px;
-            transition: r 300ms;
+  svg {
+    polyline {
+      fill: none;
+      stroke-width: 2px;
+    }
+    circle {
+      r: 3px;
+      transition: r 300ms;
 
-            &.focus {
-                r: 5px;
-            }
-        }
-        text {
-            font-size: 10px;
-        }
-
-        #downloadChart {
-            polyline {
-                stroke: #005BC0;
-            }
-            circle, text {
-                fill: #005BC0;
-            }
-        }
-
-        #uploadChart {
-            polyline {
-                stroke: #1A8EF3;
-            }
-            circle, text {
-                fill: #1A8EF3;
-            }
-        }
+      &.focus {
+        r: 5px;
+      }
+    }
+    text {
+      font-size: 10px;
     }
 
-    table {
-        tr:hover td {
-            background-color: var(--backgroundAltColor);
-        }
-
-        th, td {
-            line-height: 1.4em;
-            vertical-align: middle;
-
-            a {
-                padding: 0;
-            }
-        }
+    #downloadChart {
+      polyline {
+        stroke: #005BC0;
+      }
+      circle, text {
+        fill: #005BC0;
+      }
     }
 
-    #go-landscape {
+    #uploadChart {
+      polyline {
+        stroke: #1A8EF3;
+      }
+      circle, text {
+        fill: #1A8EF3;
+      }
+    }
+  }
+
+  table {
+    tr:hover td {
+      background-color: var(--backgroundAltColor);
+    }
+
+    th, td {
+      line-height: 1.4em;
+      vertical-align: middle;
+
+      a {
+        padding: 0;
+      }
+    }
+  }
+
+  #go-landscape {
+    display: none;
+
+    #device-wrapper {
+      margin: auto;
+      top: 0; left: 0; bottom: 0; right: 0;
+      width: 90px;
+      height: 155px;
+
+      * {
+        box-sizing: content-box;
+      }
+
+      #device {
+        width: 80px;
+        height: 120px;
+        margin: 40px 0 0 0;
+        border: 5px var(--phoneColor) solid;
+        border-top-width: 15px;
+        border-bottom-width: 20px;
+        border-radius: 4px;
+        animation: device 2s ease-in-out infinite;
+
+        &:before {
+          content: '';
+          display: block;
+          width: 10px;
+          height: 3px;
+          margin: -9px auto;
+          background: var(--phoneColorDark);
+          border-radius: 4px;
+        }
+
+        &:after {
+          content: '';
+          display: block;
+          width: 12px;
+          height: 12px;
+          margin: 4px auto;
+          background: var(--phoneColorDark);
+          border-radius: 10px;
+        }
+
+        #device-screen {
+          width: 60px;
+          height: 100px;
+          margin: 15px 0 0 0;
+          padding: 10px;
+          background: var(--screenColor);
+          color: var(--screenColorDark);
+          font-size: 0.5em;
+          overflow: hidden;
+
+          ul {
+            margin: 0;
+            padding: 0;
+            transform-origin: center;
+            transform: rotate(90deg) translateX(13px) scaleX(1.7);
+            animation: screen-lines 2s ease-in-out infinite;
+          }
+
+          li {
+            height: 6px;
+            margin: 0 0 5px 0;
+            list-style: none;
+            border-color: var(--screenColorDark);
+            background: var(--screenColorDark);
+
+            &:nth-child(2) { width: 75%}
+            &:nth-child(5) { width: 60%}
+            &:nth-child(7) { width: 90%}
+          }
+        }
+      }
+    }
+  }
+
+  @media only screen and (max-width: 800px) and (orientation: portrait) {
+    & {
+      #go-landscape {
+        display: block;
+      }
+
+      table {
         display: none;
-
-        #device-wrapper {
-            margin: auto;
-            top: 0; left: 0; bottom: 0; right: 0;
-            width: 90px;
-            height: 155px;
-
-            * {
-                box-sizing: content-box;
-            }
-
-            #device {
-                width: 80px;
-                height: 120px;
-                margin: 40px 0 0 0;
-                border: 5px var(--phoneColor) solid;
-                border-top-width: 15px;
-                border-bottom-width: 20px;
-                border-radius: 4px;
-                animation: device 2s ease-in-out infinite;
-
-                &:before {
-                    content: '';
-                    display: block;
-                    width: 10px;
-                    height: 3px;
-                    margin: -9px auto;
-                    background: var(--phoneColorDark);
-                    border-radius: 4px;
-                }
-
-                &:after {
-                    content: '';
-                    display: block;
-                    width: 12px;
-                    height: 12px;
-                    margin: 4px auto;
-                    background: var(--phoneColorDark);
-                    border-radius: 10px;
-                }
-
-                #device-screen {
-                    width: 60px;
-                    height: 100px;
-                    margin: 15px 0 0 0;
-                    padding: 10px;
-                    background: var(--screenColor);
-                    color: var(--screenColorDark);
-                    font-size: 0.5em;
-                    overflow: hidden;
-
-                    ul {
-                        margin: 0;
-                        padding: 0;
-                        transform-origin: center;
-                        transform: rotate(90deg) translateX(13px) scaleX(1.7);
-                        animation: screen-lines 2s ease-in-out infinite;
-                    }
-
-                    li {
-                        height: 6px;
-                        margin: 0 0 5px 0;
-                        list-style: none;
-                        border-color: var(--screenColorDark);
-                        background: var(--screenColorDark);
-
-                        &:nth-child(2) { width: 75%}
-                        &:nth-child(5) { width: 60%}
-                        &:nth-child(7) { width: 90%}
-                    }
-                }
-            }
-        }
+      }
     }
-
-    @media only screen and (max-width: 800px) and (orientation: portrait) {
-        & {
-            #go-landscape {
-                display: block;
-            }
-
-            table {
-                display: none;
-            }
-        }
-    }
+  }
 }
 
 @keyframes device {
-    0% {
-        transform: rotate(0deg);
-        opacity: 0;
-    }
-    25% {
-        transform: rotate(0deg);
-        opacity: 1;
-    }
-    50% {
-        transform: rotate(-90deg);
-    }
-    100% {
-        transform: rotate(-90deg);
-        opacity: 1;
-    }
+  0% {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+  25% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(-90deg);
+  }
+  100% {
+    transform: rotate(-90deg);
+    opacity: 1;
+  }
 }
 
 @keyframes screen-lines {
-    0% {
-        opacity: 0;
-    }
-    50% {
-        opacity: 0;
-    }
-    75% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }

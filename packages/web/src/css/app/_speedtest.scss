@@ -1,203 +1,203 @@
 @import "./vars";
 
 #speedtest {
-    display: flex;
-    flex-flow: row wrap;
-    margin: 0 auto;
-    max-width: 640px;
-    text-align: center;
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 auto;
+  max-width: 640px;
+  text-align: center;
 
-    #actions, #timestamp, #ip {
-        width: 100%;
+  #actions, #timestamp, #ip {
+    width: 100%;
+  }
+
+  #latency, #jitter, #download, #upload {
+    width: 25%;
+
+    @media only screen and (max-width: 640px) {
+      & {
+        width: 50%;
+      }
     }
+  }
 
-    #latency, #jitter, #download, #upload {
-        width: 25%;
+  #actions {
+    padding: 1em 0;
 
-        @media only screen and (max-width: 640px) {
-            & {
-                width: 50%;
-            }
-        }
+    #timestamp {
+      display: none;
+      padding-top: 1em;
     }
+  }
 
-    #actions {
-        padding: 1em 0;
+  #gauge {
+    width: 80%;
+    margin: 0 auto -10%;
 
-        #timestamp {
-            display: none;
-            padding-top: 1em;
+    .gauge {
+      max-height: 400px;
+
+      @media only screen and (max-width: 640px) {
+        & {
+          max-height: 260px;
         }
-    }
-
-    #gauge {
-        width: 80%;
-        margin: 0 auto -10%;
-
-        .gauge {
-            max-height: 400px;
-
-            @media only screen and (max-width: 640px) {
-                & {
-                    max-height: 260px;
-                }
-            }
-        }
-
-        .result {
-            padding: 0;
-            font-size: 2em;
-
-            @media only screen and (max-width: 640px) {
-                & {
-                    font-size: 1.2em;
-                }
-            }
-        }
-    }
-
-    #progress {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-
-        &.progress {
-            display: flex;
-            height: 3px;
-            overflow: hidden;
-            font-size: 0.75rem;
-            background: none;
-            border-radius: 0.25rem;
-            overflow: visible;
-
-            .progress-bar {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                color: #fff;
-                text-align: center;
-                white-space: nowrap;
-                background-color: #007bff;
-                transition: width 0.6s ease;
-                background: var(--blue);
-                box-shadow: 0 0 5px var(--blue);
-            }
-        }
+      }
     }
 
     .result {
-        padding: 1em 0;
+      padding: 0;
+      font-size: 2em;
 
-        @media only screen and (max-width: 640px) {
-            & {
-                padding: 0.5em 0;
-            }
+      @media only screen and (max-width: 640px) {
+        & {
+          font-size: 1.2em;
         }
+      }
+    }
+  }
 
-        label {
-            display: block;
-            text-transform: uppercase;
-            font-size: 1.2em;
-            margin-bottom: 0.2em;
-            transition: color 0.6s ease;
+  #progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
 
-            @media only screen and (max-width: 640px) {
-                & {
-                    font-size: 1em;
-                }
-            }
+    &.progress {
+      display: flex;
+      height: 3px;
+      overflow: hidden;
+      font-size: 0.75rem;
+      background: none;
+      border-radius: 0.25rem;
+      overflow: visible;
+
+      .progress-bar {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        background-color: #007bff;
+        transition: width 0.6s ease;
+        background: var(--blue);
+        box-shadow: 0 0 5px var(--blue);
+      }
+    }
+  }
+
+  .result {
+    padding: 1em 0;
+
+    @media only screen and (max-width: 640px) {
+      & {
+        padding: 0.5em 0;
+      }
+    }
+
+    label {
+      display: block;
+      text-transform: uppercase;
+      font-size: 1.2em;
+      margin-bottom: 0.2em;
+      transition: color 0.6s ease;
+
+      @media only screen and (max-width: 640px) {
+        & {
+          font-size: 1em;
         }
+      }
+    }
 
-        &.active label {
-            color: var(--blue);
+    &.active label {
+      color: var(--blue);
+    }
+
+    .ip, .org {
+      display: block;
+    }
+
+    .value {
+      font-size: 2em;
+      font-weight: lighter;
+      line-height: 1em;
+      color: var(--primaryColor);
+
+      @media only screen and (max-width: 640px) {
+        & {
+          font-size: 2.4em;
         }
+      }
 
-        .ip, .org {
-            display: block;
+      &:empty::before {
+        content: "0.00"
+      }
+
+      &.ip:empty::before {
+        content: "___.___.___.___"
+      }
+    }
+
+    .unit {
+      font-size: 0.8em;
+      font-weight: lighter;
+
+      @media only screen and (max-width: 640px) {
+        & {
+          display: block;
+          font-size: 0.9em;
         }
+      }
+    }
 
+    .org {
+      font-size: 1.2em;
+      font-weight: lighter;
+    }
+  }
+
+  &.ready {
+    align-items: center;
+    margin: auto;
+
+    #timestamp, #gauge, #latency, #jitter, #download, #upload, #ip {
+      display: none;
+    }
+
+    #actions {
+      padding: 4em 0;
+
+      button#start {
+        width: 160px;
+        font-size: 1.6em;
+        font-weight: lighter;
+      }
+    }
+  }
+
+  &.done {
+    #actions #timestamp {
+      display: block;
+    }
+
+    #gauge {
+      display: none;
+    }
+
+    #latency, #jitter, #download, #upload {
+      width: 50%;
+    }
+
+    .result {
+      @media only screen and (min-width: 640px) {
         .value {
-            font-size: 2em;
-            font-weight: lighter;
-            line-height: 1em;
-            color: var(--primaryColor);
-
-            @media only screen and (max-width: 640px) {
-                & {
-                    font-size: 2.4em;
-                }
-            }
-
-            &:empty::before {
-                content: "0.00"
-            }
-
-            &.ip:empty::before {
-                content: "___.___.___.___"
-            }
+          font-size: 3.2em;
         }
 
         .unit {
-            font-size: 0.8em;
-            font-weight: lighter;
-
-            @media only screen and (max-width: 640px) {
-                & {
-                    display: block;
-                    font-size: 0.9em;
-                }
-            }
+          font-size: 1em;
         }
-
-        .org {
-            font-size: 1.2em;
-            font-weight: lighter;
-        }
+      }
     }
-
-    &.ready {
-        align-items: center;
-        margin: auto;
-
-        #timestamp, #gauge, #latency, #jitter, #download, #upload, #ip {
-            display: none;
-        }
-
-        #actions {
-            padding: 4em 0;
-
-            button#start {
-                width: 160px;
-                font-size: 1.6em;
-                font-weight: lighter;
-            }
-        }
-    }
-
-    &.done {
-        #actions #timestamp {
-            display: block;
-        }
-
-        #gauge {
-            display: none;
-        }
-
-        #latency, #jitter, #download, #upload {
-            width: 50%;
-        }
-
-        .result {
-            @media only screen and (min-width: 640px) {
-                .value {
-                    font-size: 3.2em;
-                }
-
-                .unit {
-                    font-size: 1em;
-                }
-            }
-        }
-    }
+  }
 }
