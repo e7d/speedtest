@@ -11,7 +11,7 @@
     "url": "https://github.com/e7d/speedtest.git"
   },
   "scripts": {
-    "dist": "npm install --production && npm ci",
+    "dist": "npm ci --production",
     "run": "node server.js 8888 ../web/dist",
     "watch": "nodemon server.js 8888 ../web/dist"
   },
