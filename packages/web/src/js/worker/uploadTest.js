@@ -48,14 +48,8 @@ export default class UploadTest {
    * @returns {Promise}
    */
   async run() {
-    this.requests = [];
-
-    const run =
-      "websocket" === this.test.config.upload.mode
-        ? (size, delay = 0) => this.testWebSocket(size, delay)
-        : (size, delay = 0) => this.testXHR(size, delay);
-
-    this.test.upload = {
+    Object.assign(this, {
+      requests: [],
       initDate: null,
       status: STATUS.WAITING,
       running: true,
@@ -64,50 +58,55 @@ export default class UploadTest {
       index: 0,
       promises: [],
       blob: this.getRandomBlob()
-    };
+    });
 
-    this.test.upload.promises = [];
+    const run =
+      "websocket" === this.test.config.upload.mode
+        ? (size, delay = 0) => this.testWebSocket(size, delay)
+        : (size, delay = 0) => this.testXHR(size, delay);
+
+    this.promises = [];
     for (let index = 0; index < this.test.config.upload.xhr.streams; index++) {
       const testPromise = run(
         this.test.config.upload.xhr.size,
         this.test.config.upload.delay * 1000 + index * this.test.config.upload.xhr.delay
       );
-      this.test.upload.promises.push(testPromise);
+      this.promises.push(testPromise);
     }
 
     this.processResult();
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.upload.status = STATUS.STARTING;
-        this.test.upload.initDate = Date.now();
+        this.status = STATUS.STARTING;
+        this.initDate = Date.now();
       }, this.test.config.upload.delay * 1000)
     );
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.upload.status = STATUS.RUNNING;
-        this.test.upload.startDate = Date.now();
+        this.status = STATUS.RUNNING;
+        this.startDate = Date.now();
       }, this.test.config.upload.delay * 1000 + this.test.config.upload.gracetime * 1000)
     );
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.upload.status = STATUS.DONE;
-        this.test.upload.running = false;
+        this.status = STATUS.DONE;
+        this.running = false;
       }, this.test.config.upload.delay * 1000 + this.test.config.upload.duration * 1000)
     );
 
-    return Promise.all(this.test.upload.promises)
+    return Promise.all(this.promises)
       .then(() => this.processResult)
       .catch(reason => {
-        this.test.upload.error = reason;
+        this.error = reason;
         this.test.result.latency = null;
       })
       .then(() => {
-        this.test.upload.running = false;
-        delete this.test.upload.blob;
+        this.running = false;
+        delete this.blob;
         Request.clearRequests(this.requests);
 
-        if (this.test.upload.error) {
-          throw this.test.upload.error;
+        if (this.error) {
+          throw this.error;
         }
       });
   }
@@ -120,7 +119,7 @@ export default class UploadTest {
    * @returns {Promise}
    */
   testWebSocket(size, delay = 0) {
-    const index = this.test.upload.index++;
+    const index = this.index++;
 
     return new Promise((resolve, reject) => {
       if (STATUS.ABORTED === this.status) {
@@ -129,7 +128,7 @@ export default class UploadTest {
         });
       }
 
-      if (STATUS.DONE === this.test.upload.status) {
+      if (STATUS.DONE === this.status) {
         return resolve();
       }
 
@@ -144,17 +143,17 @@ export default class UploadTest {
           return reject({ status: STATUS.ABORTED });
         }
 
-        if (STATUS.DONE === this.test.upload.status) {
+        if (STATUS.DONE === this.status) {
           socket.close();
           return resolve();
         }
 
-        if (STATUS.RUNNING === this.test.upload.status) {
-          this.test.upload.size += this.test.upload.blob.size;
+        if (STATUS.RUNNING === this.status) {
+          this.size += this.blob.size;
         }
         this.processResult();
 
-        socket.send(this.test.upload.blob);
+        socket.send(this.blob);
       });
 
       socket.addEventListener("close", () => {
@@ -180,7 +179,7 @@ export default class UploadTest {
 
       socket.addEventListener("open", () => {
         self.setTimeout(() => {
-          socket.send(this.test.upload.blob);
+          socket.send(this.blob);
         }, delay);
       });
     });
@@ -194,7 +193,7 @@ export default class UploadTest {
    * @returns {Promise}
    */
   testXHR(size, delay = 0) {
-    const index = this.test.upload.index++;
+    const index = this.index++;
 
     return new Promise((resolve, reject) => {
       if (STATUS.ABORTED === this.status) {
@@ -203,7 +202,7 @@ export default class UploadTest {
         });
       }
 
-      if (STATUS.DONE === this.test.upload.status) {
+      if (STATUS.DONE === this.status) {
         return resolve();
       }
 
@@ -222,7 +221,7 @@ export default class UploadTest {
           return reject({ status: STATUS.ABORTED });
         }
 
-        if (STATUS.DONE === this.test.upload.status) {
+        if (STATUS.DONE === this.status) {
           Request.clearXMLHttpRequest(xhr);
           return resolve();
         }
@@ -230,8 +229,8 @@ export default class UploadTest {
         const loadDiff = e.loaded - sizeLoaded;
         sizeLoaded = e.loaded;
 
-        if (STATUS.RUNNING === this.test.upload.status) {
-          this.test.upload.size += loadDiff;
+        if (STATUS.RUNNING === this.status) {
+          this.size += loadDiff;
         }
         this.processResult();
       });
@@ -263,7 +262,7 @@ export default class UploadTest {
 
       this.test.timeouts.push(
         self.setTimeout(() => {
-          xhr.send(this.test.upload.blob);
+          xhr.send(this.blob);
         }, delay)
       );
     });
@@ -274,23 +273,23 @@ export default class UploadTest {
    */
   processResult() {
     this.test.result.upload = {
-      status: this.test.upload.status,
+      status: this.status,
       progress: 0
     };
-    if (this.test.upload.status <= STATUS.WAITING) {
+    if (this.status <= STATUS.WAITING) {
       return;
     }
 
-    const durationFromInit = (Date.now() - this.test.upload.initDate) / 1000;
-    const durationFromStart = (Date.now() - this.test.upload.startDate) / 1000;
+    const durationFromInit = (Date.now() - this.initDate) / 1000;
+    const durationFromStart = (Date.now() - this.startDate) / 1000;
     const progress = durationFromInit / this.test.config.upload.duration;
     this.test.result.upload.progress = progress;
-    if (this.test.upload.status <= STATUS.STARTING) {
+    if (this.status <= STATUS.STARTING) {
       return;
     }
 
     const { bitBandwidth: bandwidth } = Bandwidth.compute(
-      this.test.upload.size,
+      this.size,
       durationFromStart,
       this.test.config.overheadCompensation
     );

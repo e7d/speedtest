@@ -6,7 +6,7 @@ import Uuid from "../utils/uuid";
 import STATUS from "./status";
 import Test from "./test";
 
-export default class TestLatency {
+export default class LantencyTEst {
   constructor() {
     this.test = new Test();
   }
@@ -17,53 +17,52 @@ export default class TestLatency {
    * @returns {Promise}
    */
   async run() {
-    this.requests = [];
+    Object.assign(this, {
+      requests: [],
+      initDate: null,
+      status: STATUS.WAITING,
+      running: true,
+      data: [],
+      pingDate: []
+    });
 
     const run =
       "websocket" === this.test.config.latency.mode
         ? (delay = 0) => this.testWebSocket(delay)
         : (delay = 0) => this.testXHR(delay);
 
-    this.test.latency = {
-      initDate: null,
-      status: STATUS.WAITING,
-      running: true,
-      data: [],
-      pingDate: []
-    };
-
     this.processResult();
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.latency.status = STATUS.STARTING;
-        this.test.latency.initDate = Date.now();
+        this.status = STATUS.STARTING;
+        this.initDate = Date.now();
       }, this.test.config.latency.delay * 1000)
     );
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.latency.status = STATUS.RUNNING;
-        this.test.latency.startDate = Date.now();
+        this.status = STATUS.RUNNING;
+        this.startDate = Date.now();
       }, this.test.config.latency.delay * 1000 + this.test.config.latency.gracetime * 1000)
     );
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.latency.status = STATUS.DONE;
-        this.test.latency.running = false;
+        this.status = STATUS.DONE;
+        this.running = false;
       }, this.test.config.latency.delay * 1000 + this.test.config.latency.duration * 1000)
     );
 
     return run(this.test.config.latency.delay * 1000)
       .then(() => this.processResult)
       .catch(reason => {
-        this.test.latency.error = reason;
+        this.error = reason;
         this.test.result.latency = null;
       })
       .then(() => {
-        this.test.latency.running = false;
+        this.running = false;
         Request.clearRequests(this.requests);
 
-        if (this.test.latency.error) {
-          throw this.test.latency.error;
+        if (this.error) {
+          throw this.error;
         }
       });
   }
@@ -84,7 +83,7 @@ export default class TestLatency {
         });
       }
 
-      if (STATUS.DONE === this.test.latency.status) {
+      if (STATUS.DONE === this.status) {
         return resolve();
       }
 
@@ -98,23 +97,23 @@ export default class TestLatency {
           return reject({ status: STATUS.ABORTED });
         }
 
-        if (STATUS.DONE === this.test.latency.status) {
+        if (STATUS.DONE === this.status) {
           socket.close();
           return resolve();
         }
 
-        if (STATUS.RUNNING === this.test.latency.status) {
+        if (STATUS.RUNNING === this.status) {
           const data = JSON.parse(e.data);
           const index = data.index;
-          let networkLatency = Date.now() - this.test.latency.pingDate[index];
+          let networkLatency = Date.now() - this.pingDate[index];
           networkLatency = +networkLatency.toFixed(2);
-          this.test.latency.data.push(networkLatency);
+          this.data.push(networkLatency);
         }
 
         this.processResult();
 
         index += 1;
-        this.test.latency.pingDate[index] = Date.now();
+        this.pingDate[index] = Date.now();
         socket.send(
           JSON.stringify({
             action: "ping",
@@ -147,7 +146,7 @@ export default class TestLatency {
       socket.addEventListener("open", () => {
         self.setTimeout(() => {
           index += 1;
-          this.test.latency.pingDate[index] = +new Date();
+          this.pingDate[index] = +new Date();
           socket.send(
             JSON.stringify({
               action: "ping",
@@ -167,7 +166,7 @@ export default class TestLatency {
    */
   testXHR(delay = 0) {
     let pingDate, pongDate;
-    const index = this.test.latency.index++;
+    const index = this.index++;
 
     return new Promise((resolve, reject) => {
       if (STATUS.ABORTED === this.status) {
@@ -176,7 +175,7 @@ export default class TestLatency {
         });
       }
 
-      if (STATUS.DONE === this.test.latency.status) {
+      if (STATUS.DONE === this.status) {
         return resolve();
       }
 
@@ -196,11 +195,11 @@ export default class TestLatency {
           return reject({ status: STATUS.ABORTED });
         }
 
-        if (STATUS.DONE === this.test.latency.status) {
+        if (STATUS.DONE === this.status) {
           return resolve();
         }
 
-        if (STATUS.RUNNING === this.test.latency.status) {
+        if (STATUS.RUNNING === this.status) {
           const performance = Performance.getEntry(self, endpoint);
           let networkLatency =
             null !== performance
@@ -208,7 +207,7 @@ export default class TestLatency {
               : pongDate - pingDate;
 
           networkLatency = +networkLatency.toFixed(2);
-          this.test.latency.data.push(networkLatency);
+          this.data.push(networkLatency);
         }
 
         this.processResult();
@@ -251,21 +250,21 @@ export default class TestLatency {
    */
   processResult() {
     this.test.result.latency = {
-      status: this.test.latency.status,
+      status: this.status,
       progress: 0
     };
-    if (this.test.latency.status <= STATUS.WAITING) {
+    if (this.status <= STATUS.WAITING) {
       return;
     }
 
-    const durationFromInit = (Date.now() - this.test.latency.initDate) / 1000;
+    const durationFromInit = (Date.now() - this.initDate) / 1000;
     const progress = durationFromInit / this.test.config.latency.duration;
     this.test.result.latency.progress = progress;
-    if (this.test.latency.status <= STATUS.STARTING) {
+    if (this.status <= STATUS.STARTING) {
       return;
     }
 
-    const latencies = this.test.latency.data;
+    const latencies = this.data;
     this.test.result.latency = {
       ...this.test.result.latency,
       min: +Math.min.apply(null, latencies).toFixed(2),

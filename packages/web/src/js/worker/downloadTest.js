@@ -16,14 +16,8 @@ export default class DownloadTest {
    * @returns {Promise}
    */
   async run() {
-    this.requests = [];
-
-    const run =
-      "websocket" === this.test.config.download.mode
-        ? (size, delay = 0) => this.testWebSocket(size, delay)
-        : (size, delay = 0) => this.testXHR(size, delay);
-
-    this.test.download = {
+    Object.assign(this, {
+      requests: [],
       initDate: null,
       status: STATUS.WAITING,
       running: true,
@@ -31,49 +25,54 @@ export default class DownloadTest {
       size: 0,
       index: 0,
       promises: []
-    };
+    });
 
-    this.test.download.promises = [];
+    const run =
+      "websocket" === this.test.config.download.mode
+        ? (size, delay = 0) => this.testWebSocket(size, delay)
+        : (size, delay = 0) => this.testXHR(size, delay);
+
+    this.promises = [];
     for (let index = 0; index < this.test.config.download.xhr.streams; index++) {
       const testPromise = run(
         this.test.config.download.xhr.size,
         this.test.config.download.delay * 1000 + index * this.test.config.download.xhr.delay
       );
-      this.test.download.promises.push(testPromise);
+      this.promises.push(testPromise);
     }
 
     this.processResult();
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.download.status = STATUS.STARTING;
-        this.test.download.initDate = Date.now();
+        this.status = STATUS.STARTING;
+        this.initDate = Date.now();
       }, this.test.config.download.delay * 1000)
     );
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.download.status = STATUS.RUNNING;
-        this.test.download.startDate = Date.now();
+        this.status = STATUS.RUNNING;
+        this.startDate = Date.now();
       }, this.test.config.download.delay * 1000 + this.test.config.download.gracetime * 1000)
     );
     this.test.timeouts.push(
       self.setTimeout(() => {
-        this.test.download.status = STATUS.DONE;
-        this.test.download.running = false;
+        this.status = STATUS.DONE;
+        this.running = false;
       }, this.test.config.download.delay * 1000 + this.test.config.download.duration * 1000)
     );
 
-    return Promise.all(this.test.download.promises)
+    return Promise.all(this.promises)
       .then(() => this.processResult)
       .catch(reason => {
-        this.test.download.error = reason;
+        this.error = reason;
         this.test.result.download = null;
       })
       .then(() => {
-        this.test.download.running = false;
+        this.running = false;
         Request.clearRequests(this.requests);
 
-        if (this.test.download.error) {
-          throw this.test.download.error;
+        if (this.error) {
+          throw this.error;
         }
       });
   }
@@ -86,7 +85,7 @@ export default class DownloadTest {
    * @returns {Promise}
    */
   testWebSocket(size, delay = 0) {
-    const index = this.test.download.index++;
+    const index = this.index++;
 
     return new Promise((resolve, reject) => {
       if (STATUS.ABORTED === this.status) {
@@ -95,7 +94,7 @@ export default class DownloadTest {
         });
       }
 
-      if (STATUS.DONE === this.test.download.status) {
+      if (STATUS.DONE === this.status) {
         return resolve();
       }
 
@@ -109,13 +108,13 @@ export default class DownloadTest {
           return reject({ status: STATUS.ABORTED });
         }
 
-        if (STATUS.DONE === this.test.download.status) {
+        if (STATUS.DONE === this.status) {
           socket.close();
           return resolve();
         }
 
-        if (STATUS.RUNNING === this.test.download.status) {
-          this.test.download.size += e.data.length;
+        if (STATUS.RUNNING === this.status) {
+          this.size += e.data.length;
         }
         this.processResult();
 
@@ -175,7 +174,7 @@ export default class DownloadTest {
    * @returns {Promise}
    */
   testXHR(size, delay = 0) {
-    const index = this.test.download.index++;
+    const index = this.index++;
 
     return new Promise((resolve, reject) => {
       if (STATUS.ABORTED === this.status) {
@@ -184,7 +183,7 @@ export default class DownloadTest {
         });
       }
 
-      if (STATUS.DONE === this.test.download.status) {
+      if (STATUS.DONE === this.status) {
         return resolve();
       }
 
@@ -205,7 +204,7 @@ export default class DownloadTest {
           return;
         }
 
-        if (STATUS.DONE === this.test.download.status) {
+        if (STATUS.DONE === this.status) {
           Request.clearXMLHttpRequest(xhr);
           resolve();
           return;
@@ -213,8 +212,8 @@ export default class DownloadTest {
 
         const loadDiff = e.loaded - sizeLoaded;
         sizeLoaded = e.loaded;
-        if (STATUS.RUNNING === this.test.download.status) {
-          this.test.download.size += loadDiff;
+        if (STATUS.RUNNING === this.status) {
+          this.size += loadDiff;
         }
         this.processResult();
       });
@@ -251,23 +250,23 @@ export default class DownloadTest {
    */
   processResult() {
     this.test.result.download = {
-      status: this.test.download.status,
+      status: this.status,
       progress: 0
     };
-    if (this.test.download.status <= STATUS.WAITING) {
+    if (this.status <= STATUS.WAITING) {
       return;
     }
 
-    const durationFromInit = (Date.now() - this.test.download.initDate) / 1000;
-    const durationFromStart = (Date.now() - this.test.download.startDate) / 1000;
+    const durationFromInit = (Date.now() - this.initDate) / 1000;
+    const durationFromStart = (Date.now() - this.startDate) / 1000;
     const progress = durationFromInit / this.test.config.download.duration;
     this.test.result.download.progress = progress;
-    if (this.test.download.status <= STATUS.STARTING) {
+    if (this.status <= STATUS.STARTING) {
       return;
     }
 
     const { bitBandwidth: bandwidth } = Bandwidth.compute(
-      this.test.download.size,
+      this.size,
       durationFromStart,
       this.test.config.overheadCompensation
     );
