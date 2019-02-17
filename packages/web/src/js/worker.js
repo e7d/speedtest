@@ -8,10 +8,10 @@ import DownloadTest from "./worker/downloadTest";
 import IpTest from "./worker/ipTest";
 import LatencyTest from "./worker/latencyTest";
 import Messaging from "./worker/messaging";
+import Result from "./worker/result";
 import Scope from "./worker/scope";
 import Test from "./worker/test";
 import UploadTest from "./worker/uploadTest";
-import Result from "./worker/result";
 
 /**
  * Speed Test worker
