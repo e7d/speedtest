@@ -11,6 +11,7 @@ import Messaging from "./worker/messaging";
 import Scope from "./worker/scope";
 import Test from "./worker/test";
 import UploadTest from "./worker/uploadTest";
+import Result from "./worker/result";
 
 /**
  * Speed Test worker
@@ -109,11 +110,7 @@ export default class SpeedTestWorker {
     this.test.status = STATUS.STARTING;
     this.test.step = null;
     this.test.error = null;
-    Object.assign(this.test.result, {
-      latency: null,
-      download: null,
-      upload: null
-    });
+    this.test.result = new Result();
 
     this.test.status = STATUS.RUNNING;
     this.test.step = STEP.IP;
