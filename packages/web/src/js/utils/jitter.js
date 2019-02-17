@@ -10,7 +10,7 @@ export default class Jitter {
   static compute(latencies) {
     return latencies.reduce(
       (jitter, latency, index, latencies) =>
-        index === 0 ? 0 : (jitter + Math.abs(latencies[index - 1] - latency) - jitter) / 16,
+        index === 0 ? 0 : jitter + (Math.abs(latencies[index - 1] - latency) - jitter) / 16,
       0
     );
   }
