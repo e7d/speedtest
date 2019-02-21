@@ -6,7 +6,7 @@ import Uuid from "../utils/uuid";
 import STATUS from "./status";
 import Test from "./test";
 
-export default class LantencyTEst {
+export default class LantencyTest {
   constructor() {
     this.test = new Test();
   }
@@ -18,6 +18,7 @@ export default class LantencyTEst {
    */
   async run() {
     Object.assign(this, {
+      error: null,
       requests: [],
       initDate: null,
       status: STATUS.WAITING,
@@ -77,13 +78,14 @@ export default class LantencyTEst {
     let index = 0;
 
     return new Promise((resolve, reject) => {
-      if (STATUS.ABORTED === this.status) {
+      if (this.test.status === STATUS.ABORTED) {
+        this.status = STATUS.ABORTED;
         return reject({
           status: STATUS.ABORTED
         });
       }
 
-      if (STATUS.DONE === this.status) {
+      if (this.status === STATUS.DONE) {
         return resolve();
       }
 
@@ -92,17 +94,18 @@ export default class LantencyTEst {
       this.requests[index] = socket;
 
       socket.addEventListener("message", e => {
-        if (STATUS.ABORTED === this.status) {
+        if (this.test.status === STATUS.ABORTED) {
+          this.status = STATUS.ABORTED;
           socket.close();
           return reject({ status: STATUS.ABORTED });
         }
 
-        if (STATUS.DONE === this.status) {
+        if (this.status === STATUS.DONE) {
           socket.close();
           return resolve();
         }
 
-        if (STATUS.RUNNING === this.status) {
+        if (this.status === STATUS.RUNNING) {
           const data = JSON.parse(e.data);
           const index = data.index;
           let networkLatency = Date.now() - this.pingDate[index];
@@ -169,13 +172,14 @@ export default class LantencyTEst {
     const index = this.index++;
 
     return new Promise((resolve, reject) => {
-      if (STATUS.ABORTED === this.status) {
+      if (this.test.status === STATUS.ABORTED) {
+        this.status = STATUS.ABORTED;
         return reject({
           status: STATUS.ABORTED
         });
       }
 
-      if (STATUS.DONE === this.status) {
+      if (this.status === STATUS.DONE) {
         return resolve();
       }
 
@@ -191,15 +195,16 @@ export default class LantencyTEst {
         if (!pongDate && xhr.readyState >= 2) pongDate = Date.now();
       });
       xhr.addEventListener("load", () => {
-        if (STATUS.ABORTED === this.status) {
+        if (this.test.status === STATUS.ABORTED) {
+          this.status = STATUS.ABORTED;
           return reject({ status: STATUS.ABORTED });
         }
 
-        if (STATUS.DONE === this.status) {
+        if (this.status === STATUS.DONE) {
           return resolve();
         }
 
-        if (STATUS.RUNNING === this.status) {
+        if (this.status === STATUS.RUNNING) {
           const performance = Performance.getEntry(self, endpoint);
           let networkLatency =
             null !== performance
@@ -253,16 +258,12 @@ export default class LantencyTEst {
       status: this.status,
       progress: 0
     };
-    if (this.status <= STATUS.WAITING) {
-      return;
-    }
+    if (this.status <= STATUS.WAITING) return;
 
     const durationFromInit = (Date.now() - this.initDate) / 1000;
     const progress = durationFromInit / this.test.config.latency.duration;
     this.test.result.latency.progress = progress;
-    if (this.status <= STATUS.STARTING) {
-      return;
-    }
+    if (this.status <= STATUS.STARTING) return;
 
     const latencies = this.data;
     this.test.result.latency = {

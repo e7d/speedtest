@@ -17,6 +17,7 @@ export default class DownloadTest {
    */
   async run() {
     Object.assign(this, {
+      error: null,
       requests: [],
       initDate: null,
       status: STATUS.WAITING,
@@ -88,7 +89,8 @@ export default class DownloadTest {
     const index = this.index++;
 
     return new Promise((resolve, reject) => {
-      if (STATUS.ABORTED === this.status) {
+      if (this.test.status === STATUS.ABORTED) {
+        this.status = STATUS.ABORTED;
         return reject({
           status: STATUS.ABORTED
         });
@@ -103,7 +105,8 @@ export default class DownloadTest {
       socket.binaryType = this.test.config.download.websocket.binaryType;
       this.requests[index] = socket;
       socket.addEventListener("message", e => {
-        if (STATUS.ABORTED === this.status) {
+        if (this.test.status === STATUS.ABORTED) {
+          this.status = STATUS.ABORTED;
           socket.close();
           return reject({ status: STATUS.ABORTED });
         }
@@ -177,7 +180,8 @@ export default class DownloadTest {
     const index = this.index++;
 
     return new Promise((resolve, reject) => {
-      if (STATUS.ABORTED === this.status) {
+      if (this.test.status === STATUS.ABORTED) {
+        this.status = STATUS.ABORTED;
         return reject({
           status: STATUS.ABORTED
         });
@@ -198,16 +202,15 @@ export default class DownloadTest {
       let sizeLoaded = 0;
       xhr.open("GET", endpoint, true);
       xhr.addEventListener("progress", e => {
-        if (STATUS.ABORTED === this.status) {
+        if (this.test.status === STATUS.ABORTED) {
+          this.status = STATUS.ABORTED;
           Request.clearXMLHttpRequest(xhr);
-          reject({ status: STATUS.ABORTED });
-          return;
+          return reject({ status: STATUS.ABORTED });
         }
 
         if (STATUS.DONE === this.status) {
           Request.clearXMLHttpRequest(xhr);
-          resolve();
-          return;
+          return resolve();
         }
 
         const loadDiff = e.loaded - sizeLoaded;
@@ -253,17 +256,13 @@ export default class DownloadTest {
       status: this.status,
       progress: 0
     };
-    if (this.status <= STATUS.WAITING) {
-      return;
-    }
+    if (this.status <= STATUS.WAITING) return;
 
     const durationFromInit = (Date.now() - this.initDate) / 1000;
     const durationFromStart = (Date.now() - this.startDate) / 1000;
     const progress = durationFromInit / this.test.config.download.duration;
     this.test.result.download.progress = progress;
-    if (this.status <= STATUS.STARTING) {
-      return;
-    }
+    if (this.status <= STATUS.STARTING) return;
 
     const { bitBandwidth: bandwidth } = Bandwidth.compute(
       this.size,

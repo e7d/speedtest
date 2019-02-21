@@ -49,6 +49,7 @@ export default class UploadTest {
    */
   async run() {
     Object.assign(this, {
+      error: null,
       requests: [],
       initDate: null,
       status: STATUS.WAITING,
@@ -122,7 +123,8 @@ export default class UploadTest {
     const index = this.index++;
 
     return new Promise((resolve, reject) => {
-      if (STATUS.ABORTED === this.status) {
+      if (this.test.status === STATUS.ABORTED) {
+        this.status = STATUS.ABORTED;
         return reject({
           status: STATUS.ABORTED
         });
@@ -138,7 +140,8 @@ export default class UploadTest {
 
       this.requests[index] = socket;
       socket.addEventListener("message", () => {
-        if (STATUS.ABORTED === this.status) {
+        if (this.test.status === STATUS.ABORTED) {
+          this.status = STATUS.ABORTED;
           socket.close();
           return reject({ status: STATUS.ABORTED });
         }
@@ -196,7 +199,8 @@ export default class UploadTest {
     const index = this.index++;
 
     return new Promise((resolve, reject) => {
-      if (STATUS.ABORTED === this.status) {
+      if (this.test.status === STATUS.ABORTED) {
+        this.status = STATUS.ABORTED;
         return reject({
           status: STATUS.ABORTED
         });
@@ -216,7 +220,8 @@ export default class UploadTest {
       xhr.open("POST", endpoint, true);
       xhr.setRequestHeader("Content-Encoding", "identity");
       xhr.upload.addEventListener("progress", e => {
-        if (STATUS.ABORTED === this.status) {
+        if (this.test.status === STATUS.ABORTED) {
+          this.status = STATUS.ABORTED;
           Request.clearXMLHttpRequest(xhr);
           return reject({ status: STATUS.ABORTED });
         }
@@ -276,17 +281,13 @@ export default class UploadTest {
       status: this.status,
       progress: 0
     };
-    if (this.status <= STATUS.WAITING) {
-      return;
-    }
+    if (this.status <= STATUS.WAITING) return;
 
     const durationFromInit = (Date.now() - this.initDate) / 1000;
     const durationFromStart = (Date.now() - this.startDate) / 1000;
     const progress = durationFromInit / this.test.config.upload.duration;
     this.test.result.upload.progress = progress;
-    if (this.status <= STATUS.STARTING) {
-      return;
-    }
+    if (this.status <= STATUS.STARTING) return;
 
     const { bitBandwidth: bandwidth } = Bandwidth.compute(
       this.size,
