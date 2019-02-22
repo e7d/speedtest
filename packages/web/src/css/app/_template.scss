@@ -11,6 +11,10 @@
   text-align: center;
 }
 
+.flex {
+  display: flex;
+}
+
 h2 {
   font-size: 1.6rem;
   margin-bottom: 1rem;
@@ -95,6 +99,21 @@ fieldset {
   border: 0;
 }
 
+.field {
+  display: flex;
+  min-height: 2em;
+  line-height: 2em;
+
+  & > label {
+    min-width: 80px;
+    margin-right: 1em;
+  }
+
+  & input[type="radio"] + label {
+    margin-right: 1em;
+  }
+}
+
 legend {
   display: block;
   width: 100%;
@@ -112,17 +131,17 @@ label {
   margin-bottom: 0.5rem;
 }
 
-input[type="text"] {
-  display: block;
-  width: 100%;
+select,
+input[type="text"],
+input[type="number"] {
   height: calc(2.25rem + 2px);
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
   line-height: 1.5;
-  color: #495057;
+  color: #303030;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
+  border: 1px solid #cccccc;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }

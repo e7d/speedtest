@@ -1,3 +1,4 @@
+import { deepMerge } from "./utils/object";
 import Request from "./utils/request";
 
 import STATUS from "./worker/status";
@@ -59,7 +60,6 @@ export default class SpeedTestWorker {
 
   /**
    * Process incoming event message
-   *
    * @param {any} event
    */
   processMessage(event) {
@@ -83,12 +83,15 @@ export default class SpeedTestWorker {
     case "status":
       this.messaging.postStatus();
       break;
+    default:
+      if (event.data.config) {
+        this.test.config = deepMerge(this.test.config, event.data.config);
+      }
     }
   }
 
   /**
    * Run the speed test
-   *
    * @returns {Promise}
    */
   async run() {

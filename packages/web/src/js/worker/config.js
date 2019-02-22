@@ -1,3 +1,5 @@
+import { deepMerge } from "../utils/object";
+
 export default class Config {
   constructor() {
     if (!Config.instance) {
@@ -95,7 +97,7 @@ export default class Config {
 
       xhr.open("GET", "/config.json", true);
       xhr.onload = () => {
-        const config = this.extend(this.defaultConfig, JSON.parse(xhr.response));
+        const config = deepMerge(this.defaultConfig, JSON.parse(xhr.response));
         config.endpoint.xhr.uri = `${config.endpoint.xhr.protocol}://${config.endpoint.xhr.host}`;
         config.endpoint.websocket.uri = `${config.endpoint.websocket.protocol}://${config.endpoint.websocket.host}`;
         resolve(config);
@@ -103,31 +105,5 @@ export default class Config {
       xhr.onerror = () => reject("Could not load configuration file (config.json)");
       xhr.send();
     });
-  }
-
-  extend(...objects) {
-    const extended = {};
-    let i = 0;
-
-    const merge = object => {
-      for (const property in object) {
-        if (!object.hasOwnProperty(property)) {
-          continue;
-        }
-
-        if (Object.prototype.isPrototypeOf(object[property])) {
-          extended[property] = this.extend(extended[property], object[property]);
-          continue;
-        }
-
-        extended[property] = object[property];
-      }
-    };
-
-    for (; i < objects.length; i++) {
-      merge(objects[i]);
-    }
-
-    return extended;
   }
 }

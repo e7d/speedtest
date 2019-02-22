@@ -1,8 +1,10 @@
-import DateFormat from "../utils/dateFormat";
 import { UI } from "./ui";
+import DateFormat from "../utils/dateFormat";
 import SpeedTestWorker from "../worker";
 import STATUS from "../worker/status";
 import STEP from "../worker/step";
+import UserSettings from "./userSettings";
+import { convertPaths } from "../utils/object";
 
 export default class WorkerService {
   constructor() {
@@ -14,6 +16,8 @@ export default class WorkerService {
       updateDelay: 100,
       endless: false
     };
+
+    this.userSettings = new UserSettings();
 
     this.worker = new SpeedTestWorker();
     this.worker.addEventListener("message", event => {
@@ -35,6 +39,7 @@ export default class WorkerService {
     UI.$speedtest.className = "";
     UI.$gaugeValue.innerHTML = "...";
 
+    this.worker.postMessage({ config: convertPaths(this.userSettings.data).config });
     this.worker.postMessage("start");
     window.clearInterval(this.statusInterval);
     this.statusInterval = window.setInterval(() => {

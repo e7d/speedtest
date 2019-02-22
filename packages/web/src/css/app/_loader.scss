@@ -20,7 +20,7 @@
   }
 
   &.fadeOut {
-    animation-name: fadeOut;
+    animation-name: loaderFadeOut;
     animation-duration: 500ms;
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
@@ -45,7 +45,7 @@
   }
 }
 
-@keyframes fadeOut {
+@keyframes loaderFadeOut {
   from {
     top: 0;
     opacity: 1;
@@ -58,5 +58,6 @@
 
   to {
     top: -100vh;
+    opacity: 0;
   }
 }

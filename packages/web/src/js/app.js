@@ -1,9 +1,9 @@
 import { UI } from "./app/ui";
+import HistoryPage from "./app/views/history";
 import Navigation from "./app/navigation";
-import SpeedTest from "./app/speedtest";
-import Settings from "./app/settings";
-import Share from "./app/share";
-import History from "./app/history";
+import SettingsView from "./app/views/settings";
+import ShareView from "./app/views/share";
+import SpeedView from "./app/speedtest";
 
 /**
  * Speed Test web UI
@@ -16,14 +16,13 @@ export default class WebUI {
    */
   constructor() {
     this.navigation = new Navigation();
+    this.speedtest = new SpeedView();
 
-    this.speedtest = new SpeedTest();
-    this.settings = new Settings();
-    this.share = new Share();
-    this.history = new History();
+    this.historyView = new HistoryPage();
+    this.settingsView = new SettingsView();
+    this.shareView = new ShareView();
 
     this.attachStateHandler();
-    this.detectIE();
   }
 
   /**
@@ -50,7 +49,7 @@ export default class WebUI {
       case "/results":
         UI.showPage("history");
         document.title = "Speed Test - Results history";
-        this.history.loadResultsHistory();
+        this.historyView.loadResultsHistory();
         break;
 
       case "/run":
@@ -67,7 +66,7 @@ export default class WebUI {
       case "/share":
         UI.showPage("share");
         document.title = "Speed Test - Share result";
-        this.share.generateShareResult();
+        this.shareView.generateShareResult();
         break;
 
       default:
@@ -78,15 +77,5 @@ export default class WebUI {
       }
     });
     window.dispatchEvent(new Event("popstate"));
-  }
-
-  /**
-   * Detects if the current browser is Internet Explorer, based on user-agent
-   */
-  detectIE() {
-    const ua = window.navigator.userAgent;
-    if (ua.indexOf("MSIE ") > 0 || ua.indexOf("Trident.") > 0) {
-      UI.$ieAlert.removeAttribute("hidden");
-    }
   }
 }

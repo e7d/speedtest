@@ -1,7 +1,7 @@
-import { UI } from "./ui";
-import Results from "./results";
+import { UI } from "../ui";
+import Results from "../results";
 
-export default class Share {
+export default class ShareView {
   constructor() {
     this.attachEventHandlers();
   }

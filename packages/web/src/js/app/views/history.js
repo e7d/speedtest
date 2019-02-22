@@ -1,8 +1,8 @@
-import DateFormat from "../utils/dateFormat";
-import SemVer from "../utils/semver";
-import { UI } from "./ui";
+import DateFormat from "../../utils/dateFormat";
+import SemVer from "../../utils/semver";
+import { UI } from "../ui";
 
-export default class History {
+export default class HistoryView {
   constructor() {
     this.attachEventHandlers();
   }

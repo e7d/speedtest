@@ -13,6 +13,7 @@ class UIService {
     this.storeShareSelectors();
     this.storeSpeedtestSelectors();
 
+    this.detectIE();
     this.printVersion();
   }
 
@@ -48,6 +49,11 @@ class UIService {
   storeSettingsSelectors() {
     this.$settings = document.querySelector("#settings");
     this.$settingsForm = this.$settings.querySelector("form");
+    this.$settingsPreset = this.$settingsForm.querySelector("[name=preset]");
+    this.$saveConfirmation = this.$settingsForm.querySelector("#save-confirmation");
+    this.$testDuration = this.$settingsForm.querySelectorAll(
+      "[name=latency-duration], [name=download-duration], [name=upload-duration]"
+    );
   }
 
   storeHistorySelectors() {
@@ -100,6 +106,16 @@ class UIService {
     this.$gaugeValue = this.$gauge.querySelector(".value");
     this.$progress = this.$speedtest.querySelector("#progress");
     this.$progressBar = this.$speedtest.querySelector("#progress .progress-bar");
+  }
+
+  /**
+   * Detects if the current browser is Internet Explorer, based on user-agent
+   */
+  detectIE() {
+    const ua = window.navigator.userAgent;
+    if (ua.indexOf("MSIE ") > 0 || ua.indexOf("Trident.") > 0) {
+      this.$ieAlert.removeAttribute("hidden");
+    }
   }
 
   /**

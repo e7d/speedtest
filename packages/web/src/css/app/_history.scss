@@ -127,6 +127,10 @@
         }
       }
     }
+
+    p {
+      text-align: center;
+    }
   }
 
   @media only screen and (max-width: 800px) and (orientation: portrait) {
@@ -135,7 +139,7 @@
         display: block;
       }
 
-      table {
+      svg, table {
         display: none;
       }
     }

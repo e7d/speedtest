@@ -136,30 +136,6 @@
 			</article>
 		</section>
 
-		<section id="settings" hidden>
-			<h2>Settings</h2>
-
-			<form>
-				<fieldset>
-					<legend>Theme</legend>
-					<div>
-						<input id="theme-light" type="radio" name="theme" value="light" checked>
-						<label for="theme-light">
-							Light
-						</label>
-					</div>
-					<div>
-						<input id="theme-dark" type="radio" name="theme" value="dark">
-						<label for="theme-dark">
-							Dark
-						</label>
-					</div>
-				</fieldset>
-
-				<button type="submit" class="btn-dark">Save</button>
-			</form>
-		</section>
-
 		<section id="history" hidden>
 			<h2>Previous results</h2>
 
@@ -209,6 +185,116 @@
 				</thead>
 				<tbody></tbody>
 			</table>
+		</section>
+
+		<section id="settings" hidden>
+			<div class="flex">
+				<h2>Settings</h2>
+				<button id="settings-mode" class="btn-link" hidden>Advanced mode</button>
+			</div>
+
+			<form>
+				<fieldset>
+					<legend>General</legend>
+					<div class="field">
+						<label>Theme</label>
+						<div>
+							<input id="theme-light" type="radio" name="theme" value="light" checked>
+							<label for="theme-light">
+								Light
+							</label>
+						</div>
+						<div>
+							<input id="theme-dark" type="radio" name="theme" value="dark">
+							<label for="theme-dark">
+								Dark
+							</label>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>Tests</legend>
+					<div class="field">
+						<label>Preset</label>
+						<div>
+							<select id="preset" name="preset">
+								<option value="fast">Fast - less accurate but less data used</option>
+								<option value="normal" selected>Normal</option>
+								<option value="accurate">Accurate - slower and more data used</option>
+								<!-- <option value="custom">Custom</option> -->
+							</select>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset class="advanced">
+					<legend>Latency</legend>
+					<div class="field">
+						<label>Mode</label>
+						<div>
+							<input id="latency-websocket" type="radio" name="config.latency.mode" value="websocket" checked>
+							<label for="latency-websocket">
+								WebSocket
+							</label>
+						</div>
+						<div>
+							<input id="latency-xhr" type="radio" name="config.latency.mode" value="xhr">
+							<label for="latency-xhr">
+								XMLHttpRequest
+							</label>
+						</div>
+					</div>
+					<div class="field">
+						<label for="latency-duration">Duration</label>
+						<input id="latency-duration" type="number" name="config.latency.duration" value="5">
+					</div>
+				</fieldset>
+				<fieldset class="advanced">
+					<legend>Download</legend>
+					<div class="field">
+						<label>Mode</label>
+						<div>
+							<input id="download-websocket" type="radio" name="config.download.mode" value="websocket">
+							<label for="download-websocket">
+								WebSocket
+							</label>
+						</div>
+						<div>
+							<input id="download-xhr" type="radio" name="config.download.mode" value="xhr" checked>
+							<label for="download-xhr">
+								XMLHttpRequest
+							</label>
+						</div>
+					</div>
+					<div class="field">
+						<label for="download-duration">Duration</label>
+						<input id="download-duration" type="number" name="config.download.duration" value="10">
+					</div>
+				</fieldset>
+				<fieldset class="advanced">
+					<legend>Upload</legend>
+					<div class="field">
+						<label>Mode</label>
+						<div>
+							<input id="upload-websocket" type="radio" name="config.upload.mode" value="websocket" checked>
+							<label for="upload-websocket">
+								WebSocket
+							</label>
+						</div>
+						<div>
+							<input id="upload-xhr" type="radio" name="config.upload.mode" value="xhr" checked>
+							<label for="upload-xhr">
+								XMLHttpRequest
+							</label>
+						</div>
+					</div>
+					<div class="field">
+						<label for="upload-duration">Duration</label>
+						<input id="upload-duration" type="number" name="config.upload.duration" value="10">
+					</div>
+				</fieldset>
+				<button type="submit" class="btn-dark">Save</button>
+				<span id="save-confirmation">Saved!</span>
+			</form>
 		</section>
 
 		<section id="share" hidden>
