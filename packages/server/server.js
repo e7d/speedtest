@@ -308,6 +308,7 @@ wsServer.on("request", request => {
 
   let downloadData = "";
   const connection = request.accept(null, request.origin);
+  consoleLog(`Peer ${connection.remoteAddress} connected.`, true);
 
   // handle messages
   connection.on("message", message => {
@@ -317,7 +318,7 @@ wsServer.on("request", request => {
       try {
         data = JSON.parse(message.utf8Data);
       } catch (e) {
-        connection.sendUTF("unkown");
+        connection.sendUTF("unknown");
         return;
       }
 
