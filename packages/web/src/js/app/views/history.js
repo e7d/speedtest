@@ -142,6 +142,7 @@ export default class HistoryView {
   /**
    * Get the strings used to draw the results graph -
    * @param {*} results
+   * @returns {*}
    */
   getGraphStrings(results) {
     const maxResult = this.getMaxResult(results);
@@ -161,8 +162,8 @@ export default class HistoryView {
           circlesStrings: {
             download: `${circlesStrings.download}<circle result-id="${
               result.id
-            }" cx="${x}" cy="${yDownload}"></circle>`,
-            upload: `${circlesStrings.upload}<circle result-id="${result.id}" cx="${x}" cy="${yUpload}"></circle>`
+            }" cx="${x}" cy="${yDownload}" r="3"></circle>`,
+            upload: `${circlesStrings.upload}<circle result-id="${result.id}" cx="${x}" cy="${yUpload}" r="3"></circle>`
           },
           textStrings: {
             download: `${textStrings.download}<text result-id="${result.id}" x="${x}" y="${yDownload + 10}">${(
@@ -187,6 +188,7 @@ export default class HistoryView {
   /**
    * Get the maximum value transfer speed (download or upload) of all results
    * @param {*} results
+   * @returns {number}
    */
   getMaxResult(results) {
     return results.reduce((maxResult, result) => {

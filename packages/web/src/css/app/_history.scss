@@ -7,11 +7,11 @@
       stroke-width: 2px;
     }
     circle {
-      r: 3px;
-      transition: r 300ms;
+      stroke-width: 0px;
+      transition: stroke-width 300ms;
 
-      &.focus {
-        r: 5px;
+      &.focus, &:hover {
+        stroke-width: 2px;
       }
     }
     text {
@@ -19,7 +19,7 @@
     }
 
     #downloadChart {
-      polyline {
+      circle, polyline {
         stroke: #005BC0;
       }
       circle, text {
@@ -28,7 +28,7 @@
     }
 
     #uploadChart {
-      polyline {
+      circle, polyline {
         stroke: #1A8EF3;
       }
       circle, text {
