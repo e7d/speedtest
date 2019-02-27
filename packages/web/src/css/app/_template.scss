@@ -109,6 +109,10 @@ fieldset {
     margin-right: 1em;
   }
 
+  & > div > select {
+    width: 100%;
+  }
+
   & input[type="radio"] + label {
     margin-right: 1em;
   }
