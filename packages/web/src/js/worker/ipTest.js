@@ -3,7 +3,6 @@ import Uuid from "../utils/uuid";
 
 import STATUS from "./status";
 import Test from "./test";
-import Result from "./result";
 import Messaging from "./messaging";
 
 export default class IpTest {
