@@ -19,14 +19,23 @@ header {
       background-position: center;
       background-repeat: no-repeat;
       background-size: 48px;
-    }
-
-    #title {
-      font-size: 2rem;
 
       @media only screen and (max-width: 640px) {
         & {
-          font-size: 1.4rem;
+          width: 32px;
+          height: 32px;
+          background-size: 32px;
+        }
+      }
+    }
+
+    #title {
+      font-size: 2.2rem;
+      vertical-align: middle;
+
+      @media only screen and (max-width: 640px) {
+        & {
+          font-size: 1.6rem;
         }
       }
     }
