@@ -6,7 +6,7 @@
         {
             "label": "Server: run",
             "type": "npm",
-            "script": "run",
+            "script": "dev",
             "path": "packages/server/",
             "problemMatcher": [
                 "$eslint-stylish"

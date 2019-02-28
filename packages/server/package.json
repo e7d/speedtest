@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dist": "npm ci --production",
-    "run": "node server.js 8888 ../web/dist",
+    "dev": "node server.js 8888 ../web/dist",
     "watch": "nodemon server.js 8888 ../web/dist"
   },
   "bugs": {
