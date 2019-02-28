@@ -1,5 +1,5 @@
 class DownloadData {
-  constructor(chunkSize = 256 * 1024) {
+  constructor(chunkSize = 64 * 1024) {
     if (!DownloadData.instance) {
       DownloadData.instance = this;
 

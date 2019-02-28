@@ -27,12 +27,12 @@ module.exports = Merge(CommonConfig, {
     }),
     new HtmlWebpackPlugin({
       template: "src/index.html",
-      // minify: {
-      //   collapseWhitespace: true
-      // }
+      minify: {
+        collapseWhitespace: true
+      }
     })
   ],
   optimization: {
-    // minimizer: [new UglifyJsPlugin(), new OptimizeCSSAssetsPlugin()]
+    minimizer: [new UglifyJsPlugin(), new OptimizeCSSAssetsPlugin()]
   }
 });
