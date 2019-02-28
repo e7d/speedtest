@@ -1,0 +1,6 @@
+{
+  "ignore": ["results/*"],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
