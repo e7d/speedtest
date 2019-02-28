@@ -212,7 +212,7 @@ export default class WorkerService {
       return;
     }
 
-    const dataSpeed = (+data.speed || 0) / (1024 * 1024);
+    const dataSpeed = (+data.speed || 0) / (1024 ** 2);
     UI.gauge.setValue(Math.log(10 * dataSpeed + 1));
     UI.$gaugeValue.innerHTML = $element.innerHTML = dataSpeed ? dataSpeed.toFixed(2) : "";
   }

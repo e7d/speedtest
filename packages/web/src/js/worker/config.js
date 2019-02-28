@@ -52,14 +52,14 @@ export default class Config {
         websocket: {
           path: "download",
           streams: 1,
-          size: 8 * 1024 * 1024,
+          size: 8 * (1024 ** 2),
           binaryType: "blob" // "arraybuffer" or "blob"
         },
         xhr: {
           path: "download",
           streams: 6,
           delay: 150,
-          size: 20 * 1024 * 1024,
+          size: 20 * (1024 ** 2),
           responseType: "arraybuffer" // "arraybuffer" or "blob"
         },
         delay: 2,
@@ -71,13 +71,13 @@ export default class Config {
         websocket: {
           path: "upload",
           streams: 20,
-          size: 1 * 1024 * 1024
+          size: 1 * (1024 ** 2)
         },
         xhr: {
           path: "upload",
           streams: 6,
           delay: 150,
-          size: 1 * 1024 * 1024
+          size: 1 * (1024 ** 2)
         },
         delay: 2,
         duration: 10,

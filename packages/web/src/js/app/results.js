@@ -28,8 +28,8 @@ export default class Results {
         UI.$orgValue.innerHTML = result.ipInfo.org || "";
         UI.$latencyValue.innerHTML = result.latency.avg;
         UI.$jitterValue.innerHTML = result.jitter;
-        UI.$downloadValue.innerHTML = (+result.download.speed / (1024 * 1024)).toFixed(2);
-        UI.$uploadValue.innerHTML = (+result.upload.speed / (1024 * 1024)).toFixed(2);
+        UI.$downloadValue.innerHTML = (+result.download.speed / (1024 ** 2)).toFixed(2);
+        UI.$uploadValue.innerHTML = (+result.upload.speed / (1024 ** 2)).toFixed(2);
 
         if (showShareButton) UI.$shareResultButton.removeAttribute("hidden", "");
 
