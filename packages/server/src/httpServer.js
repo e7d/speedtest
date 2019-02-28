@@ -1,4 +1,5 @@
 const fs = require("fs");
+const gzip = require("./gzip");
 const http = require("http");
 const ipInfo = require("ipinfo");
 const path = require("path");
@@ -29,7 +30,7 @@ class HttpServer {
 
     this.httpServer = http
       .createServer((request, response) => {
-        // this.logger.debug(`Received request for ${request.url}`);
+        this.logger.debug(`Received request for ${request.url}`);
         const { pathname: uri, query: query } = url.parse(request.url, true);
 
         if (uri === "/ip") {
@@ -52,7 +53,7 @@ class HttpServer {
           return this.getResults(uri, response);
         }
 
-        this.loadFile(uri, response);
+        this.loadFile(uri, request, response);
       })
       .listen(port);
 
@@ -90,7 +91,7 @@ class HttpServer {
   }
 
   writeDownloadData(query, response) {
-    const size = query.size || 8 * (1024 ** 2);
+    const size = query.size || 8 * 1024 ** 2;
     response.writeHead(200, {
       "Content-Type": "application/octet-stream",
       "Content-Length": size
@@ -105,7 +106,8 @@ class HttpServer {
     let data = [];
     request.on("data", chunk => data.push(chunk));
     request.on("end", () => {
-      this.resultWritter.store(JSON.parse(Buffer.concat(data).toString()))
+      this.resultWritter
+        .store(JSON.parse(Buffer.concat(data).toString()))
         .then(id => {
           response.writeHead(200, {
             "Content-Type": "text/plain",
@@ -180,31 +182,38 @@ class HttpServer {
     }
   }
 
-  loadFile(uri, response) {
+  /**
+   * Load a static file
+   *
+   * @param {string} uri
+   * @param {Request} request
+   * @param {Response} response
+   */
+  loadFile(uri, request, response) {
     let filePath = path.join(this.webFolderPath, uri);
     fs.exists(filePath, exists => {
       if (!exists || uri === "/") {
         filePath = path.join(this.webFolderPath, "index.html");
       }
 
-      fs.readFile(filePath, "binary", (err, data) => {
-        if (err) {
-          response.writeHead(500, {
-            "Content-Type": "text/plain"
-          });
-          response.write(reason.name);
-          response.end();
-          return;
-        }
-
+      gzip(request, response);
+      try {
+        const buffer = fs.readFileSync(filePath);
         response.writeHead(200, {
           "Content-Type": this.guessContentType(filePath),
-          "Content-Length": data.length
+          "Content-Length": buffer.length
         });
-        response.write(data, "binary");
+        response.write(buffer, "binary");
         response.end();
-      });
+      } catch (e) {
+        response.writeHead(500, {
+          "Content-Type": "text/plain"
+        });
+        response.write(reason.name);
+        response.end();
+      }
     });
   }
 }
+
 module.exports = HttpServer;
