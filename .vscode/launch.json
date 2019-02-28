@@ -21,10 +21,14 @@
             "request": "launch",
             "name": "Launch Server",
             "program": "${workspaceFolder}/packages/server/server.js",
+            "cwd": "${workspaceFolder}/packages/server",
             "args": [
                 "8888",
-                "packages/web/dist"
-            ]
+                "${workspaceFolder}/packages/web/dist"
+            ],
+            "env": {
+              "NODE_ENV": "development"
+            }
         }
     ]
 }
