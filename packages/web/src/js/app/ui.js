@@ -134,7 +134,7 @@ class UIService {
   }
 
   /**
-   * Changes the color theme, light or dark.
+   * Changes the color theme, light or dark
    *
    * @param {string} theme
    */
@@ -159,7 +159,7 @@ class UIService {
   }
 
   /**
-   * Changes the current displayed page.
+   * Changes the current displayed page
    *
    * @param {string} page
    */
@@ -175,7 +175,7 @@ class UIService {
   }
 
   /**
-   * Reset the current results.
+   * Reset the current results
    */
   clearResults() {
     this.$timestamp.innerHTML = "";
@@ -188,14 +188,14 @@ class UIService {
   }
 
   /**
-   * Resets the highlighted step.
+   * Resets the highlighted step
    */
   resetHiglightStep() {
     this.$resultEntries.forEach(elem => elem.classList.remove("active"));
   }
 
   /**
-   * Highlights the current running step.
+   * Highlights the current running step
    *
    * @param {string} step
    */

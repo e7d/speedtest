@@ -231,6 +231,11 @@ export default class WorkerService {
     UI.$timestamp.innerHTML = `<a href="/result#${id}">${DateFormat.toISO(new Date(timestamp))}</a>`;
   }
 
+  /**
+   * Build a storable result history object
+   *
+   * @param {Object} result
+   */
   buildHistoryResult(result) {
     return {
       version: VERSION,
@@ -251,7 +256,7 @@ export default class WorkerService {
   }
 
   /**
-   * Store a speed test run results to the local storage.
+   * Store a speed test run results to the local storage
    *
    * @param {Object} result
    */
@@ -266,7 +271,7 @@ export default class WorkerService {
   }
 
   /**
-   * Filter out the oldest results history entries.
+   * Filter out the oldest results history entries
    *
    * @param {Object} resultsHistory
    * @param {number} [maxEntries=20]

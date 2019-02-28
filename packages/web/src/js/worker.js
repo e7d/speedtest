@@ -21,7 +21,7 @@ import UploadTest from "./worker/uploadTest";
  */
 export default class SpeedTestWorker {
   /**
-   * Creates an instance of SpeedTestWorker.
+   * Creates an instance of SpeedTestWorker
    * @param {DedicatedWorkerGlobalScope} scope
    */
   constructor(scope = self) {

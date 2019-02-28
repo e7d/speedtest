@@ -8,7 +8,7 @@ export default class SpeedTest {
   }
 
   /**
-   * Start a speed test.
+   * Start a speed test
    */
   startTest() {
     UI.$startButton.setAttribute("hidden", "");
@@ -21,7 +21,7 @@ export default class SpeedTest {
   }
 
   /**
-   * Abort a running speed test.
+   * Abort a running speed test
    */
   stopTest(clearResults = false) {
     this.workerService.abort();

@@ -12,7 +12,7 @@ import SpeedView from "./app/speedtest";
  */
 export default class WebUI {
   /**
-   * Create an instance of WebUI.
+   * Create an instance of WebUI
    */
   constructor() {
     this.navigation = new Navigation();

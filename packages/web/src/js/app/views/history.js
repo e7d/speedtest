@@ -88,21 +88,21 @@ export default class HistoryView {
         const date = new Date(+result.timestamp);
         const $row = document.createElement("tr");
         $row.innerHTML = `
-                    <td>${DateFormat.toISO(date)}</td>
-                    <td>${result.latency.avg} ms</td>
-                    <td>${result.jitter} ms</td>
-                    <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                    <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-                    <td>${result.ipInfo.ip}${result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""}</td>
-                    <td class="text-center">
-                        <a class="go-result btn btn-link" href="result#${result.id}">
-                            <i class="icon icon-link2"></i>
-                        </a>
-                        <a class="go-result btn btn-link" href="share#${result.id}">
-                            <i class="icon icon-link"></i>
-                        </a>
-                    </td>
-                `;
+            <td>${DateFormat.toISO(date)}</td>
+            <td>${result.latency.avg} ms</td>
+            <td>${result.jitter} ms</td>
+            <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+            <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+            <td>${result.ipInfo.ip}${result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""}</td>
+            <td class="text-center">
+                <a class="go-result btn btn-link" href="result#${result.id}">
+                    <i class="icon icon-link2"></i>
+                </a>
+                <a class="go-result btn btn-link" href="share#${result.id}">
+                    <i class="icon icon-link"></i>
+                </a>
+            </td>
+        `;
         $row.addEventListener("mouseenter", () => {
           this.toggleCirclesFocus(result.id, "add");
         });

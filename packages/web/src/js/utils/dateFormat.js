@@ -1,6 +1,6 @@
 export default class DateFormat {
   /**
-   * Format a date object to a universally readable format.
+   * Format a date object to a universally readable format
    *
    * @param {Date} d
    */
