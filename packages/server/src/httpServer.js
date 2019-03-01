@@ -1,7 +1,7 @@
 const fs = require("fs");
 const gzip = require("./gzip");
 const http = require("http");
-const ipInfo = require("ipinfo");
+const ipInfo = require("./ipInfo");
 const path = require("path");
 const requestIp = require("request-ip");
 const url = require("url");
@@ -74,15 +74,19 @@ class HttpServer {
       ? request.connection.remoteAddress.replace("::ffff:", "")
       : request.connection.remoteAddress;
 
-    ipInfo(ip, null, (err, ipInfo) => {
-      ipInfo = JSON.stringify(err ? { ip } : ipInfo);
-      response.writeHead(200, {
-        "Content-Type": "application/json",
-        "Content-Length": ipInfo.length
+    let info;
+    ipInfo(ip)
+      .then(response => (info = response))
+      .catch(() => (info = { ip }))
+      .finally(() => {
+        info = Buffer.from(JSON.stringify(info));
+        response.writeHead(200, {
+          "Content-Type": "application/json",
+          "Content-Length": info.byteLength
+        });
+        response.write(info);
+        response.end();
       });
-      response.write(ipInfo);
-      response.end();
-    });
   }
 
   writeEmpty(response) {
