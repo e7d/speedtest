@@ -209,7 +209,7 @@ class HttpServer {
         });
         response.write(buffer, "binary");
         response.end();
-      } catch (e) {
+      } catch (reason) {
         response.writeHead(500, {
           "Content-Type": "text/plain"
         });
