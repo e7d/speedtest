@@ -1,0 +1,14 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": "defaults, not dead",
+        "useBuiltIns": "usage",
+        "loose": true,
+        "modules": false
+      }
+    ]
+  ],
+  "plugins": ["@babel/plugin-transform-template-literals"]
+}
