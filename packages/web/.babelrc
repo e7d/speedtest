@@ -4,11 +4,14 @@
       "@babel/preset-env",
       {
         "targets": "defaults, not dead",
-        "useBuiltIns": "usage",
         "loose": true,
         "modules": false
       }
     ]
   ],
-  "plugins": ["@babel/plugin-transform-template-literals"]
+  "plugins": [
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-transform-template-literals"
+  ]
 }
