@@ -113,6 +113,7 @@ fieldset {
     width: 100%;
   }
 
+  & input[type="checkbox"] + label,
   & input[type="radio"] + label {
     margin-right: 1em;
   }
@@ -148,6 +149,47 @@ input[type="number"] {
   border: 1px solid #cccccc;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+input[type=checkbox],
+input[type=radio] {
+  -webkit-appearance: none;
+  position: relative;
+}
+input[type=checkbox]:before,
+input[type=radio]:before {
+  display: inline-block;
+  content: " ";
+  width: 14px;
+  height: 14px;
+  border: 2px solid;
+  border-color: var(--blue);
+}
+input[type=checkbox]:checked:after,
+input[type=radio]:checked:after {
+  display: inline-block;
+  content: " ";
+  position: absolute;
+  bottom: 7px;
+  left: 4px;
+  width: 10px;
+  height: 10px;
+}
+input[type=checkbox]:checked:after {
+  border: solid var(--blue);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+  bottom: 7px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+}
+input[type=radio]:checked:after {
+  background: var(--blue);
+}
+input[type=radio]:before,
+input[type=radio]:after {
+  border-radius: 100%;
 }
 
 .input-group {
