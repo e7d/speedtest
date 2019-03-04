@@ -23,7 +23,7 @@ module.exports = Merge(CommonConfig, {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "[name].[hash:8].css"
+      filename: "[name].css"
     }),
     new HtmlWebpackPlugin({
       template: "src/index.html",

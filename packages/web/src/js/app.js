@@ -15,6 +15,12 @@ export default class WebUI {
    * Create an instance of WebUI
    */
   constructor() {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js").then(() => {
+        console.log("Service Worker Registered");
+      });
+    }
+
     this.navigation = new Navigation();
     this.speedtest = new SpeedView();
 

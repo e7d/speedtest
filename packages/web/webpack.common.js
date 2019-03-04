@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: {
-    app: "./build/app"
+    "app": "./build/app"
   },
   watchOptions: {
     ignored: /node_modules/,
@@ -15,7 +15,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "[name].[hash:8].js"
+    filename: "[name].js"
   },
   module: {
     rules: [
@@ -24,7 +24,7 @@ module.exports = {
         use: {
           loader: "worker-loader",
           options: {
-            name: "[name].[hash:8].js"
+            name: "[name].js"
           }
         }
       },
@@ -44,14 +44,14 @@ module.exports = {
         loader: "url-loader",
         options: {
           limit: 1024,
-          name: "[name].[hash:8].[ext]"
+          name: "[name].[ext]"
         }
       },
       {
         test: /\.(eot|ttf|woff|woff2)$/,
         loader: "file-loader",
         options: {
-          name: "[name].[hash:8].[ext]"
+          name: "[name].[ext]"
         }
       }
     ]

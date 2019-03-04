@@ -15,9 +15,9 @@ RUN apk add --no-cache \
  && fc-cache -f -v \
  && mkdir -p /app/results \
  && mkdir -p /app/web \
- && ( cd /opt/speedtest/server && npm run dist ) \
+ && ( cd /opt/speedtest/server && npm ci --production ) \
  && mv /opt/speedtest/server/* /app/ \
- && ( cd /opt/speedtest/web && npm run dist ) \
+ && ( cd /opt/speedtest/web && npm ci && npm run dist ) \
  && mv /opt/speedtest/web/dist/* /app/web/ \
  && npm cache clean --force \
  && rm -rf /opt/speedtest \

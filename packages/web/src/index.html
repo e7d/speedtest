@@ -7,12 +7,16 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<meta name="theme-color" content="#f5f5f5">
 	<title>Speed Test</title>
+	<meta name="description" content="An HTML 5 speed test." />
+	<link rel="manifest" href="manifest.json">
 	<link rel="icon" href="favicon.ico">
+	<link rel="preload" href="app.css" as="style">
+	<link rel="preload" href="app.js" as="script">
+	<link rel="preload" href="worker.js" as="script">
 </head>
 
 <body>
-	<div id="loader" class="logo"></div>
-	<div id="main" hidden>
+	<div id="main">
 		<header>
 			<h1>
 				<a href="/">
@@ -22,9 +26,12 @@
 			</h1>
 
 			<nav id="commands">
-				<button id="show-about" class="btn-link"><i class="icon icon-info"></i></button>
-				<button id="results-history" class="btn-link"><i class="icon icon-history"></i></button>
-				<button id="show-settings" class="btn-link"><i class="icon icon-cog"></i></button>
+				<a id="show-about" class="btn-link" href="/about" title="Get information about this speed test"><i
+						class="icon icon-info"></i></a>
+				<a id="results-history" class="btn-link" href="/results" title="History of previous results"><i
+						class="icon icon-history"></i></a>
+				<a id="show-settings" class="btn-link" href="/settings" title="Configure the speed test settings"><i
+						class="icon icon-cog"></i></a>
 			</nav>
 		</header>
 
@@ -120,19 +127,19 @@
 			<article id="supported-browsers">
 				<h3>What are the supported browsers?</h3>
 				<p>This speed test should operate normally on all modern browsers, including the latest version of <a
-						href="https://www.google.com/chrome/" target="_blank">Google Chrome</a>, <a
-						href="https://www.mozilla.org/firefox/" target="_blank">Mozilla Firefox</a>,
-					<a href="https://www.microsoft.com/windows/microsoft-edge" target="_blank">Microsoft Edge</a>, <a
-						href="https://www.apple.com/safari/" target="_blank">Apple Safari</a> and <a
-						href="https://www.opera.com/" target="_blank">Opera</a>.</p>
+						href="https://www.google.com/chrome/" target="_blank" rel="noopener">Google Chrome</a>, <a
+						href="https://www.mozilla.org/firefox/" target="_blank" rel="noopener">Mozilla Firefox</a>,
+					<a href="https://www.microsoft.com/windows/microsoft-edge" target="_blank" rel="noopener">Microsoft
+						Edge</a>, <a href="https://www.apple.com/safari/" target="_blank" rel="noopener">Apple
+						Safari</a> and <a href="https://www.opera.com/" target="_blank" rel="noopener">Opera</a>.</p>
 				<p>However, no version of Internet Explorer is officially supported.</p>
 			</article>
 
 			<article id="source-code">
 				<h3>Where can I review the source code?</h3>
 				<p>This speed test is completely open source. Its source code can be reviewed online, on its GitHub
-					repository: <a href="https://github.com/e7d/speedtest"
-						target="_blank">https://github.com/e7d/speedtest</a></p>
+					repository: <a href="https://github.com/e7d/speedtest" target="_blank"
+						rel="noopener">https://github.com/e7d/speedtest</a></p>
 			</article>
 		</section>
 
@@ -178,7 +185,7 @@
 						<th>Upload</th>
 						<th>IP / Org</th>
 						<th class="text-center">
-							<button id="erase-history" class="btn-danger" title="Delete all results from history"><i
+							<button id="erase-history" class="btn-danger" aria-label="Erase history" title="Delete all results from history"><i
 									class="icon icon-trash"></i></button>
 						</th>
 					</tr>
@@ -190,7 +197,7 @@
 		<section id="settings" hidden>
 			<div class="flex">
 				<h2>Settings</h2>
-				<button id="settings-mode" class="btn-link" hidden>Advanced mode</button>
+				<button id="settings-mode" class="btn-link" aria-label="Advanced mode" hidden>Advanced mode</button>
 			</div>
 
 			<form>
@@ -231,7 +238,8 @@
 					<div class="field">
 						<label>Mode</label>
 						<div>
-							<input id="latency-websocket" type="radio" name="config.latency.mode" value="websocket" checked>
+							<input id="latency-websocket" type="radio" name="config.latency.mode" value="websocket"
+								checked>
 							<label for="latency-websocket">
 								WebSocket
 							</label>
@@ -275,7 +283,8 @@
 					<div class="field">
 						<label>Mode</label>
 						<div>
-							<input id="upload-websocket" type="radio" name="config.upload.mode" value="websocket" checked>
+							<input id="upload-websocket" type="radio" name="config.upload.mode" value="websocket"
+								checked>
 							<label for="upload-websocket">
 								WebSocket
 							</label>
@@ -292,7 +301,7 @@
 						<input id="upload-duration" type="number" name="config.upload.duration" value="10">
 					</div>
 				</fieldset>
-				<button type="submit" class="btn-dark">Save</button>
+				<button type="submit" class="btn-dark" aria-label="Save settings">Save</button>
 				<span id="save-confirmation">Saved!</span>
 			</form>
 		</section>
@@ -306,7 +315,7 @@
 				<div class="input-group">
 					<input id="share-result-link" type="text" readonly>
 					<div class="input-group-append">
-						<button id="share-result-link-copy" class="btn-outline-secondary" type="button">Copy</button>
+						<button id="share-result-link-copy" class="btn-outline-secondary" type="button" aria-label="Copy">Copy</button>
 					</div>
 				</div>
 			</fieldset>
@@ -315,7 +324,7 @@
 				<div class="input-group">
 					<input id="share-result-image" type="text" readonly>
 					<div class="input-group-append">
-						<button id="share-result-image-copy" class="btn-outline-secondary" type="button">Copy</button>
+						<button id="share-result-image-copy" class="btn-outline-secondary" type="button" aria-label="Copy">Copy</button>
 					</div>
 				</div>
 			</fieldset>
@@ -324,7 +333,7 @@
 				<div class="input-group">
 					<input id="share-result-embed" type="text" readonly>
 					<div class="input-group-append">
-						<button id="share-result-embed-copy" class="btn-outline-secondary" type="button">Copy</button>
+						<button id="share-result-embed-copy" class="btn-outline-secondary" type="button" aria-label="Copy">Copy</button>
 					</div>
 				</div>
 			</fieldset>
@@ -333,7 +342,7 @@
 				<div class="input-group">
 					<input id="share-result-forum" type="text" readonly>
 					<div class="input-group-append">
-						<button id="share-result-forum-copy" class="btn-outline-secondary" type="button">Copy</button>
+						<button id="share-result-forum-copy" class="btn-outline-secondary" type="button" aria-label="Copy">Copy</button>
 					</div>
 				</div>
 			</fieldset>
@@ -345,9 +354,9 @@
 			</div>
 
 			<div id="actions">
-				<button id="start" class="btn-lg btn-primary">Start</button>
-				<button id="stop" class="btn-lg btn-danger" hidden>Stop</button>
-				<button id="share-result" class="btn-link" hidden><i class="icon icon-link"></i> Share</button>
+				<button id="start" class="btn-lg btn-primary" aria-label="Start">Start</button>
+				<button id="stop" class="btn-lg btn-danger" aria-label="Stop" hidden>Stop</button>
+				<button id="share-result" class="btn-link" aria-label="Share" hidden><i class="icon icon-link"></i> Share</button>
 				<div id="timestamp"></div>
 			</div>
 

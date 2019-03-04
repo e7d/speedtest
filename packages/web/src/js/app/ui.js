@@ -21,16 +21,15 @@ class UIService {
     this.$html = document.querySelector("html");
     this.$themeColorMeta = document.querySelector('meta[name="theme-color"]');
     this.$body = document.querySelector("body");
-    this.$loader = document.querySelector("#loader");
     this.$main = document.querySelector("#main");
   }
 
   storeNavigationSelectors() {
     this.$titleLink = document.querySelector("h1 a");
     this.$commands = document.querySelector("#commands");
-    this.$showAboutButton = this.$commands.querySelector("button#show-about");
-    this.$resultsHistoryButton = this.$commands.querySelector("button#results-history");
-    this.$showSettingsButton = this.$commands.querySelector("button#show-settings");
+    this.$showAboutButton = this.$commands.querySelector("a#show-about");
+    this.$resultsHistoryButton = this.$commands.querySelector("a#results-history");
+    this.$showSettingsButton = this.$commands.querySelector("a#show-settings");
   }
 
   storeAlertSelectors() {

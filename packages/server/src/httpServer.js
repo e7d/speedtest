@@ -194,18 +194,24 @@ class HttpServer {
    * @param {Response} response
    */
   loadFile(uri, request, response) {
+    if (uri === "/") uri = "index.html";
     let filePath = path.join(this.webFolderPath, uri);
     fs.exists(filePath, exists => {
-      if (!exists || uri === "/") {
-        filePath = path.join(this.webFolderPath, "index.html");
+      if (!exists) {
+        response.writeHead(404);
+        response.write("Not found");
+        response.end();
+        return;
       }
 
       gzip(request, response);
       try {
+        const stat = fs.statSync(filePath);
         const buffer = fs.readFileSync(filePath);
         response.writeHead(200, {
           "Content-Type": this.guessContentType(filePath),
-          "Content-Length": buffer.length
+          "Content-Length": buffer.length,
+          "Last-Modified": stat.mtime.toUTCString()
         });
         response.write(buffer, "binary");
         response.end();

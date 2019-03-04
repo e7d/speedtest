@@ -94,7 +94,6 @@ export default class WorkerService {
    */
   processReadyStatus(data) {
     this.workerReady = true;
-    UI.$loader.classList.add("fadeOut");
     UI.$main.removeAttribute("hidden");
 
     this.config = data.config;
