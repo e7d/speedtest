@@ -32,7 +32,15 @@ module.exports = {
         test: /\.js$/,
         exclude: /(node_modules)/,
         use: {
-          loader: "babel-loader"
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"],
+            plugins: [
+              "@babel/plugin-proposal-object-rest-spread",
+              "@babel/plugin-transform-runtime",
+              "@babel/plugin-transform-template-literals"
+            ]
+          }
         }
       },
       {
