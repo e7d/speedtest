@@ -27,6 +27,7 @@ module.exports = Merge(CommonConfig, {
     }),
     new HtmlWebpackPlugin({
       template: "src/index.html",
+      chunks: ["app"],
       minify: {
         collapseWhitespace: true
       }

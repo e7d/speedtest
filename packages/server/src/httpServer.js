@@ -194,7 +194,19 @@ class HttpServer {
    * @param {Response} response
    */
   loadFile(uri, request, response) {
-    if (uri === "/") uri = "index.html";
+    if (
+      [
+        "/",
+        "/about",
+        "/result",
+        "/results",
+        "/run",
+        "/share",
+        "/settings"
+      ].includes(uri)
+    ) {
+      uri = "index.html";
+    }
     let filePath = path.join(this.webFolderPath, uri);
     fs.exists(filePath, exists => {
       if (!exists) {

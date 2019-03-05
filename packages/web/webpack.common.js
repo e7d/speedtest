@@ -3,10 +3,12 @@ const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const PreloadWebpackPlugin = require("preload-webpack-plugin");
 
 module.exports = {
   entry: {
-    "app": "./build/app"
+    app: "./build/app",
+    serviceWorker: "./build/serviceWorker"
   },
   watchOptions: {
     ignored: /node_modules/,
@@ -61,8 +63,10 @@ module.exports = {
       root: __dirname
     }),
     new HtmlWebpackPlugin({
-      template: "src/index.html"
+      template: "src/index.html",
+      chunks: ["app"]
     }),
+    new PreloadWebpackPlugin(),
     new CopyWebpackPlugin([{ from: "src/assets/", to: "." }]),
     new webpack.DefinePlugin({
       BUILD_DATE: new Date().getTime(),

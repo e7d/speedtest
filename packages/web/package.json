@@ -46,6 +46,7 @@
         "mini-css-extract-plugin": "^0.5.0",
         "node-sass": "^4.11.0",
         "optimize-css-assets-webpack-plugin": "^5.0.1",
+        "preload-webpack-plugin": "^2.3.0",
         "sass-loader": "^7.1.0",
         "source-map-loader": "^0.2.4",
         "style-loader": "^0.23.1",

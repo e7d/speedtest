@@ -10,13 +10,13 @@ import SpeedView from "./app/speedtest";
  *
  * @class WebUI
  */
-export default class WebUI {
+export default class App {
   /**
    * Create an instance of WebUI
    */
   constructor() {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js").then(() => {
+      navigator.serviceWorker.register("./serviceWorker.js").then(() => {
         console.log("Service Worker Registered");
       });
     }
