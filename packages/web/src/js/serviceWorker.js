@@ -44,8 +44,6 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (/\/(ip|ping|download|upload)/.test(event.request.url)) {
     console.log("[Service Worker] Do not cache online API", event.request.url);
-    // event.respondWith(fetch(event.request));
-    // event.respondWith();
     return;
   }
 
