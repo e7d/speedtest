@@ -13,11 +13,11 @@ export default class Navigation {
   attachEventHandlers() {
     UI.$titleLink.addEventListener("click", this.titleLinkClickHandler.bind(this));
     UI.$showAboutButton.addEventListener("click", this.showAboutButtonClickHandler.bind(this));
-    UI.$shareResultButton.addEventListener("click", this.shareResultsButtonClickHandler.bind(this));
     UI.$resultsHistoryButton.addEventListener("click", this.resultsHistoryButtonClickHandler.bind(this));
     UI.$showSettingsButton.addEventListener("click", this.showSettingsButtonClickHandler.bind(this));
     UI.$startButton.addEventListener("click", this.startButtonClickHandler.bind(this));
     UI.$stopButton.addEventListener("click", this.stopButtonClickHandler.bind(this));
+    UI.$shareResultButton.addEventListener("click", this.shareResultsButtonClickHandler.bind(this));
     UI.$closeButtons.forEach($closeButton =>
       $closeButton.addEventListener("click", this.alertCloseButtonClickHandler.bind(this))
     );
@@ -39,28 +39,24 @@ export default class Navigation {
   /**
    * Shows the information page
    */
-  showAboutButtonClickHandler() {
+  showAboutButtonClickHandler(e) {
+    e.preventDefault();
     this.pushState({}, "Speed Test - About", "/about");
-  }
-
-  /**
-   * Prepare the share results button with a PNG image
-   */
-  shareResultsButtonClickHandler() {
-    this.pushState({}, "Speed Test - Share Results", `/share${window.location.hash}`);
   }
 
   /**
    * Show results history
    */
-  resultsHistoryButtonClickHandler() {
+  resultsHistoryButtonClickHandler(e) {
+    e.preventDefault();
     this.pushState({}, "Speed Test - Results", "/results");
   }
 
   /**
    * Show settings
    */
-  showSettingsButtonClickHandler() {
+  showSettingsButtonClickHandler(e) {
+    e.preventDefault();
     this.pushState({}, "Speed Test - Settings", "/settings");
   }
 
@@ -76,6 +72,13 @@ export default class Navigation {
    */
   stopButtonClickHandler() {
     this.pushState({}, "Speed Test", "/");
+  }
+
+  /**
+   * Prepare the share results page
+   */
+  shareResultsButtonClickHandler() {
+    this.pushState({}, "Speed Test - Share Results", `/share${window.location.hash}`);
   }
 
   /**
