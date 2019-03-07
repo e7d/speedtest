@@ -87,7 +87,7 @@ You want to support the project? A speed test requires a server with high bandwi
 
 MIT License
 
-Copyright (c) 2017-2018 Michaël "e7d" Ferrand
+Copyright (c) 2017-2019 Michaël "e7d" Ferrand
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
