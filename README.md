@@ -2,6 +2,13 @@
 
 A self-hosted, lightweight speed test implemented in JavaScript, and based on [Web Workers](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) and [XMLHttpRequest](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest).
 
+- [Compatibility](#compatibility)
+- [Features](#featyres)
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Support the project](#support-the-project)
+- [License](#license)
+
 ## Compatibility
 
 | Chrome | Edge | Firefox | Opera | Safari |
@@ -20,9 +27,12 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 * Using HTTPS is highly discouraged, adding an heavy packet size and computing overhead
 * Using server compression is also discouraged, adding a computing overhead
 
-## Run
+## Usage
 
-### Docker container from registry
+### Docker
+
+![Docker Pulls](https://img.shields.io/docker/pulls/e7db/speedtest.svg)
+![Docker Stars](https://img.shields.io/docker/stars/e7db/speedtest.svg)
 
 ```sh
 docker run --name speedtest -d -p 80:80 e7db/speedtest
@@ -42,7 +52,7 @@ Having cloned this repository, you can launch the speed test on your server in d
 First, you will want to compile the web UI using [NodeJS](https://nodejs.org/) and NPM.
 
 ```sh
-cd web
+cd packages/web
 npm run dist
 ```
 
@@ -50,7 +60,7 @@ Then, prepare dependencies and run the server.
 
 
 ```sh
-cd server
+cd packages/server
 npm install
 node server.js 80 ../web/dist
 ```
@@ -66,6 +76,12 @@ You may also run a server based on your own backend script. You should comply to
 | `/upload`   | GET    |                     | Returns an empty response                                                                      |
 | `/download` | GET    | `size`, `chunkSize` | Returns binary data as long as `size`, with chunks of `chunkSize`                              |
 | `/save`     | POST   |                     | Accepts a JSON payload with the results to save, returns an UUID corresponding to this results |
+
+## Support the project
+
+You want to support the project? A speed test requires a server with high bandwith. With Patreon, or a small paypal donation, you can help me cover the fees!
+[Patreon sponsoring](https://www.patreon.com/e7d)
+[![Paypal donation](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B28JLHA4UNKQC&source=url)
 
 ## License 
 
