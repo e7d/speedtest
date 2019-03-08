@@ -16,9 +16,7 @@ export default class App {
    */
   constructor() {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./serviceWorker.js").then(() => {
-        console.log("Service Worker Registered");
-      });
+      navigator.serviceWorker.register("./serviceWorker.js");
     }
 
     this.navigation = new Navigation();

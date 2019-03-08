@@ -121,7 +121,7 @@ export default class HistoryView {
    * @param {*} results
    */
   printGraph(results) {
-    const { linesStrings, circlesStrings, textStrings } = this.getGraphStrings(
+    const { linesString, circlesString, textString } = this.getGraphStrings(
       Object.values(results).map(result => {
         return {
           id: result.id,
@@ -131,23 +131,23 @@ export default class HistoryView {
       })
     );
     UI.$resultsHistoryChart.removeAttribute("hidden");
-    UI.$resultsHistoryDownloadLine.setAttribute("points", linesStrings.download);
-    UI.$resultsHistoryDownloadPoints.innerHTML = circlesStrings.download;
-    UI.$resultsHistoryUploadLine.setAttribute("points", linesStrings.upload);
-    UI.$resultsHistoryUploadPoints.innerHTML = circlesStrings.upload;
+    UI.$resultsHistoryDownloadLine.setAttribute("points", linesString.download);
+    UI.$resultsHistoryDownloadPoints.innerHTML = circlesString.download;
+    UI.$resultsHistoryUploadLine.setAttribute("points", linesString.upload);
+    UI.$resultsHistoryUploadPoints.innerHTML = circlesString.upload;
 
     // ToDo: Use text strings
   }
 
   /**
-   * Get the strings used to draw the results graph -
+   * Get the strings used to draw the results graph
    * @param {*} results
    * @returns {*}
    */
   getGraphStrings(results) {
     const maxResult = this.getMaxResult(results);
     return results.reduce(
-      ({ linesStrings, circlesStrings, textStrings }, result, index) => {
+      ({ linesString, circlesString, textString }, result, index) => {
         const interval = 500 / (results.length + 1);
         const [x, yDownload, yUpload] = [
           490 - (interval + index * interval),
@@ -155,34 +155,67 @@ export default class HistoryView {
           55 - (50 * result.upload) / maxResult
         ];
         return {
-          linesStrings: {
-            download: `${linesStrings.download} ${x},${yDownload} `,
-            upload: `${linesStrings.upload} ${x},${yUpload} `
-          },
-          circlesStrings: {
-            download: `${circlesStrings.download}<circle result-id="${
-              result.id
-            }" cx="${x}" cy="${yDownload}" r="3"></circle>`,
-            upload: `${circlesStrings.upload}<circle result-id="${result.id}" cx="${x}" cy="${yUpload}" r="3"></circle>`
-          },
-          textStrings: {
-            download: `${textStrings.download}<text result-id="${result.id}" x="${x}" y="${yDownload + 10}">${(
-              result.download /
-              1024 ** 2
-            ).toFixed(2)}</text>`,
-            upload: `${textStrings.upload}<text result-id="${result.id}" x="${x}" y="${yUpload + 20}">${(
-              result.upload /
-              1024 ** 2
-            ).toFixed(2)}</text>`
-          }
+          linesString: this.getLinesString(linesString, x, yDownload, yUpload),
+          circlesString: this.getCirclesString(circlesString, x, yDownload, yUpload, result.id),
+          textString: this.getTextString(textString, x, yDownload, yUpload, result)
         };
       },
       {
-        linesStrings: { download: "", upload: "" },
-        circlesStrings: { download: "", upload: "" },
-        textStrings: { download: "", upload: "" }
+        linesString: { download: "", upload: "" },
+        circlesString: { download: "", upload: "" },
+        textString: { download: "", upload: "" }
       }
     );
+  }
+
+  /**
+   * Get the string used to draw the lines
+   * @param {*} linesString
+   * @param {*} x
+   * @param {*} yDownload
+   * @param {*} yUpload
+   */
+  getLinesString(linesString, x, yDownload, yUpload) {
+    return {
+      download: `${linesString.download} ${x},${yDownload} `,
+      upload: `${linesString.upload} ${x},${yUpload} `
+    };
+  }
+
+  /**
+   * Get the string used to draw the cicles
+   * @param {*} linesString
+   * @param {*} x
+   * @param {*} yDownload
+   * @param {*} yUpload
+   * @param {*} id
+   */
+  getCirclesString(circlesString, x, yDownload, yUpload, id) {
+    return {
+      download: `${circlesString.download}<circle result-id="${id}" cx="${x}" cy="${yDownload}" r="3"></circle>`,
+      upload: `${circlesString.upload}<circle result-id="${id}" cx="${x}" cy="${yUpload}" r="3"></circle>`
+    };
+  }
+
+  /**
+   * Get the string used to print the text
+   * @param {*} linesString
+   * @param {*} x
+   * @param {*} yDownload
+   * @param {*} yUpload
+   * @param {*} result
+   */
+  getTextString(textString, x, yDownload, yUpload, result) {
+    return {
+      download: `${textString.download}<text result-id="${result.id}" x="${x}" y="${yDownload + 10}">${(
+        result.download /
+        1024 ** 2
+      ).toFixed(2)}</text>`,
+      upload: `${textString.upload}<text result-id="${result.id}" x="${x}" y="${yUpload + 20}">${(
+        result.upload /
+        1024 ** 2
+      ).toFixed(2)}</text>`
+    };
   }
 
   /**

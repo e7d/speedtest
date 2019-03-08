@@ -20,74 +20,96 @@ export default class Config {
     return {
       ignoreErrors: true,
       optimize: false,
-      endpoint: {
-        websocket: {
-          protocol: self.location.protocol.replace("http", "ws").replace(":", ""),
-          host: `${self.location.host}`
-        },
-        xhr: {
-          protocol: self.location.protocol.replace(":", ""),
-          host: `${self.location.host}`
-        }
-      },
+      endpoint: this.endpointDefaultConfig,
       overheadCompensation: this.OVERHEAD["TCP+IPv4+ETH"],
-      ip: {
-        path: "ip"
+      ip: this.ipDefaultConfig,
+      latency: this.latencyDefaultConfig,
+      download: this.downloadDefaultConfig,
+      upload: this.uploadDefaultConfig,
+      result: this.resultDefaultConfig
+    };
+  }
+
+  get endpointDefaultConfig() {
+    return {
+      websocket: {
+        protocol: self.location.protocol.replace("http", "ws").replace(":", ""),
+        host: `${self.location.host}`
       },
-      latency: {
-        mode: "websocket", // "websocket" or "xhr"
-        websocket: {
-          path: "ping"
-        },
-        xhr: {
-          path: "ping"
-        },
-        count: null,
-        delay: 0,
-        duration: 5,
-        gracetime: 1
-      },
-      download: {
-        mode: "xhr", // "websocket" or "xhr"
-        websocket: {
-          path: "download",
-          streams: 1,
-          size: 8 * (1024 ** 2),
-          binaryType: "blob" // "arraybuffer" or "blob"
-        },
-        xhr: {
-          path: "download",
-          streams: 6,
-          delay: 150,
-          size: 20 * (1024 ** 2),
-          responseType: "arraybuffer" // "arraybuffer" or "blob"
-        },
-        delay: 2,
-        duration: 10,
-        gracetime: 2
-      },
-      upload: {
-        mode: "xhr", // "websocket" or "xhr"
-        websocket: {
-          path: "upload",
-          streams: 20,
-          size: 1 * (1024 ** 2)
-        },
-        xhr: {
-          path: "upload",
-          streams: 6,
-          delay: 150,
-          size: 1 * (1024 ** 2)
-        },
-        delay: 2,
-        duration: 10,
-        gracetime: 2
-      },
-      result: {
-        xhr: {
-          path: "save"
-        }
+      xhr: {
+        protocol: self.location.protocol.replace(":", ""),
+        host: `${self.location.host}`
       }
+    };
+  }
+
+  get ipDefaultConfig() {
+    return {
+      path: "ip"
+    };
+  }
+
+  get latencyDefaultConfig() {
+    return {
+      mode: "websocket", // "websocket" or "xhr"
+      websocket: {
+        path: "ping"
+      },
+      xhr: {
+        path: "ping"
+      },
+      count: null,
+      delay: 0,
+      duration: 5,
+      gracetime: 1
+    };
+  }
+
+  get downloadDefaultConfig() {
+    return {
+      mode: "xhr", // "websocket" or "xhr"
+      websocket: {
+        path: "download",
+        streams: 1,
+        size: 8 * 1024 ** 2,
+        binaryType: "blob" // "arraybuffer" or "blob"
+      },
+      xhr: {
+        path: "download",
+        streams: 6,
+        delay: 150,
+        size: 20 * 1024 ** 2,
+        responseType: "arraybuffer" // "arraybuffer" or "blob"
+      },
+      delay: 2,
+      duration: 10,
+      gracetime: 2
+    };
+  }
+
+  get uploadDefaultConfig() {
+    return {
+      mode: "xhr", // "websocket" or "xhr"
+      websocket: {
+        path: "upload",
+        streams: 20,
+        size: 1 * 1024 ** 2
+      },
+      xhr: {
+        path: "upload",
+        streams: 6,
+        delay: 150,
+        size: 1 * 1024 ** 2
+      },
+      delay: 2,
+      duration: 10,
+      gracetime: 2
+    };
+  }
+
+  get resultDefaultConfig() {
+    return {
+      path: "save"
     };
   }
 

@@ -25,7 +25,7 @@ export default class Test {
    */
   storeResult() {
     return new Promise((resolve, reject) => {
-      const endpoint = `${this.config.endpoint.xhr.uri}/${this.config.result.xhr.path}`;
+      const endpoint = `${this.config.endpoint.xhr.uri}/${this.config.result.path}`;
       const xhr = new XMLHttpRequest();
       xhr.open("POST", endpoint, true);
       xhr.addEventListener("load", e => {
@@ -39,25 +39,31 @@ export default class Test {
           message: e.message
         });
       });
-      xhr.send(
-        JSON.stringify({
-          timestamp: new Date().getTime(),
-          latency: {
-            avg: this.result.latency.avg
-          },
-          jitter: this.result.jitter,
-          download: {
-            speed: this.result.download.speed
-          },
-          upload: {
-            speed: this.result.upload.speed
-          },
-          ipInfo: {
-            ip: this.result.ipInfo.ip,
-            org: this.result.ipInfo.org
-          }
-        })
-      );
+      xhr.send(this.getJsonResult(this.result));
+    });
+  }
+
+  /**
+   * Get result as JSON
+   * @param {*} result
+   */
+  getJsonResult(result) {
+    return JSON.stringify({
+      timestamp: new Date().getTime(),
+      latency: {
+        avg: result.latency.avg
+      },
+      jitter: result.jitter,
+      download: {
+        speed: result.download.speed
+      },
+      upload: {
+        speed: result.upload.speed
+      },
+      ipInfo: {
+        ip: result.ipInfo.ip,
+        org: result.ipInfo.org
+      }
     });
   }
 }

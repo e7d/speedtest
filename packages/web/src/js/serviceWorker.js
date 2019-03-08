@@ -1,4 +1,4 @@
-var cacheName = "SpeedTestPWA-0.1.0";
+var cacheName = `SpeedTest-${VERSION}`;
 var filesToCache = [
   "/",
   "/app.css",
@@ -14,7 +14,7 @@ var filesToCache = [
 ];
 
 self.addEventListener("install", event => {
-  console.log("[Service Worker] Install");
+  console.log(`[Service Worker] Install version ${VERSION}`);
   event.waitUntil(
     caches.open(cacheName).then(cache => {
       console.log("[Service Worker] Caching app shell");
