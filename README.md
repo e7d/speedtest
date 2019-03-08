@@ -31,8 +31,7 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 
 ### Docker
 
-![Docker Pulls](https://img.shields.io/docker/pulls/e7db/speedtest.svg)
-![Docker Stars](https://img.shields.io/docker/stars/e7db/speedtest.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/e7db/speedtest.svg) ![Docker Stars](https://img.shields.io/docker/stars/e7db/speedtest.svg)
 
 ```sh
 docker run --name speedtest -d -p 80:80 e7db/speedtest
@@ -53,34 +52,24 @@ First, you will want to compile the web UI using [NodeJS](https://nodejs.org/) a
 
 ```sh
 cd packages/web
+npm ci
 npm run dist
 ```
 
 Then, prepare dependencies and run the server.
 
-
 ```sh
 cd packages/server
-npm install
+npm ci --production
 node server.js 80 ../web/dist
 ```
-
-### Custom server script
-
-You may also run a server based on your own backend script. You should comply to the following routes, for the web UI to work properly:
-
-| Endpoint    | Method | Arguments           | Expected behavior                                                                              |
-|-------------|--------|---------------------|------------------------------------------------------------------------------------------------|
-| `/ip`       | GET    |                     | Returns a JSON formatted object with the user IP information (i.e., `{ip: 'xxx'}`)             |
-| `/ping`     | GET    |                     | Returns an empty response                                                                      |
-| `/upload`   | GET    |                     | Returns an empty response                                                                      |
-| `/download` | GET    | `size`, `chunkSize` | Returns binary data as long as `size`, with chunks of `chunkSize`                              |
-| `/save`     | POST   |                     | Accepts a JSON payload with the results to save, returns an UUID corresponding to this results |
 
 ## Support the project
 
 You want to support the project? A speed test requires a server with high bandwith. With Patreon, or a small paypal donation, you can help me cover the fees!
+
 [Patreon sponsoring](https://www.patreon.com/e7d)
+
 [![Paypal donation](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B28JLHA4UNKQC&source=url)
 
 ## License 
