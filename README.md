@@ -31,7 +31,8 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 
 ### Docker
 
-![Docker Pulls](https://img.shields.io/docker/pulls/e7db/speedtest.svg) ![Docker Stars](https://img.shields.io/docker/stars/e7db/speedtest.svg)
+[![Docker Pulls](https://img.shields.io/docker/pulls/e7db/speedtest.svg)](https://hub.docker.com/r/e7db/speedtest)
+[![Docker Stars](https://img.shields.io/docker/stars/e7db/speedtest.svg)](https://hub.docker.com/r/e7db/speedtest)
 
 ```sh
 docker run --name speedtest -d -p 80:80 e7db/speedtest
