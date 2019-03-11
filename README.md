@@ -71,8 +71,8 @@ You want to support the project? A speed test requires a server with high bandwi
 
 [![Become a Patron on Patreon](https://img.shields.io/badge/sponsor-patreon-orange.svg)](https://www.patreon.com/e7d)  
 [![Donate with Paypal](https://img.shields.io/badge/donate-paypal-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B28JLHA4UNKQC&source=url)  
-[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-yellow.svg)]() `1D4fa6WDVNmKmwRJzTKDohYmHB9UzMsVVL`  
-[![Donate Ethereum](https://img.shields.io/badge/donate-ethereum-lightgrey.svg)]() `0x57f1afbC888d6954F954B0960524E4aa5Fa188af`
+[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-yellow.svg)](bitcoin:1D4fa6WDVNmKmwRJzTKDohYmHB9UzMsVVL?message=Speed%20%Test%20donation) `1D4fa6WDVNmKmwRJzTKDohYmHB9UzMsVVL`  
+[![Donate Ethereum](https://img.shields.io/badge/donate-ethereum-lightgrey.svg)](ethereum:0x57f1afbC888d6954F954B0960524E4aa5Fa188af?message=Speed%20%Test%20donation) `0x57f1afbC888d6954F954B0960524E4aa5Fa188af`
 
 ## License 
 
