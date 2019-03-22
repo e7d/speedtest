@@ -51,13 +51,7 @@ export default class Config {
 
   get latencyDefaultConfig() {
     return {
-      mode: "websocket", // "websocket" or "xhr"
-      websocket: {
-        path: "ping"
-      },
-      xhr: {
-        path: "ping"
-      },
+      path: "ping",
       count: null,
       delay: 0,
       duration: 5,
@@ -67,20 +61,11 @@ export default class Config {
 
   get downloadDefaultConfig() {
     return {
-      mode: "xhr", // "websocket" or "xhr"
-      websocket: {
-        path: "download",
-        streams: 1,
-        size: 8 * 1024 ** 2,
-        binaryType: "blob" // "arraybuffer" or "blob"
-      },
-      xhr: {
-        path: "download",
-        streams: 6,
-        delay: 150,
-        size: 20 * 1024 ** 2,
-        responseType: "arraybuffer" // "arraybuffer" or "blob"
-      },
+      path: "download",
+      streams: 6,
+      delay: 150,
+      size: 20 * 1024 ** 2,
+      responseType: "arraybuffer", // "arraybuffer" or "blob"
       delay: 2,
       duration: 10,
       gracetime: 2
@@ -89,18 +74,10 @@ export default class Config {
 
   get uploadDefaultConfig() {
     return {
-      mode: "xhr", // "websocket" or "xhr"
-      websocket: {
-        path: "upload",
-        streams: 20,
-        size: 1 * 1024 ** 2
-      },
-      xhr: {
-        path: "upload",
-        streams: 6,
-        delay: 150,
-        size: 1 * 1024 ** 2
-      },
+      path: "upload",
+      streams: 6,
+      delay: 150,
+      size: 1 * 1024 ** 2,
       delay: 2,
       duration: 10,
       gracetime: 2
