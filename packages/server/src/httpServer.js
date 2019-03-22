@@ -98,6 +98,14 @@ class HttpServer {
     response.end();
   }
 
+  writeError(response, reason) {
+    response.writeHead(500, {
+      "Content-Type": "text/plain"
+    });
+    response.write(reason.name);
+    response.end();
+  }
+
   writeDownloadData(query, response) {
     const size = query.size || 8 * 1024 ** 2;
     response.writeHead(200, {
@@ -126,13 +134,7 @@ class HttpServer {
           response.write(id);
           response.end();
         })
-        .catch(reason => {
-          response.writeHead(500, {
-            "Content-Type": "text/plain"
-          });
-          response.write(reason.name);
-          response.end();
-        });
+        .catch(reason => this.writeError(response, reason));
     });
   }
 
@@ -229,11 +231,7 @@ class HttpServer {
       response.write(buffer, "binary");
       response.end();
     } catch (reason) {
-      response.writeHead(500, {
-        "Content-Type": "text/plain"
-      });
-      response.write(reason.name);
-      response.end();
+      this.writeError(response, reason);
     }
   }
 }

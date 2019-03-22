@@ -1,3 +1,4 @@
+import Bytes from "../../utils/bytes";
 import DateFormat from "../../utils/dateFormat";
 import SemVer from "../../utils/semver";
 import { UI } from "../ui";
@@ -85,24 +86,8 @@ export default class HistoryView {
   printTable(results) {
     Object.values(results).forEach(result => {
       try {
-        const date = new Date(+result.timestamp);
         const $row = document.createElement("tr");
-        $row.innerHTML = `
-            <td>${DateFormat.toISO(date)}</td>
-            <td>${result.latency.avg} ms</td>
-            <td>${result.jitter} ms</td>
-            <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-            <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
-            <td>${result.ipInfo.ip}${result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""}</td>
-            <td class="text-center">
-                <a class="go-result btn btn-link" href="result#${result.id}">
-                    <i class="icon icon-link2"></i>
-                </a>
-                <a class="go-result btn btn-link" href="share#${result.id}">
-                    <i class="icon icon-link"></i>
-                </a>
-            </td>
-        `;
+        $row.innerHTML = this.getHtmlRow(result);
         $row.addEventListener("mouseenter", () => {
           this.toggleCirclesFocus(result.id, "add");
         });
@@ -114,6 +99,31 @@ export default class HistoryView {
         this.handleShareResultLinks();
       }
     });
+  }
+
+  /**
+   * Get the HTML row for a result
+   *
+   * @param {*} result
+   */
+  getHtmlRow(result) {
+    const date = new Date(+result.timestamp);
+    return `
+      <td>${DateFormat.toISO(date)}</td>
+      <td>${result.latency.avg} ms</td>
+      <td>${result.jitter} ms</td>
+      <td>${(result.download.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+      <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
+      <td>${result.ipInfo.ip}${result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""}</td>
+      <td class="text-center">
+          <a class="go-result btn btn-link" href="result#${result.id}">
+              <i class="icon icon-link2"></i>
+          </a>
+          <a class="go-result btn btn-link" href="share#${result.id}">
+              <i class="icon icon-link"></i>
+          </a>
+      </td>
+    `;
   }
 
   /**
@@ -207,14 +217,12 @@ export default class HistoryView {
    */
   getTextString(textString, x, yDownload, yUpload, result) {
     return {
-      download: `${textString.download}<text result-id="${result.id}" x="${x}" y="${yDownload + 10}">${(
-        result.download /
-        1024 ** 2
-      ).toFixed(2)}</text>`,
-      upload: `${textString.upload}<text result-id="${result.id}" x="${x}" y="${yUpload + 20}">${(
-        result.upload /
-        1024 ** 2
-      ).toFixed(2)}</text>`
+      download: `${textString.download}<text result-id="${result.id}" x="${x}" y="${yDownload + 10}">${Bytes.convert(
+        result.download
+      )}</text>`,
+      upload: `${textString.upload}<text result-id="${result.id}" x="${x}" y="${yUpload + 20}">${Bytes.convert(
+        result.upload
+      )}</text>`
     };
   }
 

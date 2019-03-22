@@ -2,10 +2,11 @@ import Jitter from "../utils/jitter";
 import Request from "../utils/request";
 import STATUS from "./status";
 import AbstractTest from "./abstractTest";
+import STEP from "./step";
 
 export default class LantencyTest extends AbstractTest {
   constructor() {
-    super("latency");
+    super(STEP.LATENCY);
   }
 
   /**

@@ -91,51 +91,32 @@ export default class SpeedTestWorker {
   }
 
   /**
-   * Run the speed test
-   * @returns {Promise}
+   * Prepare test run
    */
-  async run() {
-    if (this.test.running) {
-      return new Promise((resolve, reject) => {
-        reject({
-          status: this.test.status,
-          error: "Stop the current test before starting another one."
-        });
-      });
-    }
-
+  prepareRun() {
     if (this.test.config.optimize) {
       // TODO: Auto adjust config to best values following the browser in use
     }
-
     this.test.running = true;
     this.date = new Date().toJSON();
-    this.test.status = STATUS.STARTING;
     this.test.step = null;
     this.test.error = null;
     this.test.result = new Result();
-
     this.test.status = STATUS.RUNNING;
-    this.test.step = STEP.IP;
+  }
+
+  /**
+   * Run tests
+   */
+  runTests() {
     return this.ipTest
       .run()
-      .then(() => {
-        this.test.step = STEP.LATENCY;
-        return this.latencyTest.run();
-      })
-      .then(() => {
-        this.test.step = STEP.DOWNLOAD;
-        return this.downloadTest.run();
-      })
-      .then(() => {
-        this.test.step = STEP.UPLOAD;
-        return this.uploadTest.run();
-      })
-      .then(() => {
-        return this.test.storeResult();
-      })
+      .then(() => this.latencyTest.run())
+      .then(() => this.downloadTest.run())
+      .then(() => this.uploadTest.run())
       .then(() => {
         this.test.status = STATUS.DONE;
+        return this.test.storeResult();
       })
       .catch(reason => {
         reason.status = STATUS.FAILED;
@@ -151,6 +132,24 @@ export default class SpeedTestWorker {
           throw this.test.error;
         }
       });
+  }
+
+  /**
+   * Run the speed test
+   * @returns {Promise}
+   */
+  async run() {
+    if (this.test.running) {
+      return new Promise((resolve, reject) => {
+        reject({
+          status: this.test.status,
+          error: "Stop the current test before starting another one."
+        });
+      });
+    }
+
+    this.prepareRun();
+    return this.runTests();
   }
 
   /**

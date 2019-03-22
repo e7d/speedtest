@@ -1,9 +1,10 @@
 import Uuid from "../utils/uuid";
 import BandwidthTest from "./bandwidthTest";
+import STEP from "./step";
 
 export default class UploadTest extends BandwidthTest {
   constructor() {
-    super("upload");
+    super(STEP.UPLOAD);
     this.blob = this.getRandomBlob();
   }
 

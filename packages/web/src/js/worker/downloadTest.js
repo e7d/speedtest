@@ -1,9 +1,10 @@
 import Uuid from "../utils/uuid";
 import BandwidthTest from "./bandwidthTest";
+import STEP from "./step";
 
 export default class DownloadTest extends BandwidthTest {
   constructor() {
-    super("download");
+    super(STEP.DOWNLOAD);
   }
 
   /**
