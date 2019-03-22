@@ -1,82 +1,31 @@
 import Jitter from "../utils/jitter";
-import Performance from "../utils/performance";
 import Request from "../utils/request";
-import Uuid from "../utils/uuid";
-
 import STATUS from "./status";
-import Test from "./test";
+import AbstractTest from "./abstractTest";
 
-export default class LantencyTest {
+export default class LantencyTest extends AbstractTest {
   constructor() {
-    this.test = new Test();
+    super("latency");
   }
 
   /**
-   * Run the latency test
-   *
-   * @returns {Promise}
+   * Prepare the test run
    */
-  async run() {
+  prepareRun() {
     Object.assign(this, {
-      error: null,
-      requests: [],
-      initDate: null,
-      status: STATUS.WAITING,
-      running: true,
       data: [],
       pingDate: []
     });
-
-    const run =
-      "websocket" === this.test.config.latency.mode
-        ? (delay = 0) => this.testWebSocket(delay)
-        : (delay = 0) => this.testXHR(delay);
-
-    this.processResult();
-    this.test.timeouts.push(
-      self.setTimeout(() => {
-        this.status = STATUS.STARTING;
-        this.initDate = Date.now();
-      }, this.test.config.latency.delay * 1000)
-    );
-    this.test.timeouts.push(
-      self.setTimeout(() => {
-        this.status = STATUS.RUNNING;
-        this.startDate = Date.now();
-      }, this.test.config.latency.delay * 1000 + this.test.config.latency.gracetime * 1000)
-    );
-    this.test.timeouts.push(
-      self.setTimeout(() => {
-        this.status = STATUS.DONE;
-        this.running = false;
-      }, this.test.config.latency.delay * 1000 + this.test.config.latency.duration * 1000)
-    );
-
-    return run(this.test.config.latency.delay * 1000)
-      .then(() => this.processResult)
-      .catch(reason => {
-        this.error = reason;
-        this.test.result.latency = null;
-      })
-      .then(() => {
-        this.running = false;
-        Request.clearRequests(this.requests);
-
-        if (this.error) {
-          throw this.error;
-        }
-      });
   }
 
   /**
-   * Run the WebSocket based latency test
+   * Run the WebSocket based upload speed test
    *
+   * @param {any} size
    * @param {number} [delay=0]
    * @returns {Promise}
    */
-  testWebSocket(delay = 0) {
-    let index = 0;
-
+  runTest(params) {
     return new Promise((resolve, reject) => {
       if (this.test.status === STATUS.ABORTED) {
         this.status = STATUS.ABORTED;
@@ -89,163 +38,118 @@ export default class LantencyTest {
         return resolve();
       }
 
-      const endpoint = `${this.test.config.endpoint.websocket.uri}/${this.test.config.latency.websocket.path}`;
+      const endpoint = `${this.test.config.endpoint.websocket.uri}/${this.test.config.latency.path}`;
       const socket = new WebSocket(endpoint);
-      this.requests[index] = socket;
-
-      socket.addEventListener("message", e => {
-        if (this.test.status === STATUS.ABORTED) {
-          this.status = STATUS.ABORTED;
-          socket.close();
-          return reject({ status: STATUS.ABORTED });
-        }
-
-        if (this.status === STATUS.DONE) {
-          socket.close();
-          return resolve();
-        }
-
-        if (this.status === STATUS.RUNNING) {
-          const data = JSON.parse(e.data);
-          const index = data.index;
-          let networkLatency = Date.now() - this.pingDate[index];
-          networkLatency = +networkLatency.toFixed(2);
-          this.data.push(networkLatency);
-        }
-
-        this.processResult();
-
-        index += 1;
-        this.pingDate[index] = Date.now();
-        socket.send(
-          JSON.stringify({
-            action: "ping",
-            index: index
-          })
-        );
-      });
-
-      socket.addEventListener("close", () => {
-        Request.clearWebSocket(socket);
-      });
-
-      socket.addEventListener("error", e => {
-        if (this.test.config.ignoreErrors) {
-          this.testWebSocket()
-            .then(resolve)
-            .catch(reject);
-          return;
-        }
-
-        Request.clearWebSocket(socket);
-
-        reject({
-          status: STATUS.FAILED,
-          error: e.error,
-          message: e.message
-        });
-      });
-
-      socket.addEventListener("open", () => {
-        self.setTimeout(() => {
-          index += 1;
-          this.pingDate[index] = +new Date();
-          socket.send(
-            JSON.stringify({
-              action: "ping",
-              index: index
-            })
-          );
-        }, delay);
-      });
+      socket.binaryType = this.test.config.latency.binaryType || "arraybuffer";
+      this.requests.push(socket);
+      this.registerEvents(socket, params, resolve, reject);
     });
   }
 
   /**
-   * Run the XHR based latency test
+   * Register events for the WebSocket of the latency test
    *
-   * @param {number} [delay=0]
-   * @returns {Promise}
+   * @param {*} socket
+   * @param {*} params
+   * @param {*} resolve
+   * @param {*} reject
    */
-  testXHR(delay = 0) {
-    let pingDate, pongDate;
-    const index = this.index++;
+  registerEvents(socket, params, resolve, reject) {
+    socket.addEventListener("open", () => this.handleOpen(socket));
+    socket.addEventListener("message", e => this.handleMessage(e, socket, resolve, reject));
+    socket.addEventListener("close", () => this.handleClose(socket));
+    socket.addEventListener("error", e => this.handleError(e, socket, resolve, reject, params));
+  }
 
-    return new Promise((resolve, reject) => {
-      if (this.test.status === STATUS.ABORTED) {
-        this.status = STATUS.ABORTED;
-        return reject({
-          status: STATUS.ABORTED
-        });
-      }
+  /**
+   * Handle the WebSocket open event
+   *
+   * @param {*} socket
+   */
+  handleOpen(socket) {
+    this.sendMessage(socket);
+  }
 
-      if (this.status === STATUS.DONE) {
-        return resolve();
-      }
+  /**
+   * Handle the WebSocket message event
+   *
+   * @param {*} e
+   * @param {*} socket
+   * @param {*} resolve
+   * @param {*} reject
+   */
+  handleMessage(e, socket, resolve, reject) {
+    if (this.test.status === STATUS.ABORTED) {
+      this.status = STATUS.ABORTED;
+      socket.close();
+      return reject({ status: STATUS.ABORTED });
+    }
 
-      const endpoint = `${this.test.config.endpoint.xhr.uri}/${this.test.config.latency.xhr.path}?${Uuid.v4()}`;
-      const xhr = new XMLHttpRequest();
-      this.requests[index] = xhr;
+    if (this.status === STATUS.DONE) {
+      socket.close();
+      return resolve();
+    }
 
-      xhr.open("GET", endpoint, true);
-      xhr.addEventListener("loadstart", () => {
-        pingDate = Date.now();
-      });
-      xhr.addEventListener("readystatechange", e => {
-        if (!pongDate && xhr.readyState >= 2) pongDate = Date.now();
-      });
-      xhr.addEventListener("load", () => {
-        if (this.test.status === STATUS.ABORTED) {
-          this.status = STATUS.ABORTED;
-          return reject({ status: STATUS.ABORTED });
-        }
+    if (this.status === STATUS.RUNNING) {
+      const data = JSON.parse(e.data);
+      const index = data.index;
+      let networkLatency = Date.now() - this.pingDate[index];
+      networkLatency = +networkLatency.toFixed(2);
+      this.data.push(networkLatency);
+    }
+    this.processResult();
 
-        if (this.status === STATUS.DONE) {
-          return resolve();
-        }
+    this.sendMessage(socket);
+  }
 
-        if (this.status === STATUS.RUNNING) {
-          const performance = Performance.getEntry(self, endpoint);
-          let networkLatency =
-            null !== performance
-              ? performance.responseStart - performance.requestStart || performance.duration
-              : pongDate - pingDate;
+  /**
+   * Handle the WebSocket close event
+   *
+   * @param {*} socket
+   */
+  handleClose(socket) {
+    Request.clearWebSocket(socket);
+  }
 
-          networkLatency = +networkLatency.toFixed(2);
-          this.data.push(networkLatency);
-        }
+  /**
+   * Handle the WebSocket error event
+   *
+   * @param {*} e
+   * @param {*} socket
+   * @param {*} params
+   * @param {*} resolve
+   * @param {*} reject
+   */
+  handleError(e, socket, params, resolve, reject) {
+    if (this.test.config.ignoreErrors) {
+      this.runTest(params)
+        .then(resolve)
+        .catch(reject);
+      return;
+    }
 
-        this.processResult();
-        if (this.test.config.latency.count && index >= this.test.config.latency.count) {
-          return resolve();
-        }
-
-        this.testXHR()
-          .then(resolve)
-          .catch(reject);
-      });
-      xhr.addEventListener("error", e => {
-        if (this.test.config.ignoreErrors) {
-          this.testXHR()
-            .then(resolve)
-            .catch(reject);
-          return;
-        }
-
-        reject({
-          status: STATUS.FAILED,
-          error: e.error,
-          message: e.message
-        });
-      });
-
-      this.test.timeouts.push(
-        self.setTimeout(() => {
-          xhr.send();
-          pingDate = Date.now();
-        }, delay)
-      );
+    Request.clearWebSocket(socket);
+    reject({
+      status: STATUS.FAILED,
+      error: e.error,
+      message: e.message
     });
+  }
+
+  /**
+   * Send a WebSocket message
+   *
+   * @param {*} socket
+   */
+  sendMessage(socket) {
+    const index = this.index++;
+    this.pingDate[index] = Date.now();
+    socket.send(
+      JSON.stringify({
+        action: "ping",
+        index
+      })
+    );
   }
 
   /**

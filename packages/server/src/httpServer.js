@@ -11,6 +11,16 @@ const WebSocketServer = require("./wsServer");
 const DownloadData = require("./downloadData");
 const ResultWritter = require("./resultWritter");
 
+const pagesUriList = [
+  "/",
+  "/about",
+  "/result",
+  "/results",
+  "/run",
+  "/share",
+  "/settings"
+];
+
 class HttpServer {
   constructor(port, webPath) {
     this.serverFolderPath = process.cwd();
@@ -28,35 +38,7 @@ class HttpServer {
       return;
     }
 
-    this.httpServer = http
-      .createServer((request, response) => {
-        this.logger.debug(`Received request for ${request.url}`);
-        const { pathname: uri, query: query } = url.parse(request.url, true);
-
-        if (uri === "/ip") {
-          return this.writeIpInfo(request, response);
-        }
-
-        if (uri === "/ping" || uri === "/upload") {
-          return this.writeEmpty(response);
-        }
-
-        if (uri === "/download") {
-          return this.writeDownloadData(query, response);
-        }
-
-        if (uri === "/save" && request.method === "POST") {
-          return this.saveResult(request, response);
-        }
-
-        if (uri.startsWith("/results/")) {
-          return this.getResults(uri, response);
-        }
-
-        this.loadFile(uri, request, response);
-      })
-      .listen(port);
-
+    this.httpServer = this.createServer(port);
     if (!this.httpServer.listening) {
       throw new Error(`Server failed listening on port ${port}`);
     }
@@ -66,6 +48,25 @@ class HttpServer {
     this.logger.log(`WebSocket server listening at ws://0.0.0.0:${port}/`);
 
     return this.httpServer;
+  }
+
+  createServer(port) {
+    return http
+      .createServer((request, response) => {
+        this.logger.debug(`Received request for ${request.url}`);
+        const { pathname: uri, query: query } = url.parse(request.url, true);
+
+        if (uri === "/ip") return this.writeIpInfo(request, response);
+        if (uri === "/ping" || uri === "/upload")
+          return this.writeEmpty(response);
+        if (uri === "/download") return this.writeDownloadData(query, response);
+        if (uri === "/save" && request.method === "POST")
+          return this.saveResult(request, response);
+        if (uri.startsWith("/results/")) return this.getResults(uri, response);
+
+        this.loadFile(uri, request, response);
+      })
+      .listen(port);
   }
 
   writeIpInfo(request, response) {
@@ -81,6 +82,7 @@ class HttpServer {
       .finally(() => {
         info = Buffer.from(JSON.stringify(info));
         response.writeHead(200, {
+          "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
           "Content-Length": info.byteLength
         });
@@ -90,13 +92,16 @@ class HttpServer {
   }
 
   writeEmpty(response) {
-    response.writeHead(200);
+    response.writeHead(200, {
+      "Access-Control-Allow-Origin": "*"
+    });
     response.end();
   }
 
   writeDownloadData(query, response) {
     const size = query.size || 8 * 1024 ** 2;
     response.writeHead(200, {
+      "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/octet-stream",
       "Content-Length": size
     });
@@ -114,6 +119,7 @@ class HttpServer {
         .store(JSON.parse(Buffer.concat(data).toString()))
         .then(id => {
           response.writeHead(200, {
+            "Access-Control-Allow-Origin": "*",
             "Content-Type": "text/plain",
             "Content-Length": id.length
           });
@@ -194,17 +200,7 @@ class HttpServer {
    * @param {Response} response
    */
   loadFile(uri, request, response) {
-    if (
-      [
-        "/",
-        "/about",
-        "/result",
-        "/results",
-        "/run",
-        "/share",
-        "/settings"
-      ].includes(uri)
-    ) {
+    if (pagesUriList.includes(uri)) {
       uri = "index.html";
     }
     let filePath = path.join(this.webFolderPath, uri);
@@ -216,25 +212,29 @@ class HttpServer {
         return;
       }
 
-      gzip(request, response);
-      try {
-        const stat = fs.statSync(filePath);
-        const buffer = fs.readFileSync(filePath);
-        response.writeHead(200, {
-          "Content-Type": this.guessContentType(filePath),
-          "Content-Length": buffer.length,
-          "Last-Modified": stat.mtime.toUTCString()
-        });
-        response.write(buffer, "binary");
-        response.end();
-      } catch (reason) {
-        response.writeHead(500, {
-          "Content-Type": "text/plain"
-        });
-        response.write(reason.name);
-        response.end();
-      }
+      this.serveFile(filePath, request, response);
     });
+  }
+
+  serveFile(filePath, request, response) {
+    gzip(request, response);
+    try {
+      const stat = fs.statSync(filePath);
+      const buffer = fs.readFileSync(filePath);
+      response.writeHead(200, {
+        "Content-Type": this.guessContentType(filePath),
+        "Content-Length": buffer.length,
+        "Last-Modified": stat.mtime.toUTCString()
+      });
+      response.write(buffer, "binary");
+      response.end();
+    } catch (reason) {
+      response.writeHead(500, {
+        "Content-Type": "text/plain"
+      });
+      response.write(reason.name);
+      response.end();
+    }
   }
 }
 

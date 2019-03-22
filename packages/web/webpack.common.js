@@ -3,7 +3,6 @@ const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const PreloadWebpackPlugin = require("preload-webpack-plugin");
 
 module.exports = {
   entry: {
@@ -66,7 +65,6 @@ module.exports = {
       template: "src/index.html",
       chunks: ["app"]
     }),
-    new PreloadWebpackPlugin(),
     new CopyWebpackPlugin([{ from: "src/assets/", to: "." }]),
     new webpack.DefinePlugin({
       BUILD_DATE: new Date().getTime(),

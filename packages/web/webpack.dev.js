@@ -3,8 +3,5 @@ const CommonConfig = require("./webpack.common.js");
 
 module.exports = Merge(CommonConfig, {
   mode: "development",
-  devtool: "eval",
-  devServer: {
-    contentBase: "./dist"
-  }
+  devtool: "eval"
 });
