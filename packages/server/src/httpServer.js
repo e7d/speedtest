@@ -82,6 +82,7 @@ class HttpServer {
       .finally(() => {
         info = Buffer.from(JSON.stringify(info));
         response.writeHead(200, {
+          "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
           "Content-Length": info.byteLength
         });
@@ -91,13 +92,16 @@ class HttpServer {
   }
 
   writeEmpty(response) {
-    response.writeHead(200);
+    response.writeHead(200, {
+      "Access-Control-Allow-Origin": "*"
+    });
     response.end();
   }
 
   writeDownloadData(query, response) {
     const size = query.size || 8 * 1024 ** 2;
     response.writeHead(200, {
+      "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/octet-stream",
       "Content-Length": size
     });
@@ -115,6 +119,7 @@ class HttpServer {
         .store(JSON.parse(Buffer.concat(data).toString()))
         .then(id => {
           response.writeHead(200, {
+            "Access-Control-Allow-Origin": "*",
             "Content-Type": "text/plain",
             "Content-Length": id.length
           });
