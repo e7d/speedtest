@@ -97,8 +97,8 @@ export default class Config {
       xhr.open("GET", "/config.json", true);
       xhr.onload = () => {
         const config = deepMerge(this.defaultConfig, JSON.parse(xhr.response));
-        config.endpoint.xhr.uri = this.getHostname('xhr');
-        config.endpoint.websocket.uri = this.getHostname('websocket');
+        config.endpoint.xhr.uri = this.getHostname(config, 'xhr');
+        config.endpoint.websocket.uri = this.getHostname(config, 'websocket');
         resolve(config);
       };
       xhr.onerror = () => reject("Could not load configuration file (config.json)");
@@ -106,7 +106,7 @@ export default class Config {
     });
   }
 
-  getHostname(type) {
+  getHostname(config, type) {
     return `${config.endpoint[type].protocol}://${config.endpoint[type].host}`
   }
 }
