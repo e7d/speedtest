@@ -133,6 +133,7 @@ export default class WorkerService {
     UI.$gaugeValue.innerHTML = "";
     UI.gauge.setValue(0);
     UI.setProgressBar(0);
+    UI.resetHiglightStep();
     UI.$startButton.removeAttribute("hidden");
     UI.$stopButton.setAttribute("hidden", "");
 
