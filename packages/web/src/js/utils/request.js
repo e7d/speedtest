@@ -38,10 +38,10 @@ export default class Request {
     } catch (ex) {}
 
     try {
-      socket.onopen = null;
-      socket.onmessage = null;
-      socket.onclose = null;
-      socket.onerror = null;
+      socket.removeEventListener("open");
+      socket.removeEventListener("message");
+      socket.removeEventListener("close");
+      socket.removeEventListener("error");
     } catch (ex) {}
   }
 
@@ -51,19 +51,23 @@ export default class Request {
    * @param {XMLHttpRequest} xhr
    */
   static clearXMLHttpRequest(xhr) {
-    try {
-      xhr.abort();
-    } catch (ex) {}
+    if (xhr.readyState < XMLHttpRequest.DONE) {
+      try {
+        xhr.abort();
+      } catch (ex) {}
+    }
 
     try {
-      xhr.onprogress = null;
-      xhr.onload = null;
-      xhr.onerror = null;
+      xhr.removeEventListener("progress");
+      xhr.removeEventListener("load");
+      xhr.removeEventListener("error");
     } catch (ex) {}
     try {
-      xhr.upload.onprogress = null;
-      xhr.upload.onload = null;
-      xhr.upload.onerror = null;
+      xhr.upload.removeEventListener("progress");
+      xhr.upload.removeEventListener("load");
+      xhr.upload.removeEventListener("error");
     } catch (ex) {}
+
+    xhr = null;
   }
 }

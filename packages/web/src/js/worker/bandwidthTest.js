@@ -1,11 +1,10 @@
 import Bandwidth from "../utils/bandwidth";
-import Request from "../utils/request";
 import AbstractTest from "./abstractTest";
 import STATUS from "./status";
 
 export default class XHRTest extends AbstractTest {
-  constructor(type) {
-    super(type);
+  constructor(step) {
+    super(step);
   }
 
   /**
@@ -37,7 +36,7 @@ export default class XHRTest extends AbstractTest {
         });
       }
 
-      if (STATUS.DONE === this.status) {
+      if (this.status === STATUS.DONE) {
         return resolve();
       }
 
@@ -46,6 +45,7 @@ export default class XHRTest extends AbstractTest {
 
       this.registerEvents(index, xhr, params, resolve, reject);
       this.sendMessage(xhr);
+      xhr.startDate = Date.now();
     });
   }
 
@@ -60,8 +60,9 @@ export default class XHRTest extends AbstractTest {
    */
   registerEvents(index, xhr, params, resolve, reject) {
     const xhrHandler = this.initXHR(index, xhr, params);
-    xhrHandler.addEventListener("progress", e => this.handleProgress(e, index, xhr, resolve, reject));
-    xhrHandler.addEventListener("load", e => this.handleLoad(xhr, params, resolve, reject));
+    xhrHandler.addEventListener("progress", e => this.handleProgress(e, index, xhr, params, resolve, reject));
+    xhrHandler.addEventListener("load", e => this.handleLoad(e, index, xhr, params, resolve, reject));
+    xhrHandler.addEventListener("timeout", e => this.handleTimeout(e, index, xhr, params, resolve, reject));
     xhrHandler.addEventListener("error", e => this.handleError(e, xhr, params, resolve, reject));
   }
 
@@ -74,21 +75,23 @@ export default class XHRTest extends AbstractTest {
    * @param {*} resolve
    * @param {*} reject
    */
-  handleProgress(e, index, xhr, resolve, reject) {
+  handleProgress(e, index, xhr, params, resolve, reject) {
+    if (xhr.readyState === XMLHttpRequest.DONE) return;
+
     if (this.test.status === STATUS.ABORTED) {
       this.status = STATUS.ABORTED;
-      Request.clearXMLHttpRequest(xhr);
+      xhr.abort();
       return reject({ status: STATUS.ABORTED });
     }
 
-    if (STATUS.DONE === this.status) {
-      Request.clearXMLHttpRequest(xhr);
+    if (this.status === STATUS.DONE) {
+      xhr.abort();
       return resolve();
     }
 
     this.loadDiff[index] = e.loaded - this.sizeLoaded[index];
     this.sizeLoaded[index] = e.loaded;
-    if (STATUS.RUNNING === this.status) {
+    if (this.status === STATUS.RUNNING) {
       this.size += this.loadDiff[index];
     }
     this.processResult();
@@ -97,13 +100,41 @@ export default class XHRTest extends AbstractTest {
   /**
    * Handle the XHR load event
    *
+   * @param {*} e
+   * @param {*} index
    * @param {*} xhr
    * @param {*} params
    * @param {*} resolve
    * @param {*} reject
    */
-  handleLoad(xhr, params, resolve, reject) {
-    Request.clearXMLHttpRequest(xhr);
+  handleLoad(e, index, xhr, params, resolve, reject) {
+    const duration = Date.now() - xhr.startDate;
+    if (duration < 500) {
+      this.test.config[this.step].size = Math.min(
+        Math.round(e.loaded / (duration / 1000)),
+        this.test.config[this.step].maxSize
+      );
+    }
+    this.runTest(params)
+      .then(resolve)
+      .catch(reject);
+  }
+
+  /**
+   * Handle the XHR timeout event
+   *
+   * @param {*} e
+   * @param {*} index
+   * @param {*} xhr
+   * @param {*} params
+   * @param {*} resolve
+   * @param {*} reject
+   */
+  handleTimeout(e, index, xhr, params, resolve, reject) {
+    this.test.config[this.step].size = Math.max(
+      Math.round(e.loaded / (2000 / 1000)),
+      this.test.config[this.step].minSize
+    );
     this.runTest(params)
       .then(resolve)
       .catch(reject);
@@ -119,8 +150,6 @@ export default class XHRTest extends AbstractTest {
    * @param {*} reject
    */
   handleError(e, xhr, params, resolve, reject) {
-    Request.clearXMLHttpRequest(xhr);
-
     if (this.test.config.ignoreErrors) {
       this.runTest(params)
         .then(resolve)

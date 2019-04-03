@@ -5,7 +5,7 @@ import STEP from "./step";
 export default class UploadTest extends BandwidthTest {
   constructor() {
     super(STEP.UPLOAD);
-    this.blob = this.getRandomBlob();
+    this.buffer = this.getRandomData();
   }
 
   /**
@@ -13,20 +13,12 @@ export default class UploadTest extends BandwidthTest {
    *
    * @returns {Float32Array}
    */
-  getRandomData() {
-    const bufferSize = 128 * 1024;
+  getRandomData(bufferSize = 64 * 1024) {
     const buffer = new Float32Array(new ArrayBuffer(bufferSize));
     for (let index = 0; index < buffer.length; index++) {
       buffer[index] = Math.random();
     }
-
-    const dataSize = this.test.config.upload.size;
-    let data = new Float32Array(new ArrayBuffer(dataSize));
-    for (let i = 0; i < data.byteLength / buffer.byteLength; i++) {
-      data.set(buffer, i * buffer.length);
-    }
-
-    return data;
+    return buffer;
   }
 
   /**
@@ -34,8 +26,12 @@ export default class UploadTest extends BandwidthTest {
    *
    * @returns {Blob}
    */
-  getRandomBlob() {
-    return new Blob([this.getRandomData()], {
+  getRandomBlob(size) {
+    const data = [];
+    for (let i = 0; i < size / this.buffer.byteLength; i++) {
+      data.push(this.buffer);
+    }
+    return new Blob(data, {
       type: "application/octet-stream"
     });
   }
@@ -50,6 +46,7 @@ export default class UploadTest extends BandwidthTest {
   initXHR(index, xhr) {
     this.sizeLoaded[index] = 0;
     const endpoint = `${this.test.config.endpoint.xhr.uri}/${this.test.config.upload.path}?${Uuid.v4()}`;
+    xhr.upload.timeout = 2000;
     xhr.open("POST", endpoint, true);
     xhr.setRequestHeader("Content-Encoding", "identity");
     return xhr.upload;
@@ -61,6 +58,7 @@ export default class UploadTest extends BandwidthTest {
    * @param {*} xhr
    */
   sendMessage(xhr) {
+    this.blob = this.getRandomBlob(this.test.config.upload.size);
     xhr.send(this.blob);
   }
 }

@@ -1,10 +1,9 @@
 import Request from "../utils/request";
 import Uuid from "../utils/uuid";
-
+import Messaging from "./messaging";
 import STATUS from "./status";
 import STEP from "./step";
 import Test from "./test";
-import Messaging from "./messaging";
 
 export default class IpTest {
   constructor() {
@@ -49,13 +48,9 @@ export default class IpTest {
       xhr.open("GET", endpoint, true);
       xhr.addEventListener("load", () => {
         this.test.result.ipInfo = JSON.parse(xhr.response);
-        Request.clearXMLHttpRequest(xhr);
-
         resolve();
       });
       xhr.addEventListener("error", e => {
-        Request.clearXMLHttpRequest(xhr);
-
         reject({
           status: STATUS.FAILED,
           error: e.error,

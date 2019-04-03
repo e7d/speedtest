@@ -64,7 +64,9 @@ export default class Config {
       path: "download",
       streams: 6,
       delay: 150,
-      size: 20 * 1024 ** 2,
+      size: 8 * 1024 ** 2,
+      minSize: 1 * 1024 ** 2,
+      maxSize: 100 * 1024 ** 2,
       responseType: "arraybuffer", // "arraybuffer" or "blob"
       delay: 2,
       duration: 10,
@@ -78,6 +80,8 @@ export default class Config {
       streams: 6,
       delay: 150,
       size: 1 * 1024 ** 2,
+      minSize: 256 * 1024,
+      maxSize: 8 * 1024 ** 2,
       delay: 2,
       duration: 10,
       gracetime: 2
@@ -95,18 +99,18 @@ export default class Config {
       const xhr = new XMLHttpRequest();
 
       xhr.open("GET", "/config.json", true);
-      xhr.onload = () => {
+      xhr.addEventListener("load", () => {
         const config = deepMerge(this.defaultConfig, JSON.parse(xhr.response));
-        config.endpoint.xhr.uri = this.getHostname(config, 'xhr');
-        config.endpoint.websocket.uri = this.getHostname(config, 'websocket');
+        config.endpoint.xhr.uri = this.getHostname(config, "xhr");
+        config.endpoint.websocket.uri = this.getHostname(config, "websocket");
         resolve(config);
-      };
-      xhr.onerror = () => reject("Could not load configuration file (config.json)");
+      });
+      xhr.addEventListener("error", () => reject("Could not load configuration file (config.json)"));
       xhr.send();
     });
   }
 
   getHostname(config, type) {
-    return `${config.endpoint[type].protocol}://${config.endpoint[type].host}`
+    return `${config.endpoint[type].protocol}://${config.endpoint[type].host}`;
   }
 }
