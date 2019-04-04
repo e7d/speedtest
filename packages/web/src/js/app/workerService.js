@@ -128,18 +128,16 @@ export default class WorkerService {
    * @param {Object} data
    */
   processFinishedStatus(data) {
+    this.running = false;
+    window.clearInterval(this.statusInterval);
     this.processData(data);
-
     UI.$gaugeValue.innerHTML = "";
     UI.gauge.setValue(0);
     UI.setProgressBar(0);
     UI.resetHiglightStep();
     UI.$startButton.removeAttribute("hidden");
     UI.$stopButton.setAttribute("hidden", "");
-
-    this.running = false;
     UI.$speedtest.className = "done";
-    window.clearInterval(this.statusInterval);
   }
 
   /**
@@ -212,7 +210,7 @@ export default class WorkerService {
       return;
     }
 
-    const dataSpeed = (+data.speed || 0) / (1024 ** 2);
+    const dataSpeed = (+data.speed || 0) / 1024 ** 2;
     UI.gauge.setValue(Math.log(10 * dataSpeed + 1));
     UI.$gaugeValue.innerHTML = $element.innerHTML = dataSpeed ? dataSpeed.toFixed(2) : "";
   }

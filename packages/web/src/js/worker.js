@@ -72,13 +72,7 @@ export default class SpeedTestWorker {
       this.messaging.postMessage(this.test.config);
       break;
     case "start":
-      this.run()
-        .then(() => {
-          this.messaging.postStatus();
-        })
-        .catch(reason => {
-          console.error("FAIL", reason);
-        });
+      this.run().catch(reason => console.error("FAIL", reason));
       break;
     case "status":
       this.messaging.postStatus();
@@ -114,10 +108,8 @@ export default class SpeedTestWorker {
       .then(() => this.latencyTest.run())
       .then(() => this.downloadTest.run())
       .then(() => this.uploadTest.run())
-      .then(() => {
-        this.test.status = STATUS.DONE;
-        return this.test.storeResult();
-      })
+      .then(() => this.test.storeResult())
+      .then(() => (this.test.status = STATUS.DONE))
       .catch(reason => {
         reason.status = STATUS.FAILED;
         this.test.error = reason;
@@ -125,12 +117,8 @@ export default class SpeedTestWorker {
       .then(() => {
         this.test.running = false;
         this.test.step = null;
-
         Request.clearRequests(this.scope.requests);
-
-        if (STATUS.DONE !== this.test.status) {
-          throw this.test.error;
-        }
+        if (this.test.status !== STATUS.DONE) throw this.test.error;
       });
   }
 
