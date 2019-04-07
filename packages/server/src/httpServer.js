@@ -102,7 +102,7 @@ class HttpServer {
     response.writeHead(500, {
       "Content-Type": "text/plain"
     });
-    response.write(reason.name);
+    response.write(reason);
     response.end();
   }
 
