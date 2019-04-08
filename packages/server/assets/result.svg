@@ -1,5 +1,6 @@
-<svg width="350" height="200" xmlns="http://www.w3.org/2000/svg" font-family="Roboto" fill="#fff">
-    <rect id="background" height="200" width="350" fill="#1a1a1a"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="350" height="200" viewBox="0 0 350 200" font-family="Roboto" fill="#fff">
+    <rect id="background" width="350" height="200" fill="#1a1a1a"/>
 
     <g id="header">
         <rect width="350" height="40" fill="#333333"/>
