@@ -174,15 +174,15 @@ export default class XHRTest extends AbstractTest {
     };
     if (this.status <= STATUS.WAITING) return;
 
-    const durationFromInit = (Date.now() - this.initDate) / 1000;
-    const durationFromStart = (Date.now() - this.startDate) / 1000;
+    const durationFromInit = (Date.now() - this.initDate);
+    const durationFromStart = (Date.now() - this.startDate);
     const progress = durationFromInit / this.test.config[this.step].duration;
     this.test.result[this.step].progress = progress;
     if (this.status <= STATUS.STARTING) return;
 
     const { bitBandwidth: bandwidth } = Bandwidth.compute(
       this.size,
-      durationFromStart,
+      durationFromStart / 1000,
       this.test.config.overheadCompensation
     );
     this.test.result[this.step].speed = +bandwidth.toFixed(2);

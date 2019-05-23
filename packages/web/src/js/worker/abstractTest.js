@@ -57,7 +57,7 @@ export default class AbstractTest {
    * Setup the current test steps with timeouts
    */
   getTimeouts() {
-    const delay = this.test.config[this.step].delay * 1000;
+    const delay = this.test.config[this.step].delay;
     return [
       self.setTimeout(() => {
         this.status = STATUS.STARTING;
@@ -66,11 +66,11 @@ export default class AbstractTest {
       self.setTimeout(() => {
         this.status = STATUS.RUNNING;
         this.startDate = Date.now();
-      }, delay + this.test.config[this.step].gracetime * 1000),
+      }, delay + this.test.config[this.step].gracetime),
       self.setTimeout(() => {
         this.status = STATUS.DONE;
         this.running = false;
-      }, delay + this.test.config[this.step].duration * 1000)
+      }, delay + this.test.config[this.step].duration)
     ];
   }
 
@@ -86,7 +86,7 @@ export default class AbstractTest {
             this.runTest(config)
               .then(resolve)
               .catch(reject);
-          }, config.delay * 1000 + config.delay * index)
+          }, config.delay * index)
         );
       });
 

@@ -1,23 +1,23 @@
 export default {
   fast: {
     fields: {
-      "config.latency.duration": 2,
-      "config.download.duration": 5,
-      "config.upload.duration": 5,
+      "config.latency.duration": 2000,
+      "config.download.duration": 5000,
+      "config.upload.duration": 5000,
     }
   },
   normal: {
     fields: {
-      "config.latency.duration": 5,
-      "config.download.duration": 10,
-      "config.upload.duration": 10,
+      "config.latency.duration": 5000,
+      "config.download.duration": 10000,
+      "config.upload.duration": 10000,
     }
   },
   accurate: {
     fields: {
-      "config.latency.duration": 10,
-      "config.download.duration": 20,
-      "config.upload.duration": 20,
+      "config.latency.duration": 10000,
+      "config.download.duration": 20000,
+      "config.upload.duration": 20000,
     }
   }
 };

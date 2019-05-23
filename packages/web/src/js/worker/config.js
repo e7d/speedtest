@@ -54,8 +54,8 @@ export default class Config {
       path: "ping",
       count: null,
       delay: 0,
-      duration: 5,
-      gracetime: 1
+      duration: 5000,
+      gracetime: 1000
     };
   }
 
@@ -64,13 +64,12 @@ export default class Config {
       path: "download",
       streams: 6,
       delay: 150,
+      duration: 10000,
+      gracetime: 2000,
       size: 8 * 1024 ** 2,
       minSize: 1 * 1024 ** 2,
       maxSize: 100 * 1024 ** 2,
-      responseType: "arraybuffer", // "arraybuffer" or "blob"
-      delay: 2,
-      duration: 10,
-      gracetime: 2
+      responseType: "arraybuffer" // "arraybuffer" or "blob"
     };
   }
 
@@ -79,12 +78,11 @@ export default class Config {
       path: "upload",
       streams: 6,
       delay: 150,
+      duration: 10000,
+      gracetime: 2000,
       size: 1 * 1024 ** 2,
       minSize: 256 * 1024,
-      maxSize: 8 * 1024 ** 2,
-      delay: 2,
-      duration: 10,
-      gracetime: 2
+      maxSize: 8 * 1024 ** 2
     };
   }
 
