@@ -99,8 +99,9 @@ export default class ShareView {
 
     Results.loadFromUri(false)
       .then(() => {
-        const link = `${window.location.origin}/result${window.location.hash}`;
-        const image = `${window.location.origin}/results/${window.location.hash.replace("#", "")}.png`;
+        const id = window.location.pathname.split('/').pop();
+        const link = `${window.location.origin}/result/${id}`;
+        const image = `${window.location.origin}/results/${id}.png`;
         UI.$shareResultImagePreview.src = image;
         UI.$shareResultLink.value = link;
         UI.$shareResultImage.value = image;

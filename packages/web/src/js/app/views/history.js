@@ -116,10 +116,10 @@ export default class HistoryView {
       <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
       <td>${result.ipInfo.ip}${result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""}</td>
       <td class="text-center">
-          <a class="go-result btn btn-link" href="result#${result.id}">
+          <a class="go-result btn btn-link" href="result/${result.id}">
               <i class="icon icon-link2"></i>
           </a>
-          <a class="go-result btn btn-link" href="share#${result.id}">
+          <a class="go-result btn btn-link" href="share/${result.id}">
               <i class="icon icon-link"></i>
           </a>
       </td>

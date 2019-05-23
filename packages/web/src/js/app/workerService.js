@@ -221,7 +221,7 @@ export default class WorkerService {
     if (status !== STATUS.DONE) return;
 
     UI.$timestamp.setAttribute("timestamp", timestamp);
-    UI.$timestamp.innerHTML = `<a href="/result#${id}">${DateFormat.toISO(new Date(timestamp))}</a>`;
+    UI.$timestamp.innerHTML = `<a href="/result/${id}">${DateFormat.toISO(new Date(timestamp))}</a>`;
   }
 
   /**
@@ -259,7 +259,7 @@ export default class WorkerService {
     localStorage.setItem("history", JSON.stringify(this.limitResultsHistory(resultsHistory)));
 
     UI.$shareResultButton.removeAttribute("hidden");
-    window.history.replaceState({}, "Speed Test - Results", `/result#${result.id}`);
+    window.history.replaceState({}, "Speed Test - Results", `/result/${result.id}`);
     document.title = "Speed Test";
   }
 

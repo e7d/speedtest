@@ -26,6 +26,32 @@ export default class App {
     this.settingsView = new SettingsView();
     this.shareView = new ShareView();
 
+    this.routes = [
+      {
+        url: "/about",
+        handler: this.aboutPageHandler
+      },
+      {
+        url: "/results",
+        handler: this.resultsPageHandler
+      },
+      {
+        url: "/run",
+        handler: this.runPageHandler
+      },
+      {
+        url: "/settings",
+        handler: this.settingsPageHandler
+      },
+      {
+        pattern: /result(\/[0-9a-f-]+)?/,
+        handler: this.resultPageHandler
+      },
+      {
+        pattern: /share(\/[0-9a-f-]+)?/,
+        handler: this.sharePageHandler
+      }
+    ];
     this.attachStateHandler();
   }
 
@@ -38,48 +64,58 @@ export default class App {
       UI.$shareResultButton.setAttribute("hidden", "");
       UI.dismissUnknownResultsAlert();
 
-      switch (document.location.pathname) {
-      case "/about":
-        UI.showPage("about");
-        document.title = "Speed Test - About";
-        break;
-
-      case "/result":
-        UI.showPage("speedtest");
-        document.title = "Speed Test - Result";
-        this.speedtest.loadResults();
-        break;
-
-      case "/results":
-        UI.showPage("history");
-        document.title = "Speed Test - Results history";
-        this.historyView.loadResultsHistory();
-        break;
-
-      case "/run":
-        UI.showPage("speedtest");
-        document.title = "Speed Test - Running...";
-        this.speedtest.startTest();
-        break;
-
-      case "/settings":
-        UI.showPage("settings");
-        document.title = "Speed Test - Settings";
-        break;
-
-      case "/share":
-        UI.showPage("share");
-        document.title = "Speed Test - Share result";
-        this.shareView.generateShareResult();
-        break;
-
-      default:
-        UI.showPage("speedtest");
-        UI.$speedtest.className = "ready";
-        document.title = "Speed Test";
-        break;
-      }
+      const hasRoute = this.routes.some(route => {
+        if (route.url && document.location.pathname === route.url) {
+          route.handler.apply(this);
+          return true;
+        }
+        if (route.pattern && route.pattern.test(document.location.pathname)) {
+          route.handler.apply(this);
+          return true;
+        }
+      });
+      if (!hasRoute) this.defaultPageHandler();
     });
     window.dispatchEvent(new Event("popstate"));
+  }
+
+  aboutPageHandler() {
+    UI.showPage("about");
+    document.title = "Speed Test - About";
+  }
+
+  resultPageHandler() {
+    UI.showPage("speedtest");
+    document.title = "Speed Test - Result";
+    this.speedtest.loadResults();
+  }
+
+  resultsPageHandler() {
+    UI.showPage("history");
+    document.title = "Speed Test - Results history";
+    this.historyView.loadResultsHistory();
+  }
+
+  runPageHandler() {
+    UI.showPage("speedtest");
+    document.title = "Speed Test - Running...";
+    this.speedtest.startTest();
+  }
+
+  settingsPageHandler() {
+    UI.showPage("settings");
+    document.title = "Speed Test - Settings";
+  }
+
+  sharePageHandler() {
+    UI.showPage("share");
+    document.title = "Speed Test - Share result";
+    this.shareView.generateShareResult();
+  }
+
+  defaultPageHandler() {
+    UI.showPage("speedtest");
+    UI.$speedtest.className = "ready";
+    document.title = "Speed Test";
   }
 }

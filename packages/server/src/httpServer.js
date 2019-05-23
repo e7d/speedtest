@@ -13,7 +13,6 @@ const DownloadData = require("./downloadData");
 const ResultWritter = require("./resultWritter");
 
 const pagesUriList = [
-  "/",
   "/about",
   "/result",
   "/results",
@@ -227,9 +226,16 @@ class HttpServer {
    * @param {Response} response
    */
   loadFile(uri, request, response) {
-    if (pagesUriList.includes(uri)) {
-      uri = "index.html";
-    }
+    // if (pagesUriList.includes(uri)) {
+    //   uri = "index.html";
+    // }
+    if (uri === "/") uri = "index.html";
+    pagesUriList.some(pageUri => {
+      if (uri.startsWith(pageUri)) {
+        uri = "index.html";
+        return true;
+      }
+    });
     let filePath = path.join(this.webFolderPath, uri);
     fs.exists(filePath, exists => {
       if (!exists) {

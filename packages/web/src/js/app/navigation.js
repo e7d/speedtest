@@ -78,7 +78,8 @@ export default class Navigation {
    * Prepare the share results page
    */
   shareResultsButtonClickHandler() {
-    this.pushState({}, "Speed Test - Share Results", `/share${window.location.hash}`);
+    const id = window.location.pathname.split('/').pop();
+    this.pushState({}, "Speed Test - Share Results", `/share/${id}`);
   }
 
   /**

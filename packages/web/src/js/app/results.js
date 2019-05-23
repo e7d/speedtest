@@ -8,7 +8,7 @@ export default class Results {
    * @returns {Promise}
    */
   static loadFromUri(showShareButton = true) {
-    const id = window.location.hash.replace("#", "");
+    const id = window.location.pathname.split('/').pop();
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -23,7 +23,7 @@ export default class Results {
         const result = JSON.parse(xhr.response);
         UI.$speedtest.className = "done";
         UI.$timestamp.setAttribute("timestamp", result.timestamp);
-        UI.$timestamp.innerHTML = `<a href="/result#${result.id}">${DateFormat.toISO(new Date(result.timestamp))}</a>`;
+        UI.$timestamp.innerHTML = `<a href="/result/${result.id}">${DateFormat.toISO(new Date(result.timestamp))}</a>`;
         UI.$ipValue.innerHTML = result.ipInfo.ip;
         UI.$orgValue.innerHTML = result.ipInfo.org || "";
         UI.$latencyValue.innerHTML = result.latency.avg;

@@ -8,6 +8,7 @@
 	<meta name="theme-color" content="#f5f5f5">
 	<title>Speed Test</title>
 	<meta name="description" content="An HTML 5 speed test." />
+	<base href="/">
 	<link rel="manifest" href="manifest.json">
 	<link rel="icon" href="favicon.ico">
 </head>
@@ -23,18 +24,18 @@
 			</h1>
 
 			<nav id="commands">
-				<a id="show-about" class="btn-link" href="/about" title="Get information about this speed test"><i
+				<a id="show-about" class="btn-link" href="about" title="Get information about this speed test"><i
 						class="icon icon-info"></i></a>
-				<a id="results-history" class="btn-link" href="/results" title="History of previous results"><i
+				<a id="results-history" class="btn-link" href="results" title="History of previous results"><i
 						class="icon icon-history"></i></a>
-				<a id="show-settings" class="btn-link" href="/settings" title="Configure the speed test settings"><i
+				<a id="show-settings" class="btn-link" href="settings" title="Configure the speed test settings"><i
 						class="icon icon-cog"></i></a>
 			</nav>
 		</header>
 
 		<section id="alerts">
 			<div id="ie-alert" class="alert alert-warning alert-dismissible" hidden>
-				<span class="message">Internet Explorer is not a <a href="/about#supported-browsers">suported
+				<span class="message">Internet Explorer is not a <a href="about#supported-browsers">suported
 						browser</a>.</span>
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
 			</div>
