@@ -2,32 +2,70 @@
 
 A self-hosted, lightweight speed test implemented in JavaScript, and based on [Web Workers](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) and [XMLHttpRequest](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest).
 
-- [Compatibility](#compatibility)
-- [Features](#featyres)
-- [Requirements](#requirements)
 - [Usage](#usage)
+  - [Compatibility](#compatibility)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Configuration](#configuration)
+  - [Docker](#docker)
+  - [Self-hosted server](#self-hosted-server)
+- [Development](#development)
+  - [Prerequisites](#prerequisites)
+  - [Issues](#issues)
 - [Support the project](#support-the-project)
 - [License](#license)
 
-## Compatibility
+## Usage
+
+### Compatibility
 
 | Chrome | Edge | Firefox | Opera | Safari |
 |--------|------|---------|-------|--------|
 | 43     | *    | 48.0    | 12.10 | 6.0    |
 
-## Features
+### Features
 
 * IP Address (with ISP) detection
 * Latency and jitter tests
 * Download and upload bandwidth tests
 
-## Requirements
+### Requirements
 
 * Some decent server CPU
 * Using HTTPS is highly discouraged, adding an heavy packet size and computing overhead
 * Using server compression is also discouraged, adding a computing overhead
 
-## Usage
+### Configuration
+
+ToDo: Via config.json, explain all the different avalaible keys, with path, description, default value, possible values
+
+| Key                  | Description                                                                                                     | Default value    | Possible values                                           |
+|----------------------|-----------------------------------------------------------------------------------------------------------------|------------------|-----------------------------------------------------------|
+| `ignoreErrors`       | Ignore the errors yielded by upload/download requests. If `false`, the test will be aborted at the first error. | `true`           | `true` or `false`                                         |
+| `endpoint.xhr`       | The endpoint to request for XHR.                                                                                | current location | Any http:// or https:// endpoint exposing this speed test |
+| `endpoint.websocket` | The endpoint to request for WebSocket.                                                                          | current location | Any ws:// or wss:// endpoint exposing this speed test     |
+| `ip.path`            | The path of the IP test on the XHR endpoint.                                                                    | `ip`             |                                                           |
+| `latency.path`       | The path of the latency test on the WebSocket endpoint.                                                         | `ping`           |                                                           |
+| `latency.count`      | The count of latency requests to emit during the latency test.                                                  | `null`           | Any positive integer.                                     |
+| `latency.duration`   | The duration in seconds of the latency test.                                                                    | `5`              | Any positive integer.                                     |
+| `latency.gracetime`  | The duration in seconds at start of the latency test during which results are ignored. Used for test warm-up.   | `1`              | Any positive integer.                                     |
+| `download.path`      | The path of the download test on the XHR endpoint.                                                              | `download`       |                                                           |
+| `download.streams`   | The number of concurrent streams to use  during the download test.                                              | `6`              | Any positive integer.                                     |
+| `download.delay`     | The delay in milliseconds between the first request of each stream.                                             | `150`            | Any positive integer.                                     |
+| `download.size`      | The size in bytes downloaded on each download request.                                                          | `8388608`        | Any positive integer.                                     |
+| `download.minSize`   | The minimum size in bytes downloaded on each download request, to avoid excessively small requests.             | `1048576`        | Any positive integer.                                     |
+| `download.maxSize`   | The maximum size in bytes downloaded on each download request, to avoid excessively huge requests.              | `104857600`      | Any positive integer.                                     |
+| `download.duration`  | The duration in seconds of the download test.                                                                   | `10`             | Any positive integer.                                     |
+| `download.gracetime` | The duration in seconds at start of the download test during which results are ignored. Used for test warm-up.  |                  |                                                           |
+| `upload.path`        | The path of the upload test on the XHR endpoint.                                                                | `upload`         |                                                           |
+| `upload.streams`     | The number of concurrent streams to use  during the upload test.                                                | `6`              | Any positive integer.                                     |
+| `upload.delay`       | The delay in milliseconds between the first request of each stream.                                             | `150`            | Any positive integer.                                     |
+| `upload.size`        | The size in bytes uploaded on each upload request.                                                              | `8388608`        | Any positive integer.                                     |
+| `upload.minSize`     | The minimum size in bytes uploaded on each upload request, to avoid excessively small requests.                 | `1048576`        | Any positive integer.                                     |
+| `upload.maxSize`     | The maximum size in bytes uploaded on each upload request, to avoid excessively huge requests.                  | `104857600`      | Any positive integer.                                     |
+| `upload.duration`    | The duration in seconds of the upload test.                                                                     | `10`             | Any positive integer.                                     |
+| `upload.gracetime`   | The duration in seconds at start of the upload test during which results are ignored. Used for test warm-up.    |                  |                                                           |
+| `result.path`        | The path of the save result request on the XHR endpoint.                                                        | `save`           |                                                           |
 
 ### Docker
 
@@ -64,6 +102,21 @@ cd packages/server
 npm ci --production
 node server.js 80 ../web/dist
 ```
+
+## Development
+
+### Prerequisites
+
+ToDo: list prerequisites
+- GraphicsMagick: http://www.graphicsmagick.org/download.html
+- GhostScript: https://www.ghostscript.com/download.html
+- ImageMagick: https://imagemagick.org/script/download.php
+- Install fonts from assets/fonts
+- NodeJS + NPM
+
+### Issues
+
+ToDo
 
 ## Support the project
 
