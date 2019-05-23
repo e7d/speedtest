@@ -8,7 +8,7 @@ const zlib = require("zlib");
  * @param {Buffer} data
  */
 function gzip(request, response) {
-  if (!request.headers["accept-encoding"].includes("gzip")) return;
+  if (!(request.headers["accept-encoding"] || "").includes("gzip")) return;
 
   const { writeHead, write, end } = response;
   let myStatusCode, myHeaders;
