@@ -33,8 +33,6 @@ class UIService {
   }
 
   storeAlertSelectors() {
-    this.$httpsAlert = document.querySelector("#https-alert");
-    this.$httpsAlertMessage = this.$httpsAlert.querySelector(".message");
     this.$ieAlert = document.querySelector("#ie-alert");
     this.$unknownResultsAlert = document.querySelector("#unknown-results-alert");
     this.$closeButtons = document.querySelectorAll("button.close");

@@ -42,12 +42,6 @@ export default class SpeedTestWorker {
         this.downloadTest = new DownloadTest();
         this.uploadTest = new UploadTest();
 
-        if (config.endpoint.xhr.protocol === "https" || config.endpoint.websocket.protocol === "wss") {
-          this.test.alerts = {
-            https: "Speed test endpoint is accessed through a secured connection, results may be impacted."
-          };
-          console.warn(this.test.alerts.https);
-        }
         this.test.status = STATUS.READY;
         this.messaging.postStatus();
       })

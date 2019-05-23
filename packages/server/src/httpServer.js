@@ -1,6 +1,7 @@
 const fs = require("fs");
 const gzip = require("./gzip");
 const http = require("http");
+const https = require("https");
 const ipInfo = require("./ipInfo");
 const path = require("path");
 const requestIp = require("request-ip");
@@ -22,7 +23,7 @@ const pagesUriList = [
 ];
 
 class HttpServer {
-  constructor(port, webPath) {
+  constructor(webPath, httpPort, httpsPort) {
     this.serverFolderPath = process.cwd();
     this.webFolderPath = path.isAbsolute(webPath)
       ? webPath
@@ -38,34 +39,44 @@ class HttpServer {
       return;
     }
 
-    this.httpServer = this.createServer(port);
+    this.httpServer = this.createHttpServer(httpPort);
     if (!this.httpServer.listening) {
-      throw new Error(`Server failed listening on port ${port}`);
+      throw new Error(`Server failed listening on port ${httpPort}`);
     }
-    this.logger.log(`HTTP server listening at http://0.0.0.0:${port}/`);
+    this.logger.log(`HTTP server listening at http://0.0.0.0:${httpPort}/`);
 
     this.wsServer = new WebSocketServer(this.httpServer);
-    this.logger.log(`WebSocket server listening at ws://0.0.0.0:${port}/`);
+    this.logger.log(`WebSocket server listening at ws://0.0.0.0:${httpPort}/`);
 
-    return this.httpServer;
+    const httpsOptions = {
+      key: fs.readFileSync("certificates/localhost.key"),
+      cert: fs.readFileSync("certificates/localhost.pem")
+    };
+    this.httpsServer = this.createHttpsServer(httpsPort, httpsOptions);
+    if (!this.httpServer.listening) {
+      throw new Error(`Server failed listening on port ${httpsPort}`);
+    }
+    this.logger.log(`HTTPS server listening at http://0.0.0.0:${httpsPort}/`);
+
+    this.wssServer = new WebSocketServer(this.httpsServer);
+    this.logger.log(
+      `WebSocket server listening at wss://0.0.0.0:${httpsPort}/`
+    );
   }
 
-  createServer(port) {
+  createHttpServer(port) {
     return http
-      .createServer((request, response) => {
-        this.logger.debug(`Received request for ${request.url}`);
-        const { pathname: uri, query: query } = url.parse(request.url, true);
+      .createServer((request, response) =>
+        this.listenRequest(request, response)
+      )
+      .listen(port);
+  }
 
-        if (uri === "/ip") return this.writeIpInfo(request, response);
-        if (uri === "/ping" || uri === "/upload")
-          return this.writeEmpty(response);
-        if (uri === "/download") return this.writeDownloadData(query, response);
-        if (uri === "/save" && request.method === "POST")
-          return this.saveResult(request, response);
-        if (uri.startsWith("/results/")) return this.getResults(uri, response);
-
-        this.loadFile(uri, request, response);
-      })
+  createHttpsServer(port, options) {
+    return https
+      .createServer(options, (request, response) =>
+        this.listenRequest(request, response)
+      )
       .listen(port);
   }
 
@@ -89,6 +100,20 @@ class HttpServer {
         response.write(info);
         response.end();
       });
+  }
+
+  listenRequest(request, response) {
+    this.logger.debug(`Received request for ${request.url}`);
+    const { pathname: uri, query: query } = url.parse(request.url, true);
+
+    if (uri === "/ip") return this.writeIpInfo(request, response);
+    if (uri === "/ping" || uri === "/upload") return this.writeEmpty(response);
+    if (uri === "/download") return this.writeDownloadData(query, response);
+    if (uri === "/save" && request.method === "POST")
+      return this.saveResult(request, response);
+    if (uri.startsWith("/results/")) return this.getResults(uri, response);
+
+    this.loadFile(uri, request, response);
   }
 
   writeEmpty(response) {

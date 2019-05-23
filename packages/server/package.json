@@ -11,8 +11,8 @@
     "url": "https://github.com/e7d/speedtest.git"
   },
   "scripts": {
-    "dev": "node server.js 8888 ../web/dist",
-    "watch": "nodemon server.js 8888 ../web/dist"
+    "dev": "node server.js ../web/dist 8888 8443",
+    "watch": "nodemon server.js ../web/dist 8888 8443"
   },
   "bugs": {
     "url": "https://github.com/e7d/speedtest/issues"
