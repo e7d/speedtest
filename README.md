@@ -15,6 +15,12 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 - [Support the project](#support-the-project)
 - [License](#license)
 
+## Demo
+
+A demo is available here, running on a Digital Ocean server based on Amsterdam:  
+- stable: [http://134.209.196.181](http://134.209.196.181)
+- develop: [http://134.209.196.181:8080](http://134.209.196.181:8080)
+
 ## Usage
 
 ### Compatibility
@@ -37,8 +43,17 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 
 ### Configuration
 
-ToDo: Via config.json, explain all the different avalaible keys, with path, description, default value, possible values
+You can configure the speed test server following your needs. Find below the list of configurable options through the file `config.json` available at the root level of the server.  
+The key corresponds to the JSON path where to affect the value. For example, setting the value `2000` for the key `download.delay` corresponds to the following JSON:
+```json
+{
+  "download": {
+    "delay": 2000
+  }
+}
+```
 
+List of configurable options:
 | Key                  | Description                                                                                                     | Default value    | Possible values                                           |
 |----------------------|-----------------------------------------------------------------------------------------------------------------|------------------|-----------------------------------------------------------|
 | `ignoreErrors`       | Ignore the errors yielded by upload/download requests. If `false`, the test will be aborted at the first error. | `true`           | `true` or `false`                                         |
@@ -72,16 +87,27 @@ ToDo: Via config.json, explain all the different avalaible keys, with path, desc
 [![Docker Pulls](https://img.shields.io/docker/pulls/e7db/speedtest.svg)](https://hub.docker.com/r/e7db/speedtest)
 [![Docker Stars](https://img.shields.io/docker/stars/e7db/speedtest.svg)](https://hub.docker.com/r/e7db/speedtest)
 
+#### Run the Speed Test container
+
 ```sh
 docker run --name speedtest -d -p 80:80 e7db/speedtest
 ```
+
+#### Store the results permanently
 
 To store results permanently, you need a volume:
 ```sh
 docker volume create speedtest_results
 docker run --name speedtest -d -p 80:80 -v speedtest_results:/app/results e7db/speedtest
 ```
-Note: Results are never cleaned automatically.
+**Note:** Results are never cleaned automatically, used space will grow over time.
+
+#### Use a custom configuration
+
+To use a custom configuration through the `config.json` file, mount it through a read-only volume:
+```sh
+docker run --name speedtest -d -p 80:80 -v /path/to/config.json:/app/config.json:ro e7db/speedtest
+```
 
 ### Self-hosted server
 
@@ -116,7 +142,7 @@ ToDo: list prerequisites
 
 ### Issues
 
-ToDo
+If you encounter a problem with the Speed Test, please check if an [existing issue](https://github.com/e7d/speedtest/issues) adresses it and join the discussion. If not, feel free to create a new issue.
 
 ## Support the project
 
