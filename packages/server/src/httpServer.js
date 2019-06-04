@@ -55,7 +55,7 @@ class HttpServer {
     if (!this.httpServer.listening) {
       throw new Error(`Server failed listening on port ${httpsPort}`);
     }
-    this.logger.log(`HTTPS server listening at http://0.0.0.0:${httpsPort}/`);
+    this.logger.log(`HTTPS server listening at https://0.0.0.0:${httpsPort}/`);
 
     this.wssServer = new WebSocketServer(this.httpsServer);
     this.logger.log(
