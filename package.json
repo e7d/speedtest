@@ -2,6 +2,6 @@
   "name": "speedtest",
   "private": true,
   "devDependencies": {
-    "lerna": "^3.8.4"
+    "lerna": "^3.14.1"
   }
 }
