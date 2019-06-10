@@ -63,12 +63,14 @@ export default class Config {
     return {
       path: "download",
       streams: 6,
-      delay: 150,
+      delay: 2000,
       duration: 10000,
       gracetime: 2000,
       size: 8 * 1024 ** 2,
       minSize: 1 * 1024 ** 2,
       maxSize: 100 * 1024 ** 2,
+      minDuration: 1000,
+      maxDuration: 5000,
       responseType: "arraybuffer" // "arraybuffer" or "blob"
     };
   }
@@ -77,12 +79,14 @@ export default class Config {
     return {
       path: "upload",
       streams: 6,
-      delay: 150,
+      delay: 2000,
       duration: 10000,
       gracetime: 2000,
       size: 1 * 1024 ** 2,
       minSize: 256 * 1024,
-      maxSize: 8 * 1024 ** 2
+      maxSize: 8 * 1024 ** 2,
+      minDuration: 1000,
+      maxDuration: 5000
     };
   }
 
