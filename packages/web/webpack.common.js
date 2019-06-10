@@ -37,6 +37,12 @@ module.exports = {
         }
       },
       {
+        test: /views\/.*\.html$/,
+        use: {
+          loader: "html-loader"
+        }
+      },
+      {
         test: /\.(scss)$/,
         use: ["style-loader", "css-loader", "sass-loader"]
       },

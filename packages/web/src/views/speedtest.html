@@ -1,0 +1,47 @@
+<section id="speedtest" class="ready">
+	<div id="progress" class="progress">
+		<div class="progress-bar" role="progressbar"></div>
+	</div>
+
+	<div id="actions">
+		<button id="start" class="btn-lg btn-primary" aria-label="Start">Start</button>
+		<button id="stop" class="btn-lg btn-danger" aria-label="Stop" hidden>Stop</button>
+		<button id="share-result" class="btn-link" aria-label="Share" hidden><i class="icon icon-link"></i>
+			Share</button>
+		<div id="timestamp"></div>
+	</div>
+
+	<div id="latency" class="result">
+		<label><i class="icon icon-latency"></i> Latency</label>
+		<span class="value"></span>
+		<span class="unit">ms</span>
+	</div>
+	<div id="jitter" class="result">
+		<label><i class="icon icon-jitter"></i> Jitter</label>
+		<span class="value"></span>
+		<span class="unit">ms</span>
+	</div>
+	<div id="download" class="result">
+		<label><i class="icon icon-download"></i> Download</label>
+		<span class="value"></span>
+		<span class="unit">Mbps</span>
+	</div>
+	<div id="upload" class="result">
+		<label><i class="icon icon-upload"></i> Upload</label>
+		<span class="value"></span>
+		<span class="unit">Mbps</span>
+	</div>
+
+	<div id="gauge" class="gauge-container">
+		<div class="result">
+			<div class="value">...</div>
+			<div class="unit">Mbps</div>
+		</div>
+	</div>
+
+	<div id="ip" class="result">
+		<label>IP</label>
+		<div class="ip value"></div>
+		<div class="org"></div>
+	</div>
+</section>

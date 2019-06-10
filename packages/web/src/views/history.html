@@ -1,0 +1,50 @@
+<section id="history" hidden>
+	<h2>Previous results</h2>
+
+	<div id="go-landscape">
+		<div id="device-wrapper">
+			<div id="device">
+				<div id="device-screen">
+					<ul>
+						<li></li>
+						<li></li>
+						<li></li>
+						<li></li>
+						<li></li>
+						<li></li>
+						<li></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<p>Please turn your device in lanscape orientation.</p>
+	</div>
+
+	<svg viewBox="0 0 500 60">
+		<g id="uploadChart">
+			<polyline></polyline>
+			<g class="points"></g>
+		</g>
+		<g id="downloadChart">
+			<polyline></polyline>
+			<g class="points"></g>
+		</g>
+	</svg>
+	<table>
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Latency</th>
+				<th>Jitter</th>
+				<th>Download</th>
+				<th>Upload</th>
+				<th>IP / Org</th>
+				<th class="text-center">
+					<button id="erase-history" class="btn-danger" aria-label="Erase history"
+						title="Delete all results from history"><i class="icon icon-trash"></i></button>
+				</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</section>
