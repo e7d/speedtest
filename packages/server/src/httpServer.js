@@ -14,10 +14,10 @@ const ResultWritter = require("./resultWritter");
 
 const pagesUriList = [
   "/about",
-  "/result",
+  new RegExp("/result/.+"),
   "/results",
   "/run",
-  "/share",
+  new RegExp("/share/.+"),
   "/settings"
 ];
 
@@ -226,16 +226,16 @@ class HttpServer {
    * @param {Response} response
    */
   loadFile(uri, request, response) {
-    // if (pagesUriList.includes(uri)) {
-    //   uri = "index.html";
-    // }
-    if (uri === "/") uri = "index.html";
-    pagesUriList.some(pageUri => {
-      if (uri.startsWith(pageUri)) {
-        uri = "index.html";
-        return true;
-      }
-    });
+    if (
+      uri === "/" ||
+      pagesUriList.some(
+        pageUri =>
+          (pageUri instanceof RegExp && pageUri.test(uri)) ||
+          (typeof pageUri === "string" && uri === pageUri)
+      )
+    ) {
+      uri = "index.html";
+    }
     let filePath = path.join(this.webFolderPath, uri);
     fs.exists(filePath, exists => {
       if (!exists) {
@@ -254,16 +254,26 @@ class HttpServer {
     try {
       const stat = fs.statSync(filePath);
       const buffer = fs.readFileSync(filePath);
+      const contentType = this.guessContentType(filePath);
       response.writeHead(200, {
-        "Content-Type": this.guessContentType(filePath),
+        "Content-Type": contentType,
         "Content-Length": buffer.length,
-        "Last-Modified": stat.mtime.toUTCString()
+        "Last-Modified": stat.mtime.toUTCString(),
+        Expires: this.getExpiresDate(stat.mtime, contentType).toUTCString()
       });
       response.write(buffer, "binary");
       response.end();
     } catch (reason) {
       this.writeError(response, reason);
     }
+  }
+
+  getExpiresDate(modifiedDate, contentType) {
+    modifiedDate.setDate(
+      modifiedDate.getDate() +
+        (["application/javascript", "text/css"].includes(contentType) ? 365 : 7)
+    );
+    return modifiedDate;
   }
 }
 
