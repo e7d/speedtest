@@ -116,10 +116,10 @@ export default class HistoryView {
       <td>${(result.upload.speed / 1024 ** 2).toFixed(2)} Mbps</td>
       <td>${result.ipInfo.ip}${result.ipInfo.org ? `<br>${result.ipInfo.org}` : ""}</td>
       <td class="text-center">
-          <a class="go-result btn btn-link" href="result/${result.id}">
+          <a class="btn btn-link" href="result/${result.id}">
               <i class="icon icon-link2"></i>
           </a>
-          <a class="go-result btn btn-link" href="share/${result.id}">
+          <a class="btn btn-link" href="share/${result.id}">
               <i class="icon icon-link"></i>
           </a>
       </td>
@@ -253,12 +253,13 @@ export default class HistoryView {
    * Add a click handler for each result
    */
   handleShareResultLinks() {
-    const $shareLinks = document.querySelectorAll(".go-result");
-    $shareLinks.forEach($shareLink => {
-      $shareLink.addEventListener("click", e => {
+    const $btnLinks = UI.$history.querySelectorAll(".btn-link");
+    $btnLinks.forEach($btnLink => {
+      $btnLink.addEventListener("click", e => {
         e.preventDefault();
+        e.stopImmediatePropagation();
 
-        window.history.pushState({}, "Speed Test - Share", `/${$shareLink.getAttribute("href")}`);
+        window.history.pushState({}, "Speed Test - Share", `/${$btnLink.getAttribute("href")}`);
         document.title = "Speed Test - Share";
         window.dispatchEvent(new Event("popstate"));
       });

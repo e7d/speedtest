@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: {
@@ -44,7 +45,13 @@ module.exports = {
       },
       {
         test: /\.(scss)$/,
-        use: ["style-loader", "css-loader", "sass-loader"]
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+          "css-loader",
+          "sass-loader"
+        ]
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -70,6 +77,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "src/index.html",
       chunks: ["app"]
+    }),
+    new MiniCssExtractPlugin({
+      filename: "[name].css"
     }),
     new CopyWebpackPlugin([{ from: "src/assets/", to: "." }]),
     new webpack.DefinePlugin({

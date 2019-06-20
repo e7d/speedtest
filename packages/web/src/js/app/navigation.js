@@ -78,7 +78,7 @@ export default class Navigation {
    * Prepare the share results page
    */
   shareResultsButtonClickHandler() {
-    const id = window.location.pathname.split('/').pop();
+    const id = window.location.pathname.split("/").pop();
     this.pushState({}, "Speed Test - Share Results", `/share/${id}`);
   }
 
