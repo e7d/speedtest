@@ -1,4 +1,5 @@
 import { UI } from "./app/ui";
+import UserSettings from "./app/userSettings";
 import HistoryPage from "./app/views/history";
 import Navigation from "./app/navigation";
 import SettingsView from "./app/views/settings";
@@ -18,6 +19,8 @@ export default class App {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./serviceWorker.js");
     }
+
+    this.userSettings = new UserSettings();
 
     this.navigation = new Navigation();
     this.speedtest = new SpeedView();
@@ -60,6 +63,10 @@ export default class App {
    */
   attachStateHandler() {
     window.addEventListener("popstate", () => {
+      if (window.gtag) {
+        gtag("config", this.userSettings.analytics.trackingId, { page_path: document.location.pathname });
+      }
+
       this.speedtest.stopTest(true);
       UI.$shareResultButton.setAttribute("hidden", "");
       UI.dismissUnknownResultsAlert();

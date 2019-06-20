@@ -19,6 +19,7 @@ class UIService {
 
   storeGlobalSelectors() {
     this.$html = document.querySelector("html");
+    this.$head = document.querySelector("head");
     this.$themeColorMeta = document.querySelector('meta[name="theme-color"]');
     this.$body = document.querySelector("body");
     this.$main = document.querySelector("#main");

@@ -97,7 +97,8 @@ export default class WorkerService {
     UI.$main.removeAttribute("hidden");
 
     this.config = data.config;
-    if (!data.config.hideVersion) {
+    if (this.config.analytics) this.setupAnalytics();
+    if (!this.config.hideVersion) {
       UI.$version.removeAttribute("hidden");
     }
 
@@ -105,6 +106,25 @@ export default class WorkerService {
       this.queueTest = false;
       this.start();
     }
+  }
+
+  /**
+   * Setup the Google Analytics tracking scripts
+   */
+  setupAnalytics() {
+    this.userSettings.analytics = this.config.analytics;
+
+    const gtagScript = document.createElement("script");
+    gtagScript.async = true;
+    gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${this.config.analytics.trackingId}`;
+
+    const gtagConfigScript = document.createElement("script");
+    gtagConfigScript.innerHTML = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${
+      this.config.analytics.trackingId
+    }');`;
+
+    UI.$head.appendChild(gtagScript);
+    UI.$head.appendChild(gtagConfigScript);
   }
 
   /**
