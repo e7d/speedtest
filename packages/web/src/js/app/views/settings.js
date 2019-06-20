@@ -15,10 +15,6 @@ export default class SettingsView {
    */
   attachEventHandlers() {
     UI.$settingsForm.addEventListener("submit", this.settingsFormSubmitHandler.bind(this));
-    UI.$settingsPreset.addEventListener("change", this.settingsPresetChangeHandler.bind(this));
-    UI.$testDuration.forEach($testDuration =>
-      $testDuration.addEventListener("change", this.testDurationChangeHandler.bind(this))
-    );
   }
 
   /**
@@ -29,25 +25,6 @@ export default class SettingsView {
   settingsFormSubmitHandler(e) {
     e.preventDefault();
     this.processFormData(new FormData(e.target));
-  }
-
-  /**
-   * Handle the changed preset
-   */
-  settingsPresetChangeHandler() {
-    const preset = Preset[UI.$settingsForm["preset"].value];
-    if (!preset) return;
-    for (let field in preset.fields) {
-      if (!UI.$settingsForm[field]) continue;
-      UI.$settingsForm[field].value = preset.fields[field];
-    }
-  }
-
-  /**
-   * Handle the changed test duration
-   */
-  testDurationChangeHandler() {
-    UI.$settingsForm["preset"].value = "custom";
   }
 
   /**
@@ -73,6 +50,17 @@ export default class SettingsView {
       UI.$settingsForm[key].value = this.userSettings.data[key];
     }
 
+    this.applyPreset(this.userSettings.data.preset);
     UI.changeTheme(this.userSettings.data.theme);
+  }
+
+  /**
+   * Apply current user selected preset
+   */
+  applyPreset(preset) {
+    this.userSettings.data = {
+      ...this.userSettings.data,
+      ...Preset[preset || "normal"]
+    };
   }
 }

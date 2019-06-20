@@ -48,9 +48,6 @@ class UIService {
     this.$settingsForm = this.$settings.querySelector("form");
     this.$settingsPreset = this.$settingsForm.querySelector("[name=preset]");
     this.$saveConfirmation = this.$settingsForm.querySelector("#save-confirmation");
-    this.$testDuration = this.$settingsForm.querySelectorAll(
-      "[name=latency-duration], [name=download-duration], [name=upload-duration]"
-    );
   }
 
   storeHistorySelectors() {

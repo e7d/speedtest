@@ -1,15 +1,13 @@
 const server = require("websocket").server;
 const Logger = require("./logger");
-const DownloadData = require("./downloadData");
 
 class WebSocketServer {
   constructor(httpServer) {
     this.logger = new Logger();
-    this.downloadData = new DownloadData();
 
     const wsServer = new server({
       httpServer,
-      maxReceivedFrameSize: 20 * (1024 ** 2)
+      maxReceivedFrameSize: 20 * 1024 ** 2
     });
 
     wsServer.on("request", request => {
@@ -34,7 +32,6 @@ class WebSocketServer {
   }
 
   originIsAllowed(origin) {
-    // ToDo: filter depending of origin
     return true;
   }
 
@@ -42,9 +39,6 @@ class WebSocketServer {
     {
       if (data.type === "utf8")
         return this.handleUtf8Message(connection, data.utf8Data);
-
-      if (data.type === "binary")
-        return this.handleBinaryMessage(connection, data.binaryData);
     }
   }
 
@@ -58,32 +52,13 @@ class WebSocketServer {
       return;
     }
 
-    switch (data.action) {
-      case "ping":
-        connection.sendUTF(
-          JSON.stringify({
-            action: "pong",
-            index: data.index
-          })
-        );
-        break;
-      case "prepare":
-        const size = data.size || 8 * (1024 ** 2);
-        connection.downloadData = "";
-        for (let chunk of this.downloadData.get(size)) {
-          connection.downloadData += chunk;
-        }
-        break;
-      case "download":
-        connection.sendUTF(connection.downloadData);
-        break;
-    }
-  }
-
-  handleBinaryMessage(connection, binaryData) {
-    this.logger.debug(`Received Binary Message of ${binaryData.length} bytes`);
-    // connection.sendBytes(binaryData);
-    connection.sendUTF("");
+    if (data.action !== "ping") return;
+    connection.sendUTF(
+      JSON.stringify({
+        action: "pong",
+        index: data.index
+      })
+    );
   }
 
   onError(connection, error) {

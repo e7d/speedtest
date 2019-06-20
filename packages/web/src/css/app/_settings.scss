@@ -3,16 +3,12 @@
 }
 
 #settings {
-  fieldset.advanced {
+  .field.custom {
     display: none;
   }
-  &.advanced fieldset.advanced {
+  form.custom .field.custom {
     display: block;
   }
-}
-
-#tests-preset {
-  width: 100%;
 }
 
 #save-confirmation {
