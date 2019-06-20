@@ -79,12 +79,15 @@ class HttpServer {
       .listen(port);
   }
 
-  writeIpInfo(request, response) {
+  getIp(request) {
     const ipRegex = /\:\:ffff\:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
-    const ip = ipRegex.test(requestIp.getClientIp(request))
-      ? request.connection.remoteAddress.replace("::ffff:", "")
-      : request.connection.remoteAddress;
+    const ip =
+      requestIp.getClientIp(request) || request.connection.remoteAddress;
+    return ipRegex.test(ip) ? ip.replace("::ffff:", "") : ip;
+  }
 
+  writeIpInfo(request, response) {
+    const ip = this.getIp(request);
     let info;
     ipInfo(ip)
       .then(response => (info = response))
