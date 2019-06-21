@@ -19,7 +19,11 @@
             "path": "packages/server/",
             "problemMatcher": [
                 "$eslint-stylish"
-            ]
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "label": "Web: watch",
