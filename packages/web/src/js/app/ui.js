@@ -133,8 +133,8 @@ class UIService {
    *
    * @param {string} theme
    */
-  changeTheme(theme = "light") {
-    this.$html.classList[theme === "dark" ? "add" : "remove"]("dark");
+  changeTheme(theme = "dark") {
+    this.$html.classList[theme === "light" ? "add" : "remove"]("light");
 
     const [, r, g, b] = /([0-9]+), ?([0-9]+), ?([0-9]+)/.exec(
       window.getComputedStyle(this.$body).getPropertyValue("background-color")

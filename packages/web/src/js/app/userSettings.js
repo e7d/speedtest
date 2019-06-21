@@ -32,7 +32,7 @@ export default class UserSettings extends EventTarget {
    */
   confirm() {
     window.clearTimeout(this.fadeInOutTimeout);
-    UI.$saveConfirmation.classList.add("fade", "in");
-    this.fadeInOutTimeout = window.setTimeout(() => UI.$saveConfirmation.classList.remove("in"), 2000);
+    UI.$saveConfirmation.classList.add("fade");
+    this.fadeInOutTimeout = window.setTimeout(() => UI.$saveConfirmation.classList.remove("fade"), 4000);
   }
 }
