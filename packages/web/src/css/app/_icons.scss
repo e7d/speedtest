@@ -1,12 +1,12 @@
 @font-face {
   font-display: auto;
   font-family: 'icons';
-  src: url('./app/icons.eot');
-  src: url('./app/icons.eot#iefix') format('embedded-opentype'),
-    url('./app/icons.woff2') format('woff2'),
-    url('./app/icons.woff') format('woff'),
-    url('./app/icons.ttf') format('truetype'),
-    url('./app/icons.svg#icons') format('svg');
+  src: url('./icons/icons.eot');
+  src: url('./icons/icons.eot#iefix') format('embedded-opentype'),
+    url('./icons/icons.woff2') format('woff2'),
+    url('./icons/icons.woff') format('woff'),
+    url('./icons/icons.ttf') format('truetype'),
+    url('./icons/icons.svg#icons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
