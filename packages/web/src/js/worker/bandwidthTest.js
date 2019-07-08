@@ -60,10 +60,10 @@ export default class XHRTest extends AbstractTest {
    */
   registerEvents(index, xhr, params, resolve, reject) {
     const xhrHandler = this.initXHR(index, xhr, params);
-    xhrHandler.addEventListener("progress", e => this.handleProgress(e, index, xhr, params, resolve, reject));
-    xhrHandler.addEventListener("load", e => this.handleLoad(e, index, xhr, params, resolve, reject));
-    xhrHandler.addEventListener("timeout", e => this.handleTimeout(e, index, xhr, params, resolve, reject));
-    xhrHandler.addEventListener("error", e => this.handleError(e, xhr, params, resolve, reject));
+    xhrHandler.addEventListener("progress", e => this.handleProgress(e, index, xhr, resolve, reject));
+    xhrHandler.addEventListener("load", e => this.handleLoad(e, xhr, params, resolve, reject));
+    xhrHandler.addEventListener("timeout", e => this.handleTimeout(e, params, resolve, reject));
+    xhrHandler.addEventListener("error", e => this.handleError(e, params, resolve, reject));
   }
 
   /**
@@ -75,7 +75,7 @@ export default class XHRTest extends AbstractTest {
    * @param {*} resolve
    * @param {*} reject
    */
-  handleProgress(e, index, xhr, params, resolve, reject) {
+  handleProgress(e, index, xhr, resolve, reject) {
     if (xhr.readyState === XMLHttpRequest.DONE) return;
 
     if (this.test.status === STATUS.ABORTED) {
@@ -107,9 +107,9 @@ export default class XHRTest extends AbstractTest {
    * @param {*} resolve
    * @param {*} reject
    */
-  handleLoad(e, index, xhr, params, resolve, reject) {
+  handleLoad(e, xhr, params, resolve, reject) {
     const duration = Date.now() - xhr.startDate;
-    if (duration < this.test.config[this.step].minDuration) {
+    if (this.test.config[this.step].adjustSize && duration < this.test.config[this.step].minDuration) {
       this.test.config[this.step].size = Math.min(
         Math.round(e.loaded / (duration / 1000)),
         this.test.config[this.step].maxSize
@@ -130,11 +130,13 @@ export default class XHRTest extends AbstractTest {
    * @param {*} resolve
    * @param {*} reject
    */
-  handleTimeout(e, index, xhr, params, resolve, reject) {
-    this.test.config[this.step].size = Math.max(
-      Math.round(e.loaded / (this.test.config[this.step].maxDuration / 1000)),
-      this.test.config[this.step].minSize
-    );
+  handleTimeout(e, params, resolve, reject) {
+    if (this.test.config[this.step].adjustSize) {
+      this.test.config[this.step].size = Math.max(
+        Math.round(e.loaded / (this.test.config[this.step].maxDuration / 1000)),
+        this.test.config[this.step].minSize
+      );
+    }
     this.runTest(params)
       .then(resolve)
       .catch(reject);
@@ -149,7 +151,7 @@ export default class XHRTest extends AbstractTest {
    * @param {*} resolve
    * @param {*} reject
    */
-  handleError(e, xhr, params, resolve, reject) {
+  handleError(e, params, resolve, reject) {
     if (this.test.config.ignoreErrors) {
       this.runTest(params)
         .then(resolve)
@@ -174,8 +176,8 @@ export default class XHRTest extends AbstractTest {
     };
     if (this.status <= STATUS.WAITING) return;
 
-    const durationFromInit = (Date.now() - this.initDate);
-    const durationFromStart = (Date.now() - this.startDate);
+    const durationFromInit = Date.now() - this.initDate;
+    const durationFromStart = Date.now() - this.startDate;
     const progress = durationFromInit / this.test.config[this.step].duration;
     this.test.result[this.step].progress = progress;
     if (this.status <= STATUS.STARTING) return;
