@@ -22,7 +22,7 @@ const pagesUriList = [
 ];
 
 class HttpServer {
-  constructor(webPath, httpPort, httpsPort) {
+  constructor(webPath, httpPort, httpsPort, key, cert, ca) {
     this.serverFolderPath = process.cwd();
     this.webFolderPath = path.isAbsolute(webPath)
       ? webPath
@@ -48,9 +48,10 @@ class HttpServer {
     this.logger.log(`WebSocket server listening at ws://0.0.0.0:${httpPort}/`);
 
     const httpsOptions = {
-      key: fs.readFileSync("certificates/localhost.key"),
-      cert: fs.readFileSync("certificates/localhost.pem")
+      key: fs.readFileSync(key),
+      cert: fs.readFileSync(cert)
     };
+    if (ca) httpsOptions.ca = [fs.readFileSync(ca)];
     this.httpsServer = this.createHttpsServer(httpsPort, httpsOptions);
     if (!this.httpServer.listening) {
       throw new Error(`Server failed listening on port ${httpsPort}`);
