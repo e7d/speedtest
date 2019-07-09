@@ -58,7 +58,6 @@ export default class UploadTest extends BandwidthTest {
    * @param {*} xhr
    */
   sendMessage(xhr) {
-    this.blob = this.getRandomBlob(this.test.config.upload.size);
-    xhr.send(this.blob);
+    xhr.send(this.getRandomBlob(this.test.config.upload.size));
   }
 }
