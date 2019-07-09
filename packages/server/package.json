@@ -11,8 +11,8 @@
     "url": "https://github.com/e7d/speedtest.git"
   },
   "scripts": {
-    "dev": "node server.js ../web/dist 5080 5443",
-    "watch": "nodemon server.js ../web/dist 5080 5443"
+    "dev": "export BASE_PATH=../web/dist HTTP_PORT=5080 HTTPS_PORT=5443; node server.js",
+    "watch": "export BASE_PATH=../web/dist HTTP_PORT=5080 HTTPS_PORT=5443; nodemon server.js"
   },
   "bugs": {
     "url": "https://github.com/e7d/speedtest/issues"
