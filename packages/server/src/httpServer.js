@@ -121,6 +121,7 @@ class HttpServer {
 
   writeEmpty(response) {
     response.writeHead(200, {
+      "Access-Control-Allow-Headers": "Content-Type, Content-Encoding",
       "Access-Control-Allow-Origin": "*"
     });
     response.end();
@@ -155,7 +156,6 @@ class HttpServer {
         .store(JSON.parse(Buffer.concat(data).toString()))
         .then(id => {
           response.writeHead(200, {
-            "Access-Control-Allow-Origin": "*",
             "Content-Type": "text/plain",
             "Content-Length": id.length
           });

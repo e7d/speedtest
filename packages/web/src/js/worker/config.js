@@ -32,14 +32,8 @@ export default class Config {
 
   get endpointDefaultConfig() {
     return {
-      websocket: {
-        protocol: self.location.protocol.replace("http", "ws").replace(":", ""),
-        host: `${self.location.host}`
-      },
-      xhr: {
-        protocol: self.location.protocol.replace(":", ""),
-        host: `${self.location.host}`
-      }
+      websocket: `${self.location.protocol.replace("http", "ws")}//${self.location.host}`,
+      xhr: `${self.location.protocol}//${self.location.host}`
     };
   }
 
@@ -63,7 +57,7 @@ export default class Config {
     return {
       path: "download",
       streams: 6,
-      delay: 2000,
+      delay: 200,
       duration: 10000,
       gracetime: 2000,
       size: 8 * 1024 ** 2,
@@ -80,7 +74,7 @@ export default class Config {
     return {
       path: "upload",
       streams: 6,
-      delay: 2000,
+      delay: 200,
       duration: 10000,
       gracetime: 2000,
       size: 1 * 1024 ** 2,
@@ -94,7 +88,7 @@ export default class Config {
 
   get resultDefaultConfig() {
     return {
-      path: "save"
+      path: "/save"
     };
   }
 
@@ -105,16 +99,10 @@ export default class Config {
       xhr.open("GET", "/config.json", true);
       xhr.addEventListener("load", () => {
         const config = deepMerge(this.defaultConfig, JSON.parse(xhr.response));
-        config.endpoint.xhr.uri = this.getHostname(config, "xhr");
-        config.endpoint.websocket.uri = this.getHostname(config, "websocket");
         resolve(config);
       });
       xhr.addEventListener("error", () => reject("Could not load configuration file (config.json)"));
       xhr.send();
     });
-  }
-
-  getHostname(config, type) {
-    return `${config.endpoint[type].protocol}://${config.endpoint[type].host}`;
   }
 }

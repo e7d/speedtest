@@ -100,11 +100,12 @@ fieldset {
 
 .field {
   display: flex;
-  min-height: 2em;
+  min-height: 48px;
   line-height: 2.5em;
+  align-items: center;
 
   & > label {
-    min-width: 80px;
+    min-width: 100px;
     margin-right: 1em;
   }
 
@@ -123,6 +124,7 @@ legend {
   width: 100%;
   max-width: 100%;
   padding: 0;
+  margin-top: 1rem;
   margin-bottom: .5rem;
   font-size: 1.5rem;
   line-height: inherit;

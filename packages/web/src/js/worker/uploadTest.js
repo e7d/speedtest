@@ -45,7 +45,7 @@ export default class UploadTest extends BandwidthTest {
    */
   initXHR(index, xhr) {
     this.sizeLoaded[index] = 0;
-    const endpoint = `${this.test.config.endpoint.xhr.uri}/${this.test.config.upload.path}?${Uuid.v4()}`;
+    const endpoint = `${this.test.config.endpoint.xhr}/${this.test.config.upload.path}?${Uuid.v4()}`;
     xhr.upload.timeout = 2000;
     xhr.open("POST", endpoint, true);
     xhr.setRequestHeader("Content-Encoding", "identity");

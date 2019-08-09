@@ -39,7 +39,7 @@ export default class LantencyTest extends AbstractTest {
         return resolve();
       }
 
-      const endpoint = `${this.test.config.endpoint.websocket.uri}/${this.test.config.latency.path}`;
+      const endpoint = `${this.test.config.endpoint.websocket}/${this.test.config.latency.path}`;
       const socket = new WebSocket(endpoint);
       socket.binaryType = this.test.config.latency.binaryType || "arraybuffer";
       this.requests.push(socket);

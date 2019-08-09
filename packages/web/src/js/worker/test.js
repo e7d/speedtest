@@ -25,7 +25,7 @@ export default class Test {
    */
   storeResult() {
     return new Promise((resolve, reject) => {
-      const endpoint = `${this.config.endpoint.xhr.uri}/${this.config.result.path}`;
+      const endpoint = `${this.config.result.path}`;
       const xhr = new XMLHttpRequest();
       xhr.open("POST", endpoint, true);
       xhr.addEventListener("load", e => {

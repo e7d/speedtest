@@ -42,7 +42,7 @@ export default class IpTest {
 
   runTest() {
     return new Promise((resolve, reject) => {
-      const endpoint = `${this.test.config.endpoint.xhr.uri}/${this.test.config.ip.path}?${Uuid.v4()}`;
+      const endpoint = `${this.test.config.endpoint.xhr}/${this.test.config.ip.path}?${Uuid.v4()}`;
       const xhr = new XMLHttpRequest();
 
       xhr.open("GET", endpoint, true);
