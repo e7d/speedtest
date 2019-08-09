@@ -1,5 +1,6 @@
 import Request from "../utils/request";
 import Uuid from "../utils/uuid";
+import Config from "./config";
 import Messaging from "./messaging";
 import STATUS from "./status";
 import STEP from "./step";
@@ -42,7 +43,7 @@ export default class IpTest {
 
   runTest() {
     return new Promise((resolve, reject) => {
-      const endpoint = `${this.test.config.endpoint.xhr}/${this.test.config.ip.path}?${Uuid.v4()}`;
+      const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, 'xhr')}/${this.test.config.ip.path}?${Uuid.v4()}`;
       const xhr = new XMLHttpRequest();
 
       xhr.open("GET", endpoint, true);

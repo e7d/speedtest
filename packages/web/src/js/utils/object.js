@@ -1,8 +1,4 @@
-export {
-  convertPaths,
-  deepMerge,
-  pathToObj
-};
+export { convertPaths, deepMerge, pathToObj };
 
 /**
  * Deep merge a collection of objects
@@ -15,6 +11,10 @@ const deepMerge = (...objects) => {
   const merge = object => {
     for (const property in object) {
       if (!object.hasOwnProperty(property)) continue;
+      if (Array.isArray(object[property])) {
+        merged[property] = [].concat(merged[property] || [], object[property]);
+        continue;
+      }
       if (Object.prototype.isPrototypeOf(object[property])) {
         merged[property] = deepMerge(merged[property], object[property]);
         continue;

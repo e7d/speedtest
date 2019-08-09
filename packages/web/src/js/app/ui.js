@@ -47,6 +47,8 @@ class UIService {
   storeSettingsSelectors() {
     this.$settings = document.querySelector("#settings");
     this.$settingsForm = this.$settings.querySelector("form");
+    this.$settingsServerField = this.$settingsForm.querySelector("#serverField");
+    this.$settingsServerSelect = this.$settingsServerField.querySelector("select");
     this.$settingsPreset = this.$settingsForm.querySelector("[name=preset]");
     this.$saveConfirmation = this.$settingsForm.querySelector("#save-confirmation");
   }

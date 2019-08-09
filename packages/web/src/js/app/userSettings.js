@@ -20,6 +20,23 @@ export default class UserSettings extends EventTarget {
   }
 
   /**
+   * Load and display endpoints from configuration
+   * @param {*} endpoints
+   */
+  loadEndpoints(endpoints) {
+    if (!endpoints) return;
+    endpoints.forEach(endpoint => {
+      const value = JSON.stringify(endpoint.value);
+      const selected = this.data.server === value ? "selected" : "";
+      // ToDo: disable inscure enpoints if browser over https
+      const disabled = window.location.protocol === "https:" && !endpoint.value.isSecure ? "disabled" : "";
+      const label = endpoint.label;
+      UI.$settingsServerSelect.innerHTML += `<option value='${value}' ${selected} ${disabled}>${label}</option>`;
+    });
+    UI.$settingsServerField.removeAttribute("hidden");
+  }
+
+  /**
    * Save settings to storage
    */
   save() {

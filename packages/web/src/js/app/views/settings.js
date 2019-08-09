@@ -51,6 +51,7 @@ export default class SettingsView {
     }
 
     this.applyPreset(this.userSettings.data.preset);
+    this.useEndpoint(this.userSettings.data.server);
     UI.changeTheme(this.userSettings.data.theme);
   }
 
@@ -62,5 +63,10 @@ export default class SettingsView {
       ...this.userSettings.data,
       ...Preset[preset || "normal"]
     };
+  }
+
+  useEndpoint(endpoint) {
+    if (!endpoint) return;
+    this.userSettings.data["config.endpoint"] = JSON.parse(endpoint);
   }
 }

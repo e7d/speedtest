@@ -1,5 +1,6 @@
 import Jitter from "../utils/jitter";
 import Request from "../utils/request";
+import Config from "./config";
 import STATUS from "./status";
 import AbstractTest from "./abstractTest";
 import STEP from "./step";
@@ -39,7 +40,7 @@ export default class LantencyTest extends AbstractTest {
         return resolve();
       }
 
-      const endpoint = `${this.test.config.endpoint.websocket}/${this.test.config.latency.path}`;
+      const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, 'websocket')}/${this.test.config.latency.path}`;
       const socket = new WebSocket(endpoint);
       socket.binaryType = this.test.config.latency.binaryType || "arraybuffer";
       this.requests.push(socket);

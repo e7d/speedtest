@@ -1,5 +1,6 @@
 import Uuid from "../utils/uuid";
 import BandwidthTest from "./bandwidthTest";
+import Config from "./config";
 import STEP from "./step";
 
 export default class UploadTest extends BandwidthTest {
@@ -45,7 +46,7 @@ export default class UploadTest extends BandwidthTest {
    */
   initXHR(index, xhr) {
     this.sizeLoaded[index] = 0;
-    const endpoint = `${this.test.config.endpoint.xhr}/${this.test.config.upload.path}?${Uuid.v4()}`;
+    const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, 'xhr')}/${this.test.config.upload.path}?${Uuid.v4()}`;
     xhr.upload.timeout = 2000;
     xhr.open("POST", endpoint, true);
     xhr.setRequestHeader("Content-Encoding", "identity");

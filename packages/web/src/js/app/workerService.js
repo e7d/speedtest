@@ -97,6 +97,7 @@ export default class WorkerService {
     UI.$main.removeAttribute("hidden");
 
     this.config = data.config;
+    this.userSettings.loadEndpoints(data.config.endpoints);
     if (this.config.analytics) this.setupAnalytics();
     if (!this.config.hideVersion) {
       UI.$version.removeAttribute("hidden");

@@ -32,8 +32,8 @@ export default class Config {
 
   get endpointDefaultConfig() {
     return {
-      websocket: `${self.location.protocol.replace("http", "ws")}//${self.location.host}`,
-      xhr: `${self.location.protocol}//${self.location.host}`
+      host: self.location.host,
+      isSecure: self.location.protocol === "https"
     };
   }
 
@@ -104,5 +104,9 @@ export default class Config {
       xhr.addEventListener("error", () => reject("Could not load configuration file (config.json)"));
       xhr.send();
     });
+  }
+
+  static getEndpointUri(endpoint, type) {
+    return `${type === "websocket" ? "ws" : "http"}${endpoint.isSecure ? "s" : ""}://${endpoint.host}`;
   }
 }

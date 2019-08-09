@@ -186,17 +186,5 @@
     #latency, #jitter, #download, #upload {
       width: 50%;
     }
-
-    .result {
-      @media only screen and (min-width: 640px) {
-        .value {
-          font-size: 3.2em;
-        }
-
-        .unit {
-          font-size: 1em;
-        }
-      }
-    }
   }
 }
