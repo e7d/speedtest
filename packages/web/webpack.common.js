@@ -1,7 +1,3 @@
-const hash = require("child_process")
-  .execSync("git rev-parse --short HEAD")
-  .toString()
-  .trim();
 const path = require("path");
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
