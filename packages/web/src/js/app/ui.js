@@ -120,6 +120,7 @@ class UIService {
    */
   printVersion() {
     this.$version.innerHTML = this.$version.innerHTML.replace("{{VERSION}}", VERSION);
+    this.$version.innerHTML = this.$version.innerHTML.replace(/{{HASH}}/g, HASH);
     this.$version.innerHTML = this.$version.innerHTML.replace("{{BUILD_DATE}}", DateFormat.toISO(new Date(BUILD_DATE)));
   }
 

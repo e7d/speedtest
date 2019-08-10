@@ -1,4 +1,4 @@
-var cacheName = `SpeedTest-${VERSION}`;
+var cacheName = `SpeedTest-${HASH}`;
 var filesToCache = [
   "/app.css",
   "/app.js",

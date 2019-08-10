@@ -1,3 +1,7 @@
+const hash = require("child_process")
+  .execSync("git rev-parse --short HEAD")
+  .toString()
+  .trim();
 const path = require("path");
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
@@ -84,7 +88,8 @@ module.exports = {
     new CopyWebpackPlugin([{ from: "src/assets/", to: "." }]),
     new webpack.DefinePlugin({
       BUILD_DATE: new Date().getTime(),
-      VERSION: JSON.stringify(require("./package.json").version)
+      VERSION: JSON.stringify(require("./package.json").version),
+      HASH: JSON.stringify(hash)
     })
   ]
 };
