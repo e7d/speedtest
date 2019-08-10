@@ -5,7 +5,6 @@ export default class Config {
     if (!Config.instance) {
       Config.instance = this;
     }
-
     return Config.instance;
   }
 
