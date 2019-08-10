@@ -88,8 +88,7 @@ module.exports = {
     new CopyWebpackPlugin([{ from: "src/assets/", to: "." }]),
     new webpack.DefinePlugin({
       BUILD_DATE: new Date().getTime(),
-      VERSION: JSON.stringify(require("./package.json").version),
-      HASH: JSON.stringify(hash)
+      VERSION: JSON.stringify(require("./package.json").version)
     })
   ]
 };
