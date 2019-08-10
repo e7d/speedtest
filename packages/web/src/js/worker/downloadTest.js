@@ -20,7 +20,7 @@ export default class DownloadTest extends BandwidthTest {
     const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, 'xhr')}/${this.test.config.download.path}?${Uuid.v4()}&size=${
       params.size
     }`;
-    xhr.timeout = 2000;
+    xhr.timeout = this.test.config.download.maxDuration;
     xhr.open("GET", endpoint, true);
     return xhr;
   }
