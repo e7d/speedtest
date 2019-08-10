@@ -23,7 +23,7 @@ COPY packages/web/webpack.prod.js /opt/speedtest/web/webpack.prod.js
 RUN apk add --no-cache \
         imagemagick \
  && apk add --no-cache --virtual .build-deps \
-        fontconfig \
+        fontconfig git \
  && fc-cache -f -v \
  && ( cd /opt/speedtest/server && npm ci --production ) \
  && ( cd /opt/speedtest/web && npm ci && npm run dist ) \
