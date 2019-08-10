@@ -32,7 +32,7 @@ export default class Config {
   get endpointDefaultConfig() {
     return {
       host: self.location.host,
-      isSecure: self.location.protocol === "https"
+      isSecure: self.location.protocol === "https:"
     };
   }
 

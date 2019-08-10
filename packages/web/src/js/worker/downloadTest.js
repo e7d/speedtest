@@ -1,6 +1,6 @@
 import Uuid from "../utils/uuid";
 import BandwidthTest from "./bandwidthTest";
-import Config from './config';
+import Config from "./config";
 import STEP from "./step";
 
 export default class DownloadTest extends BandwidthTest {
@@ -17,9 +17,9 @@ export default class DownloadTest extends BandwidthTest {
    */
   initXHR(index, xhr, params) {
     this.sizeLoaded[index] = 0;
-    const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, 'xhr')}/${this.test.config.download.path}?${Uuid.v4()}&size=${
-      params.size
-    }`;
+    const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, "xhr")}/${
+      this.test.config.download.path
+    }?${Uuid.v4()}&size=${params.size}`;
     xhr.timeout = this.test.config.download.maxDuration;
     xhr.open("GET", endpoint, true);
     return xhr;
