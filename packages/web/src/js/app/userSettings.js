@@ -28,7 +28,6 @@ export default class UserSettings extends EventTarget {
     endpoints.forEach(endpoint => {
       const value = JSON.stringify(endpoint.value);
       const selected = this.data.server === value ? "selected" : "";
-      // ToDo: disable inscure enpoints if browser over https
       const disabled = window.location.protocol === "https:" && !endpoint.value.isSecure ? "disabled" : "";
       const label = endpoint.label;
       UI.$settingsServerSelect.innerHTML += `<option value='${value}' ${selected} ${disabled}>${label}</option>`;
