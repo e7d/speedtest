@@ -91,8 +91,8 @@ export default class AbstractTest {
       });
 
     const promises = [];
-
-    for (let index = 0; index < (config.streams || 1); index++) {
+    const streams = (this.test.config.connections === "multi" && config.streams) || 1;
+    for (let index = 0; index < streams; index++) {
       promises.push(getPromise(index, config));
     }
     return promises;

@@ -10,8 +10,8 @@ export default class Config {
 
   get OVERHEAD() {
     return {
-      "TCP+IPv4+ETH": 1500 / (1500 - 20 - 20 - 14),
-      "TCP+IPv6+ETH": 1500 / (1500 - 40 - 20 - 14)
+      "TCP+IPv4+ETH": 1500 / (1500 - (20 + 20 + 14)),
+      "TCP+IPv6+ETH": 1500 / (1500 - (20 + 40 + 14))
     };
   }
 
@@ -21,6 +21,7 @@ export default class Config {
       optimize: false,
       endpoint: this.endpointDefaultConfig,
       overheadCompensation: this.OVERHEAD["TCP+IPv4+ETH"],
+      connections: "multi",
       ip: this.ipDefaultConfig,
       latency: this.latencyDefaultConfig,
       download: this.downloadDefaultConfig,
