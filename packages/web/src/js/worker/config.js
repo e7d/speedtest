@@ -63,10 +63,11 @@ export default class Config {
       size: 8 * 1024 ** 2,
       adjustSize: true,
       minSize: 1 * 1024 ** 2,
+      // ToDo: handle IE max size with optimizations, default: 100
+      // maxSize: 8 * 1024 ** 2,
       maxSize: 100 * 1024 ** 2,
       minDuration: 1000,
-      maxDuration: 5000,
-      responseType: "arraybuffer" // "arraybuffer" or "blob"
+      maxDuration: 5000
     };
   }
 
@@ -80,6 +81,8 @@ export default class Config {
       size: 1 * 1024 ** 2,
       adjustSize: true,
       minSize: 256 * 1024,
+      // ToDo: handle IE max size with optimizations, default: 20
+      // maxSize: 1 * 1024 ** 2,
       maxSize: 20 * 1024 ** 2,
       minDuration: 1000,
       maxDuration: 5000

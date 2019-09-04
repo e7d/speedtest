@@ -260,8 +260,6 @@ export default class HistoryView {
         e.stopImmediatePropagation();
 
         window.history.pushState({}, "Speed Test - Share", `/${$btnLink.getAttribute("href")}`);
-        document.title = "Speed Test - Share";
-        window.dispatchEvent(new Event("popstate"));
       });
     });
   }

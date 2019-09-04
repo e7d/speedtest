@@ -1,10 +1,49 @@
 import { UI } from "./ui";
+import SpeedTest from "./speedtest";
+import UserSettings from "./userSettings";
+import HistoryPage from "./views/history";
+import SettingsView from "./views/settings";
+import ShareView from "./views/share";
 
 export default class Navigation {
   constructor() {
     UI.page = "home";
+    this.routes = [
+      {
+        url: "/about",
+        handler: this.aboutPageHandler
+      },
+      {
+        url: "/results",
+        handler: this.resultsPageHandler
+      },
+      {
+        url: "/run",
+        handler: this.runPageHandler
+      },
+      {
+        url: "/settings",
+        handler: this.settingsPageHandler
+      },
+      {
+        pattern: /result(\/[0-9a-f-]+)?/,
+        handler: this.resultPageHandler
+      },
+      {
+        pattern: /share(\/[0-9a-f-]+)?/,
+        handler: this.sharePageHandler
+      }
+    ];
+
+    this.speedtest = new SpeedTest();
+    this.userSettings = new UserSettings();
+
+    this.historyView = new HistoryPage();
+    this.settingsView = new SettingsView();
+    this.shareView = new ShareView();
 
     this.attachEventHandlers();
+    this.attachStateHandler();
   }
 
   /**
@@ -23,9 +62,80 @@ export default class Navigation {
     );
   }
 
+  /**
+   * Attach the handler observing history state
+   */
+  attachStateHandler() {
+    window.addEventListener("popstate", () => {
+      this.pageHandler();
+    });
+    this.pageHandler();
+  }
+
   pushState(data, title, url) {
     window.history.pushState(data, title, url);
-    window.dispatchEvent(new Event("popstate"));
+    this.pageHandler();
+  }
+
+  pageHandler() {
+    if (window.gtag) {
+      gtag("config", this.userSettings.analytics.trackingId, { page_path: document.location.pathname });
+    }
+
+    UI.$shareResultButton.setAttribute("hidden", "");
+    UI.dismissUnknownResultsAlert();
+
+    const hasRoute = this.routes.some(route => {
+      if (route.url && document.location.pathname === route.url) {
+        route.handler.apply(this);
+        return true;
+      }
+      if (route.pattern && route.pattern.test(document.location.pathname)) {
+        route.handler.apply(this);
+        return true;
+      }
+    });
+    if (!hasRoute) this.defaultPageHandler();
+  }
+
+  defaultPageHandler() {
+    UI.showPage("speedtest");
+    UI.$speedtest.className = "ready";
+    document.title = "Speed Test";
+  }
+
+  aboutPageHandler() {
+    UI.showPage("about");
+    document.title = "Speed Test - About";
+  }
+
+  resultPageHandler() {
+    UI.showPage("speedtest");
+    document.title = "Speed Test - Result";
+    this.speedtest.loadResults();
+  }
+
+  resultsPageHandler() {
+    UI.showPage("history");
+    document.title = "Speed Test - Results history";
+    this.historyView.loadResultsHistory();
+  }
+
+  runPageHandler() {
+    UI.showPage("speedtest");
+    document.title = "Speed Test - Running...";
+    this.speedtest.startTest();
+  }
+
+  settingsPageHandler() {
+    UI.showPage("settings");
+    document.title = "Speed Test - Settings";
+  }
+
+  sharePageHandler() {
+    UI.showPage("share");
+    document.title = "Speed Test - Share result";
+    this.shareView.generateShareResult();
   }
 
   /**
@@ -71,6 +181,7 @@ export default class Navigation {
    * Abort the running speed test on "Stop" button click
    */
   stopButtonClickHandler() {
+    this.speedtest.stopTest(true);
     this.pushState({}, "Speed Test", "/");
   }
 

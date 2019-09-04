@@ -1,9 +1,8 @@
 import { UI } from "./ui";
 
-export default class UserSettings extends EventTarget {
+export default class UserSettings {
   constructor() {
     if (!UserSettings.instance) {
-      super();
       UserSettings.instance = this;
       this.load();
     }

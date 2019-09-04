@@ -49,8 +49,8 @@ export default class UploadTest extends BandwidthTest {
     const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, "xhr")}/${
       this.test.config.upload.path
     }?${Uuid.v4()}`;
-    xhr.upload.timeout = this.test.config.upload.maxDuration;
     xhr.open("POST", endpoint, true);
+    xhr.upload.timeout = this.test.config.upload.maxDuration;
     xhr.setRequestHeader("Content-Encoding", "identity");
     return xhr.upload;
   }

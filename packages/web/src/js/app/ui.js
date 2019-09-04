@@ -137,11 +137,6 @@ class UIService {
    */
   changeTheme(theme = "dark") {
     this.$html.classList[theme === "light" ? "add" : "remove"]("light");
-
-    const [, r, g, b] = /([0-9]+), ?([0-9]+), ?([0-9]+)/.exec(
-      window.getComputedStyle(this.$body).getPropertyValue("background-color")
-    );
-    this.$themeColorMeta.setAttribute("content", this.rgbToHex(+r, +g, +b));
   }
 
   /**
