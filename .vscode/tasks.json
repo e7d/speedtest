@@ -4,28 +4,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Server: watch",
+      "label": "Server and Web: dev",
       "type": "npm",
-      "script": "watch",
-      "path": "packages/server/",
-      "problemMatcher": ["$eslint-stylish"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    },
-    {
-      "label": "Server: run",
-      "type": "npm",
-      "script": "dev",
-      "path": "packages/server/",
-      "problemMatcher": ["$eslint-stylish"]
-    },
-    {
-      "label": "Web: watch",
-      "type": "npm",
-      "script": "watch",
-      "path": "packages/web/",
+      "script": "start",
       "problemMatcher": ["$eslint-stylish"],
       "group": {
         "kind": "build",
@@ -38,10 +19,7 @@
       "script": "build",
       "path": "packages/web/",
       "problemMatcher": ["$eslint-stylish"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "group": "build"
     },
     {
       "label": "Web: dist",

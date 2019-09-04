@@ -3,6 +3,8 @@
     [
       "@babel/preset-env",
       {
+        "useBuiltIns": "usage",
+        "corejs": 3,
         "targets": "defaults, not dead",
         "loose": true,
         "modules": false
