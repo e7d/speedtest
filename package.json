@@ -10,13 +10,16 @@
     "url": "https://github.com/e7d/speedtest.git"
   },
   "scripts": {
+    "build": "lerna run build",
     "setup": "npm i && lerna bootstrap",
-    "start": "lerna run start --stream"
+    "start": "lerna run start --stream",
+    "start:dev": "lerna run start:dev --stream",
+    "test": "lerna run test"
   },
   "bugs": {
     "url": "https://github.com/e7d/speedtest/issues"
   },
   "devDependencies": {
-    "lerna": "^3.16.4"
+    "lerna": "^3.17.0"
   }
 }

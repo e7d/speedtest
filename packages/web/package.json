@@ -11,11 +11,12 @@
         "url": "https://github.com/e7d/speedtest.git"
     },
     "scripts": {
-        "build": "webpack --env=dev --progress --profile --colors",
-        "dev": "webpack --env=dev --progress --profile --colors --watch",
-        "dist": "webpack --env=prod --progress --profile --colors",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "npm run dev"
+        "build": "webpack --env=prod --progress --profile --colors",
+        "build:dev": "webpack --env=dev --progress --profile --colors",
+        "build:watch": "webpack --env=dev --progress --profile --colors --watch",
+        "start": "npm run build",
+        "start:dev": "npm run build:watch",
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "bugs": {
         "url": "https://github.com/e7d/speedtest/issues"
@@ -24,17 +25,17 @@
         "svg-gauge": "^1.0.6"
     },
     "devDependencies": {
-        "@babel/core": "^7.5.5",
-        "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-        "@babel/plugin-transform-runtime": "^7.5.5",
+        "@babel/core": "^7.6.4",
+        "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+        "@babel/plugin-transform-runtime": "^7.6.2",
         "@babel/plugin-transform-template-literals": "^7.4.4",
-        "@babel/preset-env": "^7.5.5",
-        "@babel/register": "^7.5.5",
-        "@babel/runtime": "^7.5.5",
+        "@babel/preset-env": "^7.6.3",
+        "@babel/register": "^7.6.2",
+        "@babel/runtime": "^7.6.3",
         "babel-eslint": "^10.0.3",
         "babel-loader": "^8.0.6",
         "browserslist": "^4.7.0",
-        "caniuse-lite": "^1.0.30000989",
+        "caniuse-lite": "^1.0.30000999",
         "clean-webpack-plugin": "^1.0.1",
         "copy-webpack-plugin": "^5.0.4",
         "core-js": "^3.2.1",
@@ -54,8 +55,8 @@
         "style-loader": "^0.23.1",
         "uglifyjs-webpack-plugin": "^2.2.0",
         "url-loader": "^1.1.2",
-        "webpack": "^4.39.3",
-        "webpack-cli": "^3.3.7",
+        "webpack": "^4.41.0",
+        "webpack-cli": "^3.3.9",
         "webpack-merge": "^4.2.2",
         "worker-loader": "^2.0.0"
     }

@@ -11,8 +11,11 @@
     "url": "https://github.com/e7d/speedtest.git"
   },
   "scripts": {
-    "run": "export BASE_PATH=../web/dist HTTP_PORT=5080 HTTPS_PORT=5443; node server.js",
-    "start": "export BASE_PATH=../web/dist HTTP_PORT=5080 HTTPS_PORT=5443; nodemon server.js"
+    "server": "export BASE_PATH=../web/dist HTTP_PORT=5080 HTTPS_PORT=5443; node server.js",
+    "server:watch": "export BASE_PATH=../web/dist HTTP_PORT=5080 HTTPS_PORT=5443; nodemon server.js",
+    "start": "npm run server",
+    "start:dev": "npm run server:watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bugs": {
     "url": "https://github.com/e7d/speedtest/issues"
@@ -22,9 +25,9 @@
     "gm": "^1.23.1",
     "request-ip": "^2.1.3",
     "uuid": "^3.3.3",
-    "websocket": "^1.0.29"
+    "websocket": "^1.0.30"
   },
   "devDependencies": {
-    "nodemon": "^1.19.2"
+    "nodemon": "^1.19.3"
   }
 }

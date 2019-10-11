@@ -4,9 +4,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Server and Web: dev",
+      "label": "Server and Web: Start (dev)",
       "type": "npm",
-      "script": "start",
+      "script": "start:dev",
       "problemMatcher": ["$eslint-stylish"],
       "group": {
         "kind": "build",
