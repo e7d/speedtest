@@ -26,7 +26,7 @@ RUN apk add --no-cache \
         fontconfig \
  && fc-cache -f -v \
  && ( cd /opt/speedtest/server && npm ci --production ) \
- && ( cd /opt/speedtest/web && npm ci && npm run dist ) \
+ && ( cd /opt/speedtest/web && npm ci && npm run build ) \
  && mkdir -p /app/results /app/web \
  && mv /opt/speedtest/server/* /app/ \
  && mv /opt/speedtest/web/dist/* /app/web/ \
