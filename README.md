@@ -19,8 +19,8 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
 
 A demo is available here, running on a Digital Ocean server based on Amsterdam:
 
-- stable: [http://134.209.196.181](http://134.209.196.181)
-- develop: [http://134.209.196.181:8080](http://134.209.196.181:8080)
+- stable: [http://134.209.196.181:8080](http://134.209.196.181:8080)
+- develop: [http://134.209.196.181:8081](http://134.209.196.181:8081)
 
 ## Usage
 
