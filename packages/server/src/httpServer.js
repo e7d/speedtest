@@ -29,7 +29,7 @@ class HttpServer {
       : path.join(this.serverFolderPath, webPath);
     this.logger = new Logger();
     this.downloadData = new DownloadData();
-    this.resultWritter = new ResultWritter(this.serverFolderPath);
+    this.resultWritter = new ResultWritter(path.join(this.serverFolderPath, "results"));
 
     if (!fs.existsSync(this.webFolderPath)) {
       this.logger.error(
