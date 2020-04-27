@@ -17,7 +17,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "[name].js"
+    filename: "[name].[contenthash:8].js"
   },
   module: {
     rules: [
@@ -26,7 +26,7 @@ module.exports = {
         use: {
           loader: "worker-loader",
           options: {
-            name: "[name].js"
+            name: "[name].[contenthash:8].js"
           }
         }
       },
@@ -58,19 +58,23 @@ module.exports = {
         loader: "url-loader",
         options: {
           limit: 1024,
-          name: "[name].[ext]"
+          name: "[name].[contenthash:8].[ext]"
         }
       },
       {
         test: /\.(eot|ttf|woff|woff2)$/,
         loader: "file-loader",
         options: {
-          name: "[name].[ext]"
+          name: "[name].[contenthash:8].[ext]"
         }
       }
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      BUILD_DATE: new Date().getTime(),
+      VERSION: JSON.stringify(require("./package.json").version)
+    }),
     new CleanWebpackPlugin(["dist/*"], {
       root: __dirname
     }),
@@ -79,12 +83,8 @@ module.exports = {
       chunks: ["app"]
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].css"
+      filename: "[name].[contenthash:8].css"
     }),
-    new CopyWebpackPlugin([{ from: "src/assets/", to: "." }]),
-    new webpack.DefinePlugin({
-      BUILD_DATE: new Date().getTime(),
-      VERSION: JSON.stringify(require("./package.json").version)
-    })
+    new CopyWebpackPlugin([{ from: "src/assets/", to: "." }])
   ]
 };
