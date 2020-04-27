@@ -25,12 +25,11 @@ export default class UserSettings extends EventTarget {
    */
   loadEndpoints(endpoints) {
     if (!endpoints) return;
-    endpoints.forEach(endpoint => {
-      const value = JSON.stringify(endpoint.value);
-      const selected = this.data.server === value ? "selected" : "";
-      const disabled = window.location.protocol === "https:" && !endpoint.value.isSecure ? "disabled" : "";
-      const label = endpoint.label;
-      UI.$settingsServerSelect.innerHTML += `<option value='${value}' ${selected} ${disabled}>${label}</option>`;
+    endpoints.forEach(({ label, uri }) => {
+      const isSecure = uri.startsWith('https:');
+      const selected = this.data.server === uri ? "selected" : "";
+      const disabled = window.location.protocol === "https:" && !isSecure ? "disabled" : "";
+      UI.$settingsServerSelect.innerHTML += `<option value="${uri}" ${selected} ${disabled}>${label}</option>`;
     });
     UI.$settingsServerField.removeAttribute("hidden");
   }

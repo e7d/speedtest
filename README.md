@@ -9,6 +9,7 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
     - [Features](#features)
     - [Requirements](#requirements)
     - [Configuration](#configuration)
+      - [Endpoints configuration](#endpoints-configuration)
     - [Docker](#docker)
       - [Run the Speed Test container](#run-the-speed-test-container)
       - [Store the results permanently](#store-the-results-permanently)
@@ -65,6 +66,7 @@ List of configurable options:
 | -------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------- |
 | analytics.trackingId | The Google Analytics tracking ID to use on the speed test.                                                    |                  | "UA-XXXXXXXX-Y" or empty.                                  |
 | ignoreErrors         | Ignore the errors yielded by upload/download requests. If false, the test will be aborted at the first error. | true             | true or false.                                             |
+| endpoints            | The available endpoints list.                                                                                 |                  | See [Endpoints configuration](#Endpoints_configuration) below.                                                 |
 | endpoint.xhr         | The endpoint to request for XHR.                                                                              | current location | Any http:// or https:// endpoint exposing this speed test. |
 | endpoint.websocket   | The endpoint to request for WebSocket.                                                                        | current location | Any ws:// or wss:// endpoint exposing this speed test.     |
 | ip.path              | The path of the IP test on the XHR endpoint.                                                                  | ip               |                                                            |
@@ -81,6 +83,35 @@ List of configurable options:
 | download.duration    | The duration in seconds of the download test.                                                                 | 10               | Any positive integer.                                      |
 | upload.gracetime     | The duration in seconds at start of the upload test during which results are ignored. Used for test warm-up.  |                  |                                                            |
 | result.path          | The path of the save result request on the XHR endpoint.                                                      | save             |                                                            |
+
+#### Endpoints configuration
+
+```JSON
+{
+  "endpoints": [
+    {
+      "label": "FR",
+      "uri": "http://speedtest-fr.localhost:5080"
+    },
+    {
+      "label": "FR (secured)",
+      "uri": "https://speedtest-fr.localhost:5443"
+    },
+    {
+      "label": "NL",
+      "uri": "http://speedtest-nl.localhost:5080"
+    },
+    {
+      "label": "UK",
+      "uri": "http://speedtest-uk.localhost:5080"
+    },
+    {
+      "label": "US",
+      "uri": "http://speedtest-us.localhost:5080"
+    }
+  ]
+}
+```
 
 ### Docker
 
