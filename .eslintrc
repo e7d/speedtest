@@ -8,16 +8,22 @@
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 6,
-    "sourceType": "module",
     "ecmaFeatures": {
       "arrowFunctions": true,
       "binaryLiterals": true,
       "blockBindings": true,
       "classes": true,
+      "comma-dangle": [
+        "error",
+        "never"
+      ],
       "defaultParams": true,
       "destructuring": true,
+      "experimentalObjectRestSpread": true,
       "forOf": true,
       "generators": true,
+      "globalReturn": true,
+      "jsx": true,
       "modules": true,
       "objectLiteralComputedProperties": true,
       "objectLiteralDuplicateProperties": true,
@@ -29,15 +35,15 @@
       "spread": true,
       "superInFunctions": true,
       "templateStrings": true,
-      "unicodeCodePointEscapes": true,
-      "globalReturn": true,
-      "jsx": true,
-      "experimentalObjectRestSpread": true
-    }
+      "unicodeCodePointEscapes": true
+    },
+    "sourceType": "module"
   },
   "rules": {
-    "strict": 0,
-    "indent": ["error", 2],
+    "indent": [
+      "error",
+      2
+    ],
     "max-len": [
       "error",
       {
@@ -45,6 +51,7 @@
         "ignoreTemplateLiterals": true,
         "ignoreRegExpLiterals": true
       }
-    ]
+    ],
+    "strict": 0
   }
 }
