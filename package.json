@@ -11,7 +11,9 @@
   },
   "scripts": {
     "build": "lerna run build",
-    "setup": "npm i && lerna bootstrap",
+    "build:dev": "lerna run build:dev",
+    "setup": "npm ci && lerna bootstrap",
+    "setup:dev": "npm i && lerna bootstrap",
     "start": "lerna run start --stream",
     "start:dev": "lerna run start:dev --stream",
     "test": "lerna run test"

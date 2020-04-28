@@ -7,8 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: {
-    app: "./build/app",
-    serviceWorker: "./build/serviceWorker"
+    app: "./build/app"
   },
   watchOptions: {
     ignored: /node_modules/,
