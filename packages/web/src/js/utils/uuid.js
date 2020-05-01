@@ -2,7 +2,6 @@ export default class Uuid {
   /**
    * Generate a RFC4122 compliant UUID
    * @see http://www.ietf.org/rfc/rfc4122.txt
-   *
    * @returns {string}
    */
   static v4() {

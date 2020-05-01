@@ -1,9 +1,7 @@
 export default class Request {
   /**
    * Clear a collection of XHR
-   *
    * @param {any} requests
-   * @returns {Promise}
    */
   static clearRequests(requests) {
     if (!Array.isArray(requests) || 0 === requests.length) {
@@ -29,7 +27,6 @@ export default class Request {
 
   /**
    * Clear an ongoing WebSocket
-   *
    * @param {WebSocket} socket
    */
   static clearWebSocket(socket) {
@@ -47,7 +44,6 @@ export default class Request {
 
   /**
    * Clear an ongoing XHR
-   *
    * @param {XMLHttpRequest} xhr
    */
   static clearXMLHttpRequest(xhr) {

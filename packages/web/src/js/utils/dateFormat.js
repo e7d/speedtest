@@ -1,7 +1,6 @@
 export default class DateFormat {
   /**
    * Format a date object to a universally readable format
-   *
    * @param {Date} d
    */
   static toISO(d = new Date()) {

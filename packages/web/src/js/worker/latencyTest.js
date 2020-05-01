@@ -1,8 +1,8 @@
 import Jitter from "../utils/jitter";
 import Request from "../utils/request";
+import AbstractTest from "./abstractTest";
 import Config from "./config";
 import STATUS from "./status";
-import AbstractTest from "./abstractTest";
 import STEP from "./step";
 
 export default class LantencyTest extends AbstractTest {
@@ -22,22 +22,22 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Run the WebSocket based upload speed test
-   *
-   * @param {any} size
-   * @param {number} [delay=0]
-   * @returns {Promise}
+   * @param {object} params
+   * @returns {Promise<void>}
    */
   runTest(params) {
     return new Promise((resolve, reject) => {
       if (this.test.status === STATUS.ABORTED) {
         this.status = STATUS.ABORTED;
-        return reject({
+        reject({
           status: STATUS.ABORTED
         });
+        return;
       }
 
       if (this.status === STATUS.DONE) {
-        return resolve();
+        resolve();
+        return;
       }
 
       const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, 'websocket')}/${this.test.config.latency.path}`;
@@ -50,11 +50,10 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Register events for the WebSocket of the latency test
-   *
-   * @param {*} socket
-   * @param {*} params
-   * @param {*} resolve
-   * @param {*} reject
+   * @param {WebSocket} socket
+   * @param {object} params
+   * @param {function} resolve
+   * @param {function} reject
    */
   registerEvents(socket, params, resolve, reject) {
     socket.addEventListener("open", () => this.handleOpen(socket));
@@ -65,8 +64,7 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Handle the WebSocket open event
-   *
-   * @param {*} socket
+   * @param {WebSocket} socket
    */
   handleOpen(socket) {
     this.sendMessage(socket);
@@ -74,22 +72,23 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Handle the WebSocket message event
-   *
-   * @param {*} e
-   * @param {*} socket
-   * @param {*} resolve
-   * @param {*} reject
+   * @param {Event} e
+   * @param {WebSocket} socket
+   * @param {function} resolve
+   * @param {function} reject
    */
   handleMessage(e, socket, resolve, reject) {
     if (this.test.status === STATUS.ABORTED) {
       this.status = STATUS.ABORTED;
       socket.close();
-      return reject({ status: STATUS.ABORTED });
+      reject({ status: STATUS.ABORTED });
+      return;
     }
 
     if (this.status === STATUS.DONE) {
       socket.close();
-      return resolve();
+      resolve();
+      return;
     }
 
     if (this.status === STATUS.RUNNING) {
@@ -106,8 +105,7 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Handle the WebSocket close event
-   *
-   * @param {*} socket
+   * @param {WebSocket} socket
    */
   handleClose(socket) {
     Request.clearWebSocket(socket);
@@ -115,12 +113,11 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Handle the WebSocket error event
-   *
-   * @param {*} e
-   * @param {*} socket
-   * @param {*} params
-   * @param {*} resolve
-   * @param {*} reject
+   * @param {Event} e
+   * @param {WebSocket} socket
+   * @param {object} params
+   * @param {function} resolve
+   * @param {function} reject
    */
   handleError(e, socket, params, resolve, reject) {
     if (this.test.config.ignoreErrors) {
@@ -140,8 +137,7 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Send a WebSocket message
-   *
-   * @param {*} socket
+   * @param {WebSocket} socket
    */
   sendMessage(socket) {
     const index = this.index++;
@@ -156,8 +152,6 @@ export default class LantencyTest extends AbstractTest {
 
   /**
    * Process the latency test result
-   *
-   * @returns {Promise}
    */
   processResult() {
     this.test.result.latency = {

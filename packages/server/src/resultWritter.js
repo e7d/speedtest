@@ -91,7 +91,10 @@ class Result {
       ).write(
         path.join(this.serverFolderPath, "results", `${resultId}.png`),
         err => {
-          if (err) return reject(err.message);
+          if (err) {
+            reject(err.message);
+            return;
+          }
           resolve(resultId);
         }
       );

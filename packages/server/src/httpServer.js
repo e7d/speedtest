@@ -224,7 +224,6 @@ class HttpServer {
 
   /**
    * Load a static file
-   *
    * @param {string} uri
    * @param {Request} request
    * @param {Response} response
