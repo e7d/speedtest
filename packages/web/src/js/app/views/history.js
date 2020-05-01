@@ -49,7 +49,6 @@ export default class HistoryView {
 
   /**
    * Filter out the results belonging previous versions
-   *
    * @param {*} results
    */
 
@@ -103,7 +102,6 @@ export default class HistoryView {
 
   /**
    * Get the HTML row for a result
-   *
    * @param {*} result
    */
   getHtmlRow(result) {

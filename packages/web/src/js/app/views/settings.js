@@ -19,7 +19,6 @@ export default class SettingsView {
 
   /**
    * Handle the posted form
-   *
    * @param {HtmlFormEvent} e
    */
   settingsFormSubmitHandler(e) {
@@ -29,7 +28,6 @@ export default class SettingsView {
 
   /**
    * Process the data posted through the form
-   *
    * @param {FormData} formData
    */
   processFormData(formData) {

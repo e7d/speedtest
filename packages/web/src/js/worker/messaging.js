@@ -15,7 +15,6 @@ export default class Messaging {
 
   /**
    * Post a message to the main thread
-   *
    * @param {*} message
    */
   postMessage(message) {

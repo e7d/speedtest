@@ -1,10 +1,10 @@
-import { UI } from "./ui";
 import DateFormat from "../utils/dateFormat";
+import { convertPaths } from "../utils/object";
 import SpeedTestWorker from "../worker";
 import STATUS from "../worker/status";
 import STEP from "../worker/step";
+import { UI } from "./ui";
 import UserSettings from "./userSettings";
-import { convertPaths } from "../utils/object";
 
 export default class WorkerService {
   constructor() {
@@ -61,7 +61,6 @@ export default class WorkerService {
 
   /**
    * Process an event response from the speed test Worker
-   *
    * @param {MessageEvent} event
    */
   processWorkerResponse(event) {
@@ -89,7 +88,6 @@ export default class WorkerService {
 
   /**
    * Update UI as speed test is ready
-   *
    * @param {Object} data
    */
   processReadyStatus(data) {
@@ -130,7 +128,6 @@ export default class WorkerService {
 
   /**
    * Update UI as speed test is successful
-   *
    * @param {Object} data
    */
   processDoneStatus(data) {
@@ -140,7 +137,6 @@ export default class WorkerService {
 
   /**
    * Update UI as speed test is finished
-   *
    * @param {Object} data
    */
   processFinishedStatus(data) {
@@ -158,7 +154,6 @@ export default class WorkerService {
 
   /**
    * Process a set of data
-   *
    * @param {Object} data
    */
   processData(data = {}) {
@@ -175,7 +170,6 @@ export default class WorkerService {
 
   /**
    * Process IP related information
-   *
    * @param {*} step
    * @param {Object} ipInfo
    */
@@ -194,7 +188,6 @@ export default class WorkerService {
 
   /**
    * Process latency related information
-   *
    * @param {*} step
    * @param {Object} latency
    */
@@ -210,7 +203,6 @@ export default class WorkerService {
 
   /**
    * Process bandwidth related information
-   *
    * @param {*} step
    * @param {Object} data
    */
@@ -233,7 +225,6 @@ export default class WorkerService {
 
   /**
    * Process a done test
-   *
    * @param {*} status
    * @param {String} timestamp
    * @param {String} id
@@ -247,7 +238,6 @@ export default class WorkerService {
 
   /**
    * Build a storable result history object
-   *
    * @param {Object} result
    */
   buildHistoryResult(result) {
@@ -271,7 +261,6 @@ export default class WorkerService {
 
   /**
    * Store a speed test run results to the local storage
-   *
    * @param {Object} result
    */
   storeLatestResult(result) {
@@ -286,10 +275,8 @@ export default class WorkerService {
 
   /**
    * Filter out the oldest results history entries
-   *
    * @param {Object} resultsHistory
    * @param {number} [maxEntries=20]
-   *
    * @returns {Object}
    */
   limitResultsHistory(resultsHistory, maxEntries = 20) {

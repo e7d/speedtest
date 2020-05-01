@@ -22,6 +22,7 @@ export default class Test {
 
   /**
    * Store the result in the server
+   * @returns {Promise<void>}
    */
   storeResult() {
     return new Promise((resolve, reject) => {
@@ -45,7 +46,8 @@ export default class Test {
 
   /**
    * Get result as JSON
-   * @param {*} result
+   * @param {object} result
+   * @returns {string}
    */
   getJsonResult(result) {
     return JSON.stringify({

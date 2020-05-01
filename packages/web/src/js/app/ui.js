@@ -1,4 +1,5 @@
 import Gauge from "svg-gauge";
+
 import DateFormat from "../utils/dateFormat";
 import STEP from "../worker/step";
 
@@ -132,7 +133,6 @@ class UIService {
 
   /**
    * Changes the color theme, light or dark
-   *
    * @param {string} theme
    */
   changeTheme(theme = "dark") {
@@ -146,7 +146,6 @@ class UIService {
 
   /**
    * Compute hexadecimal color code from RGB values
-   *
    * @param {number} r
    * @param {number} g
    * @param {number} b
@@ -157,7 +156,6 @@ class UIService {
 
   /**
    * Changes the current displayed page
-   *
    * @param {string} page
    */
   showPage(page) {
@@ -193,7 +191,6 @@ class UIService {
 
   /**
    * Highlights the current running step
-   *
    * @param {string} step
    */
   highlightStep(step) {
@@ -219,7 +216,6 @@ class UIService {
 
   /**
    * Set a value on the progress bar
-   *
    * @param {Number} progress
    * @param {string} step
    */

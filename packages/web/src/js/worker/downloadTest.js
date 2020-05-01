@@ -10,10 +10,10 @@ export default class DownloadTest extends BandwidthTest {
 
   /**
    * Prepapre the XHR object
-   *
-   * @param {*} index
-   * @param {*} xhr
-   * @param {*} params
+   * @param {number} index
+   * @param {XMLHttpRequest} xhr
+   * @param {object} params
+   * @returns {XMLHttpRequest}
    */
   initXHR(index, xhr, params) {
     this.sizeLoaded[index] = 0;
@@ -27,8 +27,7 @@ export default class DownloadTest extends BandwidthTest {
 
   /**
    * Send the XHR message
-   *
-   * @param {*} xhr
+   * @param {XMLHttpRequest} xhr
    */
   sendMessage(xhr) {
     xhr.send(null);

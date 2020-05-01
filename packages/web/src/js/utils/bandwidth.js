@@ -1,7 +1,6 @@
 export default class Bandwidth {
   /**
    * Compute the bandwidth used from data use over time
-   *
    * @param {number} size
    * @param {number} duration
    * @returns {Object}

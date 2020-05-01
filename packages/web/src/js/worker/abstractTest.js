@@ -10,8 +10,7 @@ export default class AbstractTest {
 
   /**
    * Run the bandwidth test
-   *
-   * @returns {Promise}
+   * @returns {Promise<void>}
    */
   async run() {
     this.test.step = this.step;
@@ -55,6 +54,7 @@ export default class AbstractTest {
 
   /**
    * Setup the current test steps with timeouts
+   * @returns {number[]}
    */
   getTimeouts() {
     const delay = this.test.config[this.step].delay;
@@ -76,6 +76,7 @@ export default class AbstractTest {
 
   /**
    * Build and return the current test promises
+   * @returns {Promise[]}
    */
   getPromises() {
     const config = this.test.config[this.step];

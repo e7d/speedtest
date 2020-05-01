@@ -6,7 +6,7 @@ const URL = "https://ipinfo.io";
  *
  * @param {String} ip The IP to get information about
  * @param {String} token The optional authentication token
- * @returns {Promise}
+ * @returns {Promise<string>}
  */
 function ipInfo(ip, token = null) {
   return new Promise((resolve, reject) => {

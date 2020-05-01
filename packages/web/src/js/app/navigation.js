@@ -84,7 +84,6 @@ export default class Navigation {
 
   /**
    * Close alert boxes on "×" button click
-   *
    * @param {MouseEvent} e
    */
   alertCloseButtonClickHandler(e) {

@@ -14,8 +14,7 @@ export default class IpTest {
 
   /**
    * Run the IP test
-   *
-   * @returns {Promise}
+   * @returns {Promise<void>}
    */
   async run() {
     this.test.step = STEP.IP;
@@ -41,6 +40,9 @@ export default class IpTest {
       });
   }
 
+  /**
+   * Run the XHR based ip test
+   */
   runTest() {
     return new Promise((resolve, reject) => {
       const endpoint = `${Config.getEndpointUri(this.test.config.endpoint, 'xhr')}/${this.test.config.ip.path}?${Uuid.v4()}`;

@@ -1,7 +1,6 @@
 export default class Performance {
   /**
    * Read browser most recent PerformanceEntry matching a given path
-   *
    * @param {any} path
    * @returns {PerformanceNavigationTiming}
    */
