@@ -51,7 +51,7 @@ export default class UploadTest extends BandwidthTest {
     xhr.upload.timeout = this.test.config.upload.maxDuration;
     xhr.open("POST", endpoint, true);
     xhr.setRequestHeader("Content-Encoding", "identity");
-    return xhr.upload;
+    return xhr;
   }
 
   /**

@@ -62,12 +62,12 @@ export default class XHRTest extends AbstractTest {
    * @param {function} reject
    */
   registerEvents(index, xhr, params, resolve, reject) {
-    const xhrHandler = this.initXHR(index, xhr, params);
-    xhrHandler.addEventListener("progress", e => this.handleProgress(e, index, xhr, resolve, reject));
-    xhrHandler.addEventListener("load", e => this.handleLoad(e, xhr, params, resolve, reject));
-    xhrHandler.addEventListener("error", e => this.handleError(e, params, resolve, reject));
-    xhrHandler.addEventListener("timeout", e => this.handleTimeout(e, index, params, resolve, reject));
-    xhr.onreadystatechange = e => this.closeUnhandledRequests(xhr, resolve);
+    xhr = this.initXHR(index, xhr, params);
+    const xhrProgressHandler = this.step === 'upload' ? xhr.upload : xhr;
+    xhrProgressHandler.onprogress = e => this.handleProgress(e, index, xhr, resolve, reject);
+    xhr.addEventListener("load", e => this.handleLoad(e, xhr, params, resolve, reject));
+    xhr.addEventListener("error", e => this.handleError(e, params, resolve, reject));
+    xhr.addEventListener("timeout", e => this.handleTimeout(e, params, resolve, reject));
   }
 
   /**
@@ -79,10 +79,7 @@ export default class XHRTest extends AbstractTest {
    * @param {function} reject
    */
   handleProgress(e, index, xhr, resolve, reject) {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      resolve();
-      return;
-    };
+    if (xhr.readyState === XMLHttpRequest.DONE) return;
 
     if (this.test.status === STATUS.ABORTED) {
       this.status = STATUS.ABORTED;
@@ -127,40 +124,6 @@ export default class XHRTest extends AbstractTest {
   }
 
   /**
-   * Close unhandled requests
-   * @param {XMLHttpRequest} xhr
-   * @param {function} resolve
-   */
-  closeUnhandledRequests(xhr, resolve)
-  {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      resolve();
-      return;
-    }
-  }
-
-  /**
-   * Handle the XHR timeout event
-   * @param {Event} e
-   * @param {number} index
-   * @param {XMLHttpRequest} xhr
-   * @param {object} params
-   * @param {function} resolve
-   * @param {function} reject
-   */
-  handleTimeout(e, index, params, resolve, reject) {
-    if (this.test.config[this.step].adjustSize) {
-      this.test.config[this.step].size = Math.max(
-        Math.round(e.loaded / (this.test.config[this.step].maxDuration / 1000)),
-        this.test.config[this.step].minSize
-      );
-    }
-    this.runTest(params)
-      .then(resolve)
-      .catch(reject);
-  }
-
-  /**
    * Handle the XHR error event
    * @param {Event} e
    * @param {object} params
@@ -180,6 +143,26 @@ export default class XHRTest extends AbstractTest {
       error: e.error,
       message: e.message
     });
+  }
+
+  /**
+   * Handle the XHR timeout event
+   * @param {Event} e
+   * @param {XMLHttpRequest} xhr
+   * @param {object} params
+   * @param {function} resolve
+   * @param {function} reject
+   */
+  handleTimeout(e, params, resolve, reject) {
+    if (this.test.config[this.step].adjustSize) {
+      this.test.config[this.step].size = Math.max(
+        Math.round(e.loaded / (this.test.config[this.step].maxDuration / 1000)),
+        this.test.config[this.step].minSize
+      );
+    }
+    this.runTest(params)
+      .then(resolve)
+      .catch(reject);
   }
 
   /**
