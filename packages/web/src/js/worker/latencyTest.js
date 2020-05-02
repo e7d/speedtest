@@ -100,7 +100,7 @@ export default class LantencyTest extends AbstractTest {
     }
     this.processResult();
 
-    this.sendMessage(socket);
+    self.setTimeout(() => this.sendMessage(socket), 20);
   }
 
   /**
@@ -160,7 +160,7 @@ export default class LantencyTest extends AbstractTest {
     };
     if (this.status <= STATUS.WAITING) return;
 
-    const durationFromInit = (Date.now() - this.initDate);
+    const durationFromInit = Date.now() - this.initDate;
     const progress = durationFromInit / this.test.config.latency.duration;
     this.test.result.latency.progress = progress;
     if (this.status <= STATUS.STARTING) return;
