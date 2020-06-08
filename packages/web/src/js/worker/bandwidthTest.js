@@ -112,7 +112,7 @@ export default class XHRTest extends AbstractTest {
    */
   handleLoad(e, xhr, params, resolve, reject) {
     const duration = Date.now() - xhr.startDate;
-    if (this.test.config[this.step].adjustSize && duration < this.test.config[this.step].minDuration) {
+    if (this.test.config[this.step].adjustSize && e.laoded > 0 && duration < this.test.config[this.step].minDuration) {
       this.test.config[this.step].size = Math.min(
         Math.round(e.loaded / (duration / 1000)),
         this.test.config[this.step].maxSize
