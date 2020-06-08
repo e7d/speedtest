@@ -11,7 +11,7 @@ export default class UploadTest extends BandwidthTest {
 
   /**
    * Produce random data
-   *
+   * @param {number} [bufferSize = 64 * 1024]
    * @returns {Float32Array}
    */
   getRandomData(bufferSize = 64 * 1024) {
@@ -24,7 +24,7 @@ export default class UploadTest extends BandwidthTest {
 
   /**
    * Produce a Blob made of random data
-   *
+   * @param {number} size
    * @returns {Blob}
    */
   getRandomBlob(size) {
@@ -39,10 +39,9 @@ export default class UploadTest extends BandwidthTest {
 
   /**
    * Prepapre the XHR object
-   *
-   * @param {*} index
-   * @param {*} xhr
-   * @param {*} params
+   * @param {number} index
+   * @param {XMLHttpRequest} xhr
+   * @returns {XMLHttpRequestUpload}
    */
   initXHR(index, xhr) {
     this.sizeLoaded[index] = 0;
@@ -52,13 +51,12 @@ export default class UploadTest extends BandwidthTest {
     xhr.upload.timeout = this.test.config.upload.maxDuration;
     xhr.open("POST", endpoint, true);
     xhr.setRequestHeader("Content-Encoding", "identity");
-    return xhr.upload;
+    return xhr;
   }
 
   /**
    * Send the XHR message
-   *
-   * @param {*} xhr
+   * @param {XMLHttpRequest} xhr
    */
   sendMessage(xhr) {
     xhr.send(this.getRandomBlob(this.test.config.upload.size));

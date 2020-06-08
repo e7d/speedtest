@@ -1,9 +1,5 @@
 import { deepMerge } from "./utils/object";
 import Request from "./utils/request";
-
-import STATUS from "./worker/status";
-import STEP from "./worker/step";
-
 import Config from "./worker/config";
 import DownloadTest from "./worker/downloadTest";
 import IpTest from "./worker/ipTest";
@@ -11,6 +7,7 @@ import LatencyTest from "./worker/latencyTest";
 import Messaging from "./worker/messaging";
 import Result from "./worker/result";
 import Scope from "./worker/scope";
+import STATUS from "./worker/status";
 import Test from "./worker/test";
 import UploadTest from "./worker/uploadTest";
 
@@ -118,11 +115,11 @@ export default class SpeedTestWorker {
 
   /**
    * Run the speed test
-   * @returns {Promise}
+   * @returns {Promise<void>}
    */
   async run() {
     if (this.test.running) {
-      return new Promise((resolve, reject) => {
+      return new Promise((_, reject) => {
         reject({
           status: this.test.status,
           error: "Stop the current test before starting another one."

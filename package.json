@@ -11,7 +11,9 @@
   },
   "scripts": {
     "build": "lerna run build",
-    "setup": "npm i && lerna bootstrap",
+    "build:dev": "lerna run build:dev",
+    "setup": "npm ci && lerna bootstrap",
+    "setup:dev": "npm i && lerna bootstrap",
     "start": "lerna run start --stream",
     "start:dev": "lerna run start:dev --stream",
     "test": "lerna run test"
@@ -20,6 +22,6 @@
     "url": "https://github.com/e7d/speedtest/issues"
   },
   "devDependencies": {
-    "lerna": "^3.17.0"
+    "lerna": "^3.20.2"
   }
 }

@@ -2,18 +2,24 @@
 
 A self-hosted, lightweight speed test implemented in JavaScript, and based on [Web Workers](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) and [XMLHttpRequest](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest).
 
-- [Usage](#usage)
-  - [Compatibility](#compatibility)
-  - [Features](#features)
-  - [Requirements](#requirements)
-  - [Configuration](#configuration)
-  - [Docker](#docker)
-  - [Self-hosted server](#self-hosted-server)
-- [Development](#development)
-  - [Prerequisites](#prerequisites)
-  - [Issues](#issues)
-- [Support the project](#support-the-project)
-- [License](#license)
+- [Speed Test](#speed-test)
+  - [Demo](#demo)
+  - [Usage](#usage)
+    - [Compatibility](#compatibility)
+    - [Features](#features)
+    - [Requirements](#requirements)
+    - [Configuration](#configuration)
+      - [Endpoints configuration](#endpoints-configuration)
+    - [Docker](#docker)
+      - [Run the Speed Test container](#run-the-speed-test-container)
+      - [Store the results permanently](#store-the-results-permanently)
+      - [Use a custom configuration](#use-a-custom-configuration)
+    - [Self-hosted server](#self-hosted-server)
+  - [Development](#development)
+    - [Prerequisites](#prerequisites)
+    - [Issues](#issues)
+  - [Support the project](#support-the-project)
+  - [License](#license)
 
 ## Demo
 
@@ -56,26 +62,56 @@ The key corresponds to the JSON path where to affect the value. For example, set
 ```
 
 List of configurable options:
-| Key | Description | Default value | Possible values |
-|----------------------|---------------------------------------------------------------------------------------------------------------|------------------|------------------------------------------------------------|
-| analytics.trackingId | The Google Analytics tracking ID to use on the speed test. | | "UA-XXXXXXXX-Y" or empty. |
-| ignoreErrors | Ignore the errors yielded by upload/download requests. If false, the test will be aborted at the first error. | true | true or false. |
-| endpoint.xhr | The endpoint to request for XHR. | current location | Any http:// or https:// endpoint exposing this speed test. |
-| endpoint.websocket | The endpoint to request for WebSocket. | current location | Any ws:// or wss:// endpoint exposing this speed test. |
-| ip.path | The path of the IP test on the XHR endpoint. | ip | |
-| latency.path | The path of the latency test on the WebSocket endpoint. | ping | |
-| latency.count | The count of latency requests to emit during the latency test. | null | Any positive integer. |
-| latency.duration | The duration in seconds of the latency test. | 5 | Any positive integer. |
-| latency.gracetime | The duration in seconds at start of the latency test during which results are ignored. Used for test warm-up. | 1 | Any positive integer. |
-| download.path | The path of the download test on the XHR endpoint. | download | |
-| download.streams | The number of concurrent streams to use during the download test. | 6 | Any positive integer. |
-| download.delay | The delay in milliseconds between the first request of each stream. | 150 | Any positive integer. |
-| download.size | The size in bytes downloaded on each download request. | 8388608 | Any positive integer. |
-| download.minSize | The minimum size in bytes downloaded on each download request, to avoid excessively small requests. | 1048576 | Any positive integer. |
-| download.maxSize | The maximum size in bytes downloaded on each download request, to avoid excessively huge requests. | 104857600 | Any positive integer. |
-| download.duration | The duration in seconds of the download test. | 10 | Any positive integer. |
-| upload.gracetime | The duration in seconds at start of the upload test during which results are ignored. Used for test warm-up. | | |
-| result.path | The path of the save result request on the XHR endpoint. | save | |
+| Key                  | Description                                                                                                   | Default value    | Possible values                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------- |
+| analytics.trackingId | The Google Analytics tracking ID to use on the speed test.                                                    |                  | "UA-XXXXXXXX-Y" or empty.                                  |
+| ignoreErrors         | Ignore the errors yielded by upload/download requests. If false, the test will be aborted at the first error. | true             | true or false.                                             |
+| endpoints            | The available endpoints list.                                                                                 |                  | See [Endpoints configuration](#Endpoints_configuration) below.                                                 |
+| endpoint.xhr         | The endpoint to request for XHR.                                                                              | current location | Any http:// or https:// endpoint exposing this speed test. |
+| endpoint.websocket   | The endpoint to request for WebSocket.                                                                        | current location | Any ws:// or wss:// endpoint exposing this speed test.     |
+| ip.path              | The path of the IP test on the XHR endpoint.                                                                  | ip               |                                                            |
+| latency.path         | The path of the latency test on the WebSocket endpoint.                                                       | ping             |                                                            |
+| latency.count        | The count of latency requests to emit during the latency test.                                                | null             | Any positive integer.                                      |
+| latency.duration     | The duration in seconds of the latency test.                                                                  | 5                | Any positive integer.                                      |
+| latency.gracetime    | The duration in seconds at start of the latency test during which results are ignored. Used for test warm-up. | 1                | Any positive integer.                                      |
+| download.path        | The path of the download test on the XHR endpoint.                                                            | download         |                                                            |
+| download.streams     | The number of concurrent streams to use during the download test.                                             | 6                | Any positive integer.                                      |
+| download.delay       | The delay in milliseconds between the first request of each stream.                                           | 150              | Any positive integer.                                      |
+| download.size        | The size in bytes downloaded on each download request.                                                        | 8388608          | Any positive integer.                                      |
+| download.minSize     | The minimum size in bytes downloaded on each download request, to avoid excessively small requests.           | 1048576          | Any positive integer.                                      |
+| download.maxSize     | The maximum size in bytes downloaded on each download request, to avoid excessively huge requests.            | 104857600        | Any positive integer.                                      |
+| download.duration    | The duration in seconds of the download test.                                                                 | 10               | Any positive integer.                                      |
+| upload.gracetime     | The duration in seconds at start of the upload test during which results are ignored. Used for test warm-up.  |                  |                                                            |
+| result.path          | The path of the save result request on the XHR endpoint.                                                      | save             |                                                            |
+
+#### Endpoints configuration
+
+```JSON
+{
+  "endpoints": [
+    {
+      "label": "FR",
+      "uri": "http://speedtest-fr.localhost:5080"
+    },
+    {
+      "label": "FR (secured)",
+      "uri": "https://speedtest-fr.localhost:5443"
+    },
+    {
+      "label": "NL",
+      "uri": "http://speedtest-nl.localhost:5080"
+    },
+    {
+      "label": "UK",
+      "uri": "http://speedtest-uk.localhost:5080"
+    },
+    {
+      "label": "US",
+      "uri": "http://speedtest-us.localhost:5080"
+    }
+  ]
+}
+```
 
 ### Docker
 

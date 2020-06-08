@@ -1,5 +1,5 @@
-import { UI } from "../ui";
 import Preset from "../preset";
+import { UI } from "../ui";
 import UserSettings from "../userSettings";
 
 export default class SettingsView {
@@ -19,7 +19,6 @@ export default class SettingsView {
 
   /**
    * Handle the posted form
-   *
    * @param {HtmlFormEvent} e
    */
   settingsFormSubmitHandler(e) {
@@ -29,7 +28,6 @@ export default class SettingsView {
 
   /**
    * Process the data posted through the form
-   *
    * @param {FormData} formData
    */
   processFormData(formData) {
@@ -65,8 +63,9 @@ export default class SettingsView {
     };
   }
 
-  useEndpoint(endpoint) {
-    if (!endpoint) return;
-    this.userSettings.data["config.endpoint"] = JSON.parse(endpoint);
+  useEndpoint(uri) {
+    if (!uri) return;
+    const [protocol, host] = uri.split("//");
+    this.userSettings.data["config.endpoint"] = { isSecure: protocol === "https:", host };
   }
 }

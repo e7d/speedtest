@@ -4,8 +4,7 @@ import { UI } from "./ui";
 export default class Results {
   /**
    * Load the results from the currect URI
-   *
-   * @returns {Promise}
+   * @returns {Promise<void>}
    */
   static loadFromUri(showShareButton = true) {
     const id = window.location.pathname.split('/').pop();

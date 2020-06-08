@@ -77,7 +77,7 @@ export default class Config {
       delay: 200,
       duration: 10000,
       gracetime: 2000,
-      size: 1 * 1024 ** 2,
+      size: 20 * 1024 ** 2,
       adjustSize: true,
       minSize: 256 * 1024,
       maxSize: 20 * 1024 ** 2,

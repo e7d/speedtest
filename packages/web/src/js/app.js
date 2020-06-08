@@ -1,10 +1,10 @@
+import Navigation from "./app/navigation";
+import SpeedView from "./app/speedtest";
 import { UI } from "./app/ui";
 import UserSettings from "./app/userSettings";
 import HistoryPage from "./app/views/history";
-import Navigation from "./app/navigation";
 import SettingsView from "./app/views/settings";
 import ShareView from "./app/views/share";
-import SpeedView from "./app/speedtest";
 
 /**
  * Speed Test web UI
@@ -16,10 +16,6 @@ export default class App {
    * Create an instance of WebUI
    */
   constructor() {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./serviceWorker.js");
-    }
-
     this.userSettings = new UserSettings();
 
     this.navigation = new Navigation();
