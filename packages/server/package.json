@@ -28,6 +28,6 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.4"
   }
 }
