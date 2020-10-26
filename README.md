@@ -17,6 +17,7 @@ A self-hosted, lightweight speed test implemented in JavaScript, and based on [W
     - [Self-hosted server](#self-hosted-server)
   - [Development](#development)
     - [Prerequisites](#prerequisites)
+    - [Setup the repository](#setup-the-repository)
     - [Issues](#issues)
   - [Support the project](#support-the-project)
   - [License](#license)
@@ -145,35 +146,31 @@ docker run --name speedtest -d -p 80:80 -v /path/to/config.json:/app/web/config.
 
 ### Self-hosted server
 
-Having cloned this repository, you can launch the speed test on your server in different flavors.
-
-First, you will want to compile the web UI using [NodeJS](https://nodejs.org/) and NPM.
-
+Having cloned this repository and moved into the directory, issue the following commands:
 ```sh
-cd packages/web
-npm ci
-npm run dist
-```
-
-Then, prepare dependencies and run the server.
-
-```sh
-cd packages/server
-npm ci --production
-node server.js 80 ../web/dist
+npm run setup
+npm run build
+npm run start
 ```
 
 ## Development
 
 ### Prerequisites
 
-ToDo: list prerequisites
-
 - GraphicsMagick: http://www.graphicsmagick.org/download.html
 - GhostScript: https://www.ghostscript.com/download.html
 - ImageMagick: https://imagemagick.org/script/download.php
 - Install fonts from assets/fonts
 - NodeJS + NPM
+
+### Setup the repository
+
+To setup, build and run the project for development, issue the following commands:
+```sh
+npm run setup:dev
+npm run build:dev
+npm run start:dev
+```
 
 ### Issues
 
