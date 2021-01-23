@@ -107,7 +107,7 @@ class HttpServer {
 
   listenRequest(request, response) {
     this.logger.debug(`Received request for ${request.url}`);
-    const { pathname: uri, query: query } = url.parse(request.url, true);
+    const { pathname: uri, query } = url.parse(request.url, true);
 
     if (uri === "/ip") return this.writeIpInfo(request, response);
     if (uri === "/ping" || uri === "/upload") return this.writeEmpty(response);

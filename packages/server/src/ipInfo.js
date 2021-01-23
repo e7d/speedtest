@@ -16,7 +16,7 @@ function ipInfo(ip, token = null) {
       response.on("error", err => reject(err));
       response.on("data", chunk => (data += chunk));
       response.on("end", () => resolve(JSON.parse(data)));
-    });
+    }).on('error', err => reject(err));
   });
 }
 module.exports = ipInfo;
