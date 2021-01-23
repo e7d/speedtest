@@ -141,7 +141,7 @@ docker run --name speedtest -d -p 80:80 -v speedtest_results:/app/results e7db/s
 To use a custom configuration through the `config.json` file, mount it through a read-only volume:
 
 ```sh
-docker run --name speedtest -d -p 80:80 -v /path/to/config.json:/app/config.json:ro e7db/speedtest
+docker run --name speedtest -d -p 80:80 -v /path/to/config.json:/app/web/config.json:ro e7db/speedtest
 ```
 
 ### Self-hosted server
