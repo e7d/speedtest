@@ -240,8 +240,8 @@ class HttpServer {
       uri = "index.html";
     }
     let filePath = path.join(this.webFolderPath, uri);
-    fs.exists(filePath, exists => {
-      if (!exists) {
+    fs.access(filePath, (err) => {
+      if (err && err.code === 'ENOENT') {
         response.writeHead(404);
         response.write("Not found");
         response.end();
@@ -255,17 +255,21 @@ class HttpServer {
   serveFile(filePath, request, response) {
     gzip(request, response);
     try {
-      const stat = fs.statSync(filePath);
-      const buffer = fs.readFileSync(filePath);
-      const contentType = this.guessContentType(filePath);
-      response.writeHead(200, {
-        "Content-Type": contentType,
-        "Content-Length": buffer.length,
-        "Last-Modified": stat.mtime.toUTCString(),
-        Expires: this.getExpiresDate(stat.mtime, contentType).toUTCString()
+      fs.stat(filePath, (err, stats) => {
+        if (err) throw err.message;
+        fs.readFile(filePath, (err, buffer) => {
+          if (err) throw err.message;
+          const contentType = this.guessContentType(filePath);
+          response.writeHead(200, {
+            "Content-Type": contentType,
+            "Content-Length": buffer.length,
+            "Last-Modified": stats.mtime.toUTCString(),
+            Expires: this.getExpiresDate(stats.mtime, contentType).toUTCString()
+          });
+          response.write(buffer, "binary");
+          response.end();
+        });
       });
-      response.write(buffer, "binary");
-      response.end();
     } catch (reason) {
       this.writeError(response, reason);
     }
