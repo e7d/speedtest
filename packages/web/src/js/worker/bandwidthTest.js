@@ -65,7 +65,7 @@ export default class XHRTest extends AbstractTest {
     xhr = this.initXHR(index, xhr, params);
     const xhrProgressHandler = this.step === 'upload' ? xhr.upload : xhr;
     xhrProgressHandler.onprogress = e => this.handleProgress(e, index, xhr, resolve, reject);
-    xhr.addEventListener("load", e => this.handleLoad(e, xhr, params, resolve, reject));
+    xhrProgressHandler.addEventListener("load", e => this.handleLoad(e, xhr, params, resolve, reject));
     xhr.addEventListener("error", e => this.handleError(e, params, resolve, reject));
     xhr.addEventListener("timeout", e => this.handleTimeout(e, params, resolve, reject));
   }
@@ -112,7 +112,7 @@ export default class XHRTest extends AbstractTest {
    */
   handleLoad(e, xhr, params, resolve, reject) {
     const duration = Date.now() - xhr.startDate;
-    if (this.test.config[this.step].adjustSize && e.laoded > 0 && duration < this.test.config[this.step].minDuration) {
+    if (this.test.config[this.step].adjustSize && e.loaded > 0 && duration < this.test.config[this.step].minDuration) {
       this.test.config[this.step].size = Math.min(
         Math.round(e.loaded / (duration / 1000)),
         this.test.config[this.step].maxSize

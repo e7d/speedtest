@@ -63,7 +63,7 @@ export default class Config {
       size: 8 * 1024 ** 2,
       adjustSize: true,
       minSize: 1 * 1024 ** 2,
-      maxSize: 100 * 1024 ** 2,
+      maxSize: 500 * 1024 ** 2,
       minDuration: 1000,
       maxDuration: 5000,
       responseType: "arraybuffer" // "arraybuffer" or "blob"
@@ -80,7 +80,7 @@ export default class Config {
       size: 20 * 1024 ** 2,
       adjustSize: true,
       minSize: 256 * 1024,
-      maxSize: 20 * 1024 ** 2,
+      maxSize: 100 * 1024 ** 2,
       minDuration: 1000,
       maxDuration: 5000
     };

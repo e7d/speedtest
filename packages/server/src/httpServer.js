@@ -122,7 +122,9 @@ class HttpServer {
   writeEmpty(response) {
     response.writeHead(200, {
       "Access-Control-Allow-Headers": "Content-Type, Content-Encoding",
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "text/plain",
+      "Content-Length": 0
     });
     response.end();
   }
