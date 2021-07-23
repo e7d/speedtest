@@ -242,7 +242,7 @@ class HttpServer {
     }
     let filePath = path.join(this.webFolderPath, uri);
     fs.exists(filePath, exists => {
-      if (!exists) {
+      if (!exists || filePath.indexOf(this.webFolderPath) !== 0) {
         response.writeHead(404);
         response.write("Not found");
         response.end();
