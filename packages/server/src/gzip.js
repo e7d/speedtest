@@ -22,7 +22,8 @@ function gzip(request, response) {
     writeHead.call(response, myStatusCode, {
       ...myHeaders,
       "Content-Encoding": "gzip",
-      "Content-Length": compressedBuffer.length
+      "Content-Length": compressedBuffer.length,
+      "Content-Security-Policy": "default-src 'self'; img-src 'self' data:"
     });
     write.call(response, compressedBuffer, dataType);
     end.call(response);
