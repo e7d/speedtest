@@ -34,7 +34,7 @@
         "@babel/runtime": "^7.12.5",
         "babel-eslint": "^10.1.0",
         "babel-loader": "^8.2.2",
-        "browserslist": "^4.16.1",
+        "browserslist": "^4.21.0",
         "caniuse-lite": "^1.0.30001179",
         "clean-webpack-plugin": "^1.0.1",
         "copy-webpack-plugin": "^5.1.2",

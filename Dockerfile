@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS build
+FROM node:14-alpine AS build
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN apk add --no-cache \
   && npm run setup \
   && npm run build
 
-FROM node:lts-alpine
+FROM node:14-alpine
 
 LABEL maintainer='Michaël "e7d" Ferrand <michael@e7d.io>'
 

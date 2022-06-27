@@ -172,7 +172,7 @@ npm run start
 - GhostScript: https://www.ghostscript.com/download.html
 - ImageMagick: https://imagemagick.org/script/download.php
 - Install fonts from assets/fonts
-- NodeJS + NPM
+- NodeJS 14 + NPM
 
 ### Setup the repository
 
