@@ -1,7 +1,14 @@
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const Merge = require("webpack-merge");
-const CommonConfig = require("./webpack.common.js");
+const common = require("./webpack.common.js");
 
-module.exports = Merge(CommonConfig, {
+module.exports = Merge(common, {
   mode: "development",
-  devtool: "eval"
+  devtool: "eval",
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "src/index.ejs",
+      chunks: ["app"]
+    })
+  ]
 });

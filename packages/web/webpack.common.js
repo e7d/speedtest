@@ -1,6 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -25,7 +25,7 @@ module.exports = {
         use: {
           loader: "worker-loader",
           options: {
-            name: "[name].[contenthash:8].js"
+            filename: "[name].[contenthash:8].js"
           }
         }
       },
@@ -37,17 +37,15 @@ module.exports = {
         }
       },
       {
-        test: /views\/.*\.html$/,
+        test: /\.ejs$/,
         use: {
-          loader: "html-loader"
+          loader: "ejs-loader"
         }
       },
       {
-        test: /\.(scss)$/,
+        test: /\.scss$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader
-          },
+          MiniCssExtractPlugin.loader,
           "css-loader",
           "sass-loader"
         ]
@@ -74,16 +72,12 @@ module.exports = {
       BUILD_DATE: new Date().getTime(),
       VERSION: JSON.stringify(require("./package.json").version)
     }),
-    new CleanWebpackPlugin(["dist/*"], {
-      root: __dirname
-    }),
-    new HtmlWebpackPlugin({
-      template: "src/index.html",
-      chunks: ["app"]
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ["dist/*"]
     }),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash:8].css"
     }),
-    new CopyWebpackPlugin([{ from: "src/assets/", to: "." }])
+    new CopyWebpackPlugin({ patterns: [{ from: "src/assets/", to: "." }] })
   ]
 };
