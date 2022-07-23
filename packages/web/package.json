@@ -22,7 +22,7 @@
         "url": "https://github.com/e7d/speedtest/issues"
     },
     "dependencies": {
-        "svg-gauge": "^1.0.6"
+        "svg-gauge": "^1.0.7"
     },
     "devDependencies": {
         "@babel/core": "^7.12.10",
