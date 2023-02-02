@@ -21,6 +21,6 @@
     "url": "https://github.com/e7d/speedtest/issues"
   },
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "lerna": "^6.4.1"
   }
 }
